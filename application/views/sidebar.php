@@ -137,9 +137,9 @@
                     <li>
                         <a href="<?php echo base_url(); ?>reports/view_survey_data/13" class="sub-menu <?php echo(($this->uri->segment(3)) == '13' ? 'active' : '');?>">Crops Water Incomes Expenditures</a>
                     </li>
-                    <!-- <li>
+                    <li>
                         <a href="<?php echo base_url(); ?>reports/view_survey_data/14" class="sub-menu <?php echo(($this->uri->segment(3)) == '14' ? 'active' : '');?>">Conflict Exposure</a>
-                    </li> -->
+                    </li>
                     <li>
                         <a href="<?php echo base_url(); ?>reports/view_survey_data/5" class="sub-menu <?php echo(($this->uri->segment(3)) == '5' ? 'active' : '');?>">Livestock Prices & Quality</a>
                     </li>
