@@ -1001,158 +1001,163 @@ class Users extends CI_Controller {
 	}
 
 	public function map_contributer_location(){
-		date_default_timezone_set("UTC");
-		$baseurl = base_url();
-		$result = array(
-			'csrfHash' => $this->security->get_csrf_hash(),
-			'csrfName' => $this->security->get_csrf_token_name()
-		);
+		try{
+			date_default_timezone_set("UTC");
+			$baseurl = base_url();
+			$result = array(
+				'csrfHash' => $this->security->get_csrf_hash(),
+				'csrfName' => $this->security->get_csrf_token_name()
+			);
+			
+			if($this->session->userdata('login_id') == '') {
+				$result['session_err'] = 1;
+				$result['msg'] = 'Session Expired! Please login again to continue.';
+
+				echo json_encode($result);
+				exit();
+			}
+
+			$loc_type = $this->input->post('loc_type');
+			$country = $this->input->post('country');
+			$contributer = $this->input->post('contributer');
+			$uai = $this->input->post('uai');
+			$sub_loc_id = $this->input->post('sub_loc');
+			$cluster = $this->input->post('cluster');
+			// $locatios = $this->input->post('location');
+			if(!empty($uai)){
+				if((!$uai)) {
+					$result['status'] = 0;
+					$result['msg'] = 'Please select some Uai location.';
 		
-		if($this->session->userdata('login_id') == '') {
-			$result['session_err'] = 1;
-			$result['msg'] = 'Session Expired! Please login again to continue.';
+					echo json_encode($result);
+					exit();
+				}
+			}
+			if(!empty($cluster)){
+				// echo json_encode($cluster);
+				// exit();
+				if(!$cluster){
+					$result['status'] = 0;
+					$result['msg'] = 'Please select cluster.';
+		
+					echo json_encode($result);
+					exit();
+				}
+			}
+			// Delete all previously assigned locations
+			if($loc_type == 'uai') {
+				$this->db->where('user_id', $contributer)->where('country_id', $country);
+				$this->db->where('sub_loc_id IS NOT NULL')->delete('tbl_user_unit_location');
+
+				$this->db->where('user_id', $contributer)->where('country_id', $country);
+				$this->db->where('cluster_id IS NOT NULL')->delete('tbl_user_unit_location');
+			} else if($loc_type == 'cluster') {
+
+				$this->db->where('user_id', $contributer)->where('country_id', $country);
+				$this->db->where('cluster_id IS NOT NULL')->delete('tbl_user_unit_location');
+
+				$this->db->where('user_id', $contributer)->where('country_id', $country);
+				$this->db->where('sub_loc_id IS NOT NULL')->delete('tbl_user_unit_location');
+			}
+
+			$locInsertArray = array();
+			$locNamesArray = array();
+			// foreach ($locatios as $key => $loc) {
+				// Insert new location
+				if($loc_type == 'uai') {
+					// Get uai id of sub location
+					// $locDetail = $this->db->where('sub_loc_id', $loc)->where('status', 1)->get('lkp_sub_location')->row_array();
+					// Get uai name
+					$uaiDetail = $this->db->where('uai_id', $uai)->get('lkp_uai')->row_array();
+					array_push($locNamesArray, $uaiDetail['uai']);
+
+					array_push($locInsertArray, array(
+						'user_id' => $contributer,
+						'country_id' => $country,
+						'uai_id' => $uai,
+						'sub_loc_id' => $sub_loc_id,
+						'added_by' => $this->session->userdata('login_id'),
+						'added_datetime' => date('Y-m-d H:i:s'),
+						'ip_address' => $this->input->ip_address()
+					));
+				} else if($loc_type == 'cluster') {
+					// print_r("test");exit();
+					// Get cluster name
+					$clusterDetail = $this->db->where('cluster_id', $cluster)->get('lkp_cluster')->row_array();
+					array_push($locNamesArray, $clusterDetail['name']);
+					
+					array_push($locInsertArray, array(
+						'user_id' => $contributer,
+						'country_id' => $country,
+						'cluster_id' => $cluster,
+						'added_by' => $this->session->userdata('login_id'),
+						'added_datetime' => date('Y-m-d H:i:s'),
+						'ip_address' => $this->input->ip_address()
+					));
+				}
+			// }
+			if(count($locNamesArray) > 0) {
+				$this->db->insert_batch('tbl_user_unit_location', $locInsertArray);
+
+				// Send Push to Contributer
+				$pushtoken = array();
+				// Get user's device tokens to send push
+				$this->db->distinct()->select('token');
+				$this->db->where('user_id', $this->input->post('contributer'))->where('status', 1);
+				$usertoken = $this->db->get('tbl_push_notification')->result_array();
+				foreach ($usertoken as $tkey => $utoken) {
+					array_push($pushtoken, $utoken['token']);
+				}
+
+				// Get contributer details
+				$contriDetails = $this->db->where('user_id', $contributer)->get('tbl_users')->row_array();
+
+				define('FIREBASE_API_KEY', 'AAAAU3aENuY:APA91bGj_Jb-rjYNw2QKjAq-aMKCVvvFL-GzwMJwzjVgXq-f07IkWGX8H3r06Ym6n_7bFKleq9o8Qg0nxcilKsLobX-ma8nQIv-S7EVC7x-owiACt2hTQJBC43igp-swHz1_wlnsOxRe');
+
+				if(count($pushtoken) > 0) {
+					$msg = array(
+						'body'		=> "Dear ".$contriDetails['first_name']." ".$contriDetails['last_name'].",\n
+									".implode(', ', $locNamesArray)." has been mapped to your account by the Administrator. Please sync the application and you can submit the data for the new location(s).\n
+									Kindly reach out to the administrator adminkaznet@ilri.org in case of any further questions or assistance",
+						'title'		=> "Location ".implode(', ', $locNamesArray)." have been assigned to you.",
+						// 'content'	=> json_encode($content),
+						'type'		=> "general",
+						'vibrate'	=> 1,
+						'sound'		=> 1,
+					);
+
+					$fields = array(
+						'registration_ids' => $pushtoken,
+						'priority' => 'high',
+						'data' => $msg
+					);
+
+					$headers = array(
+						'Authorization: key=' . FIREBASE_API_KEY,
+						'Content-Type: application/json'
+					);
+					$ch = curl_init();
+					curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+					curl_setopt( $ch,CURLOPT_POST, true );
+					curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+					curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+					curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+					curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+
+					$chResult = curl_exec($ch );
+					curl_close( $ch );
+				}
+			}
+
+			$result['status'] = 1;
+			$result['msg'] = 'Location assigned successfully.';
 
 			echo json_encode($result);
 			exit();
+		}catch (Exception $e) {
+			// Handle the exception
+			echo 'Caught exception: ',  $e->getMessage(), "\n";
 		}
-
-		$loc_type = $this->input->post('loc_type');
-		$country = $this->input->post('country');
-		$contributer = $this->input->post('contributer');
-		$uai = $this->input->post('uai');
-		$sub_loc_id = $this->input->post('sub_loc');
-		$cluster = $this->input->post('cluster');
-		// $locatios = $this->input->post('location');
-		if(!empty($uai)){
-			if((!$uai)) {
-				$result['status'] = 0;
-				$result['msg'] = 'Please select some Uai location.';
-	
-				echo json_encode($result);
-				exit();
-			}
-		}
-		if(!empty($cluster)){
-			// echo json_encode($cluster);
-			// exit();
-			if(!$cluster){
-				$result['status'] = 0;
-				$result['msg'] = 'Please select cluster.';
-	
-				echo json_encode($result);
-				exit();
-			}
-		}
-		// Delete all previously assigned locations
-		if($loc_type == 'uai') {
-			$this->db->where('user_id', $contributer)->where('country_id', $country);
-			$this->db->where('sub_loc_id IS NOT NULL')->delete('tbl_user_unit_location');
-
-			$this->db->where('user_id', $contributer)->where('country_id', $country);
-			$this->db->where('cluster_id IS NOT NULL')->delete('tbl_user_unit_location');
-		} else if($loc_type == 'cluster') {
-
-			$this->db->where('user_id', $contributer)->where('country_id', $country);
-			$this->db->where('cluster_id IS NOT NULL')->delete('tbl_user_unit_location');
-
-			$this->db->where('user_id', $contributer)->where('country_id', $country);
-			$this->db->where('sub_loc_id IS NOT NULL')->delete('tbl_user_unit_location');
-		}
-
-		$locInsertArray = array();
-		$locNamesArray = array();
-		// foreach ($locatios as $key => $loc) {
-			// Insert new location
-			if($loc_type == 'uai') {
-				// Get uai id of sub location
-				// $locDetail = $this->db->where('sub_loc_id', $loc)->where('status', 1)->get('lkp_sub_location')->row_array();
-				// Get uai name
-				$uaiDetail = $this->db->where('uai_id', $uai)->get('lkp_uai')->row_array();
-				array_push($locNamesArray, $uaiDetail['uai']);
-
-				array_push($locInsertArray, array(
-					'user_id' => $contributer,
-					'country_id' => $country,
-					'uai_id' => $uai,
-					'sub_loc_id' => $sub_loc_id,
-					'added_by' => $this->session->userdata('login_id'),
-					'added_datetime' => date('Y-m-d H:i:s'),
-					'ip_address' => $this->input->ip_address()
-				));
-			} else if($loc_type == 'cluster') {
-				// print_r("test");exit();
-				// Get cluster name
-				$clusterDetail = $this->db->where('cluster_id', $cluster)->get('lkp_cluster')->row_array();
-				array_push($locNamesArray, $clusterDetail['name']);
-				
-				array_push($locInsertArray, array(
-					'user_id' => $contributer,
-					'country_id' => $country,
-					'cluster_id' => $cluster,
-					'added_by' => $this->session->userdata('login_id'),
-					'added_datetime' => date('Y-m-d H:i:s'),
-					'ip_address' => $this->input->ip_address()
-				));
-			}
-		// }
-		if(count($locNamesArray) > 0) {
-			$this->db->insert_batch('tbl_user_unit_location', $locInsertArray);
-
-			// Send Push to Contributer
-			$pushtoken = array();
-			// Get user's device tokens to send push
-			$this->db->distinct()->select('token');
-			$this->db->where('user_id', $this->input->post('contributer'))->where('status', 1);
-			$usertoken = $this->db->get('tbl_push_notification')->result_array();
-			foreach ($usertoken as $tkey => $utoken) {
-				array_push($pushtoken, $utoken['token']);
-			}
-
-			// Get contributer details
-			$contriDetails = $this->db->where('user_id', $contributer)->get('tbl_users')->row_array();
-
-			define('FIREBASE_API_KEY', 'AAAAU3aENuY:APA91bGj_Jb-rjYNw2QKjAq-aMKCVvvFL-GzwMJwzjVgXq-f07IkWGX8H3r06Ym6n_7bFKleq9o8Qg0nxcilKsLobX-ma8nQIv-S7EVC7x-owiACt2hTQJBC43igp-swHz1_wlnsOxRe');
-
-			if(count($pushtoken) > 0) {
-				$msg = array(
-					'body'		=> "Dear ".$contriDetails['first_name']." ".$contriDetails['last_name'].",\n
-								".implode(', ', $locNamesArray)." has been mapped to your account by the Administrator. Please sync the application and you can submit the data for the new location(s).\n
-								Kindly reach out to the administrator adminkaznet@ilri.org in case of any further questions or assistance",
-					'title'		=> "Location ".implode(', ', $locNamesArray)." have been assigned to you.",
-					// 'content'	=> json_encode($content),
-					'type'		=> "general",
-					'vibrate'	=> 1,
-					'sound'		=> 1,
-				);
-
-				$fields = array(
-					'registration_ids' => $pushtoken,
-					'priority' => 'high',
-					'data' => $msg
-				);
-
-				$headers = array(
-					'Authorization: key=' . FIREBASE_API_KEY,
-					'Content-Type: application/json'
-				);
-				$ch = curl_init();
-				curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
-				curl_setopt( $ch,CURLOPT_POST, true );
-				curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-				curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-				curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-				curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
-
-				$chResult = curl_exec($ch );
-				curl_close( $ch );
-			}
-		}
-
-		$result['status'] = 1;
-		$result['msg'] = 'Location assigned successfully.';
-
-		echo json_encode($result);
-		exit();
 	}
 	public function map_cluster_location(){
 		date_default_timezone_set("UTC");
