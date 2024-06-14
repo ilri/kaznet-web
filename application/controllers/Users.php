@@ -621,7 +621,7 @@ class Users extends CI_Controller {
 			$this->db->distinct()->select('*');
 			$this->db->where('user_id',$user_id);
 			$locations = $this->db->where('status', 1)->get('tbl_user_unit_location')->result_array();
-			$result['locations'] = $this->security->xss_clean($locations);
+			$result['locations'] = $locations;
 		}else{
 			// $this->db->distinct()->select('*');
 			// $this->db->where('user_id',$logged_in_user_id);
