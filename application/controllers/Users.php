@@ -615,6 +615,9 @@ class Users extends CI_Controller {
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
 		$result['countries'] = $this->security->xss_clean($countries);
 
+		var_dump($result);
+		die();
+
 		// if user id is not empty get user locations for display if already assign 
 		$locations = array();
 		if($user_id && strlen($user_id) > 0){
