@@ -722,23 +722,23 @@ class Users extends CI_Controller {
 			$unique_cluster_id = array_unique(array_column($locations, 'cluster_id'));
 			$unique_country_id = array_unique(array_column($locations, 'country_id'));
 		}
-		$result['country'] = $this->security->xss_clean($unique_country_id);
-		$result['uais'] = $this->security->xss_clean($unique_uai_id);
-		$result['sub_locs'] = $this->security->xss_clean($unique_sub_loc_id);
-		$result['clusters'] = $this->security->xss_clean($unique_cluster_id);
+		$result['country'] = $unique_country_id;
+		$result['uais'] = $unique_uai_id;
+		$result['sub_locs'] = $unique_sub_loc_id;
+		$result['clusters'] = $unique_cluster_id;
 
 		// Get all countries
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
-		$result['countries'] = $this->security->xss_clean($countries);
+		$result['countries'] = $countries;
 		// Get all uais
 		$uai_list = $this->db->where('status', 1)->get('lkp_uai')->result_array();
-		$result['uai_list'] = $this->security->xss_clean($uai_list);
+		$result['uai_list'] = $uai_list;
 		// Get all uais
 		$sub_loc_list = $this->db->where('status', 1)->get('lkp_sub_location')->result_array();
-		$result['sub_loc_list'] = $this->security->xss_clean($sub_loc_list);
+		$result['sub_loc_list'] = $sub_loc_list;
 		// Get all uais
 		$cluster_list = $this->db->where('status', 1)->get('lkp_cluster')->result_array();
-		$result['cluster_list'] = $this->security->xss_clean($cluster_list);
+		$result['cluster_list'] = $cluster_list;
 
 		echo json_encode($result);
 		exit();
