@@ -613,7 +613,7 @@ class Users extends CI_Controller {
 
 		// Get all countries
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
-		$result['countries'] = $this->security->xss_clean($countries);
+		$result['countries'] = $countries;
 
 		var_dump($result);
 		die();
