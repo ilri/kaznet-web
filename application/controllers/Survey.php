@@ -1485,11 +1485,11 @@ class Survey extends CI_Controller {
 			// Get selected task
 			$this->db->where('id', $task);
 			$tasks = $this->db->where('status', 1)->get('form')->result_array();
-			$result['tasks_list'] = $this->security->xss_clean($tasks);
+			$result['tasks_list'] = $tasks;
 		}else{
 			// Get all tasks
 			$tasks = $this->db->where('status', 1)->get('form')->result_array();
-			$result['tasks_list'] = $this->security->xss_clean($tasks);
+			$result['tasks_list'] = $tasks;
 		}
 		// $c1=0;$c2=0;$c3=0;
 		// $this->db->select('*');
