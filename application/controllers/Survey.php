@@ -365,7 +365,7 @@ class Survey extends CI_Controller {
 
 		// Get all tasks
 		$tasks = $this->db->where('status', 1)->where('type', $task_type)->get('form')->result_array();
-		$result['tasks'] = $this->security->xss_clean($tasks);
+		$result['tasks'] = $tasks;
 
 		$result['status'] = 1;
 		echo json_encode($result);
