@@ -606,7 +606,7 @@ class Users extends CI_Controller {
 		$this->load->model('User_model');
 		
 		$contributers = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(8));
-		$result['contributers'] = $this->security->xss_clean($contributers);
+		$result['contributers'] = $contributers;
 
 		// $cluster_admins = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(6));
 		// $result['cluster_admins'] = $this->security->xss_clean($cluster_admins);
