@@ -324,11 +324,11 @@ class Survey extends CI_Controller {
 		
 		// Get all tasks types
 		$tasks_types = $this->db->distinct()->select('type')->where('status', 1)->get('form')->result_array();
-		$result['tasks_types'] = $this->security->xss_clean($tasks_types);
+		$result['tasks_types'] = $tasks_types;
 
 		// Get all countries
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
-		$result['countries'] = $this->security->xss_clean($countries);
+		$result['countries'] = $countries;
 
 		// var_dump($result); die();
 
