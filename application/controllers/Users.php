@@ -28,7 +28,7 @@ class Users extends CI_Controller {
 		$result = array();
 		
 		$all_roles = $this->User_model->all_roles();
-		$result['all_roles'] = $this->security->xss_clean($all_roles);
+		$result['all_roles'] = $all_roles;
 
 		//user data for profile info
 		$this->load->model('Dynamicmenu_model');
@@ -217,14 +217,14 @@ class Users extends CI_Controller {
 		
 		$contributers = $this->User_model->all_users_without_status(array(), array(8));
 		// $contributers = $this->User_model->get_users_location_based(array(), array(8), $data);
-		$result['contributers'] = $this->security->xss_clean($contributers);
+		$result['contributers'] = $contributers;
 
 		$cluster_admins = $this->User_model->all_users_without_status(array(), array(6));
 		// $cluster_admins = $this->User_model->get_users_location_based(array(), array(6), $data);
-		$result['cluster_admins'] = $this->security->xss_clean($cluster_admins);
+		$result['cluster_admins'] = $cluster_admins;
 
 		$disseminations = $this->User_model->all_users_without_status(array(), array(9));
-		$result['disseminations'] = $this->security->xss_clean($disseminations);
+		$result['disseminations'] = $disseminations;
 
 		$this->load->view('header');
 		$this->load->view('sidebar');
@@ -249,7 +249,7 @@ class Users extends CI_Controller {
 		
 		// $contributers = $this->User_model->all_users_without_status(array(), array(8));
 		$contributers = $this->User_model->all_users_without_status(array(), array());
-		$result['contributers'] = $this->security->xss_clean($contributers);
+		$result['contributers'] = $contributers;
 
 		$result['status'] = 1;
 
@@ -276,10 +276,10 @@ class Users extends CI_Controller {
 		
 		$this->load->model('User_model');
 		$all_users = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(8));
-		$result['contributers'] = $this->security->xss_clean($all_users);
+		$result['contributers'] = $all_users;
 
 		$tasks = $this->db->where('status', 1)->get('form')->result_array();
-		$result['tasks'] = $this->security->xss_clean($tasks);
+		$result['tasks'] = $tasks;
 
 		$this->load->view('header');
 		$this->load->view('sidebar');
@@ -561,21 +561,21 @@ class Users extends CI_Controller {
 		$this->load->model('User_model');
 		
 		$contributers = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(8));
-		$result['contributers'] = $this->security->xss_clean($contributers);
+		$result['contributers'] = $contributers;
 
 		$cluster_admins = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(6));
-		$result['cluster_admins'] = $this->security->xss_clean($cluster_admins);
+		$result['cluster_admins'] = $cluster_admins;
 
 		// Get all countries
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
-		$result['countries'] = $this->security->xss_clean($countries);
+		$result['countries'] = $countries;
 
 		// if user id is not empty get user locations for display if already assign locations
 		if($user_id && strlen($user_id) > 0){
 			$this->db->distinct()->select('*');
 			$this->db->where('user_id',$user_id);
 			$locations = $this->db->where('status', 1)->get('tbl_user_unit_location')->result_array();
-			$result['locations'] = $this->security->xss_clean($locations);
+			$result['locations'] = $locations;
 			// echo"<pre>";print_r($locations);echo"</pre>";exit;
 		}
 
@@ -662,28 +662,28 @@ class Users extends CI_Controller {
 		// $result['contributers'] = $this->security->xss_clean($contributers);
 
 		$cluster_admins = $this->User_model->all_users(($user_id ? array($user_id) : array()), array(6));
-		$result['cluster_admins'] = $this->security->xss_clean($cluster_admins);
+		$result['cluster_admins'] = $cluster_admins;
 
 		// Get all countries
 		$countries = $this->db->where('status', 1)->get('lkp_country')->result_array();
-		$result['countries'] = $this->security->xss_clean($countries);
+		$result['countries'] = $countries;
 		
 		// if user id is not empty get user locations for display if already assign locations
 		if($user_id && strlen($user_id) > 0){
 			$this->db->distinct()->select('*');
 			$this->db->where('user_id',$user_id);
 			$locations = $this->db->where('status', 1)->get('tbl_user_unit_location')->result_array();
-			$result['locations'] = $this->security->xss_clean($locations);
+			$result['locations'] = $locations;
 		}else{
 			if($logged_in_user_id==1){
 				$this->db->distinct()->select('*');
 				$locations = $this->db->where('status', 1)->get('tbl_user_unit_location')->result_array();
-				$result['locations'] = $this->security->xss_clean($locations);
+				$result['locations'] = $locations;
 			}else{
 				$this->db->distinct()->select('*');
 				$this->db->where('user_id',$logged_in_user_id);
 				$locations = $this->db->where('status', 1)->get('tbl_user_unit_location')->result_array();
-				$result['locations'] = $this->security->xss_clean($locations);
+				$result['locations'] = $locations;
 			}		
 		}
 
@@ -1137,6 +1137,9 @@ class Users extends CI_Controller {
 						'Content-Type: application/json'
 					);
 					$ch = curl_init();
+					if ($ch === false) {
+						die('Failed to initialize cURL');
+					}
 					curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
 					curl_setopt( $ch,CURLOPT_POST, true );
 					curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
@@ -1321,11 +1324,11 @@ class Users extends CI_Controller {
 		
 		$this->load->model('User_model');
 		$all_users = $this->User_model->all_users();
-		$result['users'] = $this->security->xss_clean($all_users);
+		$result['users'] = $all_users;
 
 		$this->load->model('Helper_model');
 		$all_units = $this->Helper_model->all_units();
-		$result['units'] = $this->security->xss_clean($all_units);
+		$result['units'] = $all_units;
 
 		$this->load->view('header');
 		$this->load->view('sidebar');
@@ -1594,7 +1597,7 @@ class Users extends CI_Controller {
 			$header_result = array('main_menu' => $main_menu);
 
 			$result = array('users' => $users);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			$this->load->view('header', $header_result);
 			$this->load->view('user/view', $result);
 			$this->load->view('footer');
@@ -1617,7 +1620,7 @@ class Users extends CI_Controller {
 			'csrfName' => $this->security->get_csrf_token_name(),
 			'csrfHash' => $this->security->get_csrf_hash()
 		);
-		$result = $this->security->xss_clean($result);
+		$result = $result;
 		
 		
 		$user_details = $this->User_model->get_user_details($_POST['user_id']);
@@ -1647,7 +1650,7 @@ class Users extends CI_Controller {
 			'csrfName' => $this->security->get_csrf_token_name(),
 			'csrfHash' => $this->security->get_csrf_hash()
 		);
-		$result = $this->security->xss_clean($result);
+		$result = $result;
 		$usernumber = $this->input->post('usernumber');
 		$this->db->select('users.user_id, users.username, users.email_id, users.first_name, users.last_name, users.mobile_number');
 		$this->db->from('tbl_users as users');
@@ -1681,15 +1684,15 @@ class Users extends CI_Controller {
 			//get all user
 			
 			$users = $this->User_model->all_users();
-			$result['users'] = $this->security->xss_clean($users);
+			$result['users'] = $users;
 
 			
 			$all_roles = $this->User_model->all_roles();
-			$result['all_roles'] = $this->security->xss_clean($all_roles);
+			$result['all_roles'] = $all_roles;
 
 			$this->load->model('Projects_model');
 			$projects = $this->Projects_model->all_project();
-			$result['projects'] = $this->security->xss_clean($projects);
+			$result['projects'] = $projects;
 
 			$header_result = array('main_menu' => $main_menu);
 			$this->load->view('header', $header_result);
@@ -1716,7 +1719,7 @@ class Users extends CI_Controller {
 				'email_id' => htmlspecialchars($_POST['email'], ENT_QUOTES),
 				'username' => htmlspecialchars($_POST['username'], ENT_QUOTES),
 			);
-			$data = $this->security->xss_clean($data);
+			$data = $data;
 			$update_user = $this->db->where('user_id', $_POST['user_id'])->update('tbl_users', $data);
 			if($update_user){
 				$result = array(
@@ -1733,7 +1736,7 @@ class Users extends CI_Controller {
 					'status' => 0
 				);
 			}
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			echo json_encode($result);
 			exit();
 		}
@@ -1790,7 +1793,7 @@ class Users extends CI_Controller {
 		$data = array(
 			'role_id' => $_POST['user_role']
 		);
-		$data = $this->security->xss_clean($data);
+		$data = $data;
 		$update_user = $this->db->where('user_id', $_POST['user_id'])->update('tbl_users', $data);
 		if($update_user){
 			// Delete all the old mappings
@@ -1851,7 +1854,7 @@ class Users extends CI_Controller {
 			$header_result = array('main_menu' => $main_menu);
 
 			$result = array('users' => $users);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			$this->load->view('header', $header_result);
 			$this->load->view('user/delete', $result);
 			$this->load->view('footer');
@@ -1985,7 +1988,7 @@ class Users extends CI_Controller {
 			$result = array('roles_list' => $roles_list, 'capability_list' => $capability_list);
 
 			$header_result = array('main_menu' => $main_menu);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			$this->load->view('header', $header_result);
 			$this->load->view('user/roles_capabilities', $result);
 			$this->load->view('footer');
@@ -2040,7 +2043,7 @@ class Users extends CI_Controller {
 			$result = array('roles_list' => $roles_list);
 
 			$header_result = array('main_menu' => $main_menu);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			$this->load->view('header', $header_result);
 			$this->load->view('user/add_role', $result);
 			$this->load->view('footer');
@@ -2095,7 +2098,7 @@ class Users extends CI_Controller {
 
 			$result = array('roles' => $roles_list);			
 			$header_result = array('main_menu' => $main_menu);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 			$this->load->view('header', $header_result);
 			$this->load->view('user/edit_role', $result);
 			$this->load->view('footer');
@@ -2122,7 +2125,7 @@ class Users extends CI_Controller {
 				'role_name' => $role_name,
 				'role_description' => $role_description
 			);
-			$role_data = $this->security->xss_clean($role_data);
+			$role_data = $role_data;
 			//update role name and description
 			$update_role = $this->db->where('role_id', $role_id)->update('tbl_role', $role_data);
 			//check role updated or not
@@ -2161,7 +2164,7 @@ class Users extends CI_Controller {
 	
 			$result = array('roles' => $roles_list);
 			$header_result = array('main_menu' => $main_menu);
-			$result = $this->security->xss_clean($result);
+			$result = $result;
 		    $this->load->view('header', $header_result);
 		    $this->load->view('user/delete_role', $result);
 		    $this->load->view('footer');

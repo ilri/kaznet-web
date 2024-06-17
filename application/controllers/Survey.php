@@ -1615,7 +1615,11 @@ class Survey extends CI_Controller {
 			$contributor_list[$ckey]['country_name'] = $country_list['name'];
 
 			$cluster_list =$this->db->select('name')->where('cluster_id', $contributor['cluster_id'])->where('status', 1)->get('lkp_cluster')->row_array();
-			$contributor_list[$ckey]['cluster_name'] = $cluster_list['name'];
+			if(!empty($cluster_list)){
+				$contributor_list[$ckey]['cluster_name'] = $cluster_list['name'];
+			}else{
+				$contributor_list[$ckey]['cluster_name'] = "";
+			}
 
 			$uai_list =$this->db->select('uai')->where('uai_id', $contributor['uai_id'])->where('status', 1)->get('lkp_uai')->row_array();
 			$contributor_list[$ckey]['uai_name'] = $uai_list['uai'];
@@ -1632,7 +1636,11 @@ class Survey extends CI_Controller {
 
 			$this->db->select('name')->where('market_id', $contributor['market_id']);
 			$market_name_list = $this->db->where('status', 1)->get('lkp_market')->row_array();
-			$contributor_list[$ckey]['market_name'] = $market_name_list['name'];
+			if(!empty($market_name_list)){
+				$contributor_list[$ckey]['market_name'] = $market_name_list['name'];
+			}else{
+				$contributor_list[$ckey]['market_name'] = "";
+			}
 
 			$status="";
 			if($contributor['start_date'] > date("Y-m-d")){
