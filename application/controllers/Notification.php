@@ -34,7 +34,7 @@ class Notification extends CI_Controller {
 		
 		$this->load->model('User_model');
 		$all_users = $this->User_model->all_users_without_status(array(), array(8));
-		$result['contributers'] = $this->security->xss_clean($all_users);
+		$result['contributers'] = $all_users;
 
 		$this->load->view('header');
 		$this->load->view('sidebar');

@@ -218,7 +218,7 @@ class Survey extends CI_Controller {
 			if($extotal) $surveys[$key]['extotal'] = $extotal;
 			else $surveys[$key]['extotal'] = 0;
 		}
-		$result['surveys_ht'] = $this->security->xss_clean($surveys);
+		$result['surveys_ht'] = $surveys;
 
 		$this->db->where('type', 'Market Task')->where('status', 1);
 		// $this->db->order_by('type');
@@ -256,7 +256,7 @@ class Survey extends CI_Controller {
 			if($extotal) $surveys_mt[$key]['extotal'] = $extotal;
 			else $surveys_mt[$key]['extotal'] = 0;
 		}
-		$result['surveys_mt'] = $this->security->xss_clean($surveys_mt);
+		$result['surveys_mt'] = $surveys_mt;
 
 		$this->db->where('type', 'Rangeland Task')->where('status', 1);
 		// $this->db->order_by('type');
@@ -294,7 +294,7 @@ class Survey extends CI_Controller {
 			if($extotal) $surveys_rt[$key]['extotal'] = $extotal;
 			else $surveys_rt[$key]['extotal'] = 0;
 		}
-		$result['surveys_rt'] = $this->security->xss_clean($surveys_rt);
+		$result['surveys_rt'] = $surveys_rt;
 
 		$this->load->view('header');
 		$this->load->view('sidebar');
@@ -390,7 +390,7 @@ class Survey extends CI_Controller {
 
 		// Get all tasks
 		$tasks = $this->db->where('status', 1)->get('form')->result_array();
-		$result['tasks'] = $this->security->xss_clean($tasks);
+		$result['tasks'] = $tasks;
 
 		$result['status'] = 1;
 		echo json_encode($result);
@@ -1609,10 +1609,18 @@ class Survey extends CI_Controller {
 		// print_r($this->db->last_query());exit();
 		foreach ($contributor_list as $ckey => $contributor) {
 			$task_list =$this->db->select('title')->where('id', $contributor['survey_id'])->where('status', 1)->get('form')->row_array();
-			$contributor_list[$ckey]['task_name'] = $task_list['title'];
+			if(!empty($task_list)){
+				$contributor_list[$ckey]['task_name'] = $task_list['title'];
+			}else{
+				$contributor_list[$ckey]['task_name'] = "";
+			}
 
 			$country_list =$this->db->select('name')->where('country_id', $contributor['country_id'])->where('status', 1)->get('lkp_country')->row_array();
-			$contributor_list[$ckey]['country_name'] = $country_list['name'];
+			if(!empty($country_list)){
+				$contributor_list[$ckey]['country_name'] = $country_list['name'];
+			}else{
+				$contributor_list[$ckey]['country_name'] ="";
+			}
 
 			$cluster_list =$this->db->select('name')->where('cluster_id', $contributor['cluster_id'])->where('status', 1)->get('lkp_cluster')->row_array();
 			if(!empty($cluster_list)){
@@ -1622,16 +1630,32 @@ class Survey extends CI_Controller {
 			}
 
 			$uai_list =$this->db->select('uai')->where('uai_id', $contributor['uai_id'])->where('status', 1)->get('lkp_uai')->row_array();
-			$contributor_list[$ckey]['uai_name'] = $uai_list['uai'];
+			if(!empty($uai_list)){
+				$contributor_list[$ckey]['uai_name'] = $uai_list['uai'];
+			}else{
+				$contributor_list[$ckey]['uai_name'] = "";
+			}
 
 			$sub_loc_list =$this->db->select('location_name')->where('sub_loc_id', $contributor['sub_loc_id'])->where('status', 1)->get('lkp_sub_location')->row_array();
-			$contributor_list[$ckey]['location_name'] = $sub_loc_list['location_name'];
+			if(!empty($sub_loc_list)){
+				$contributor_list[$ckey]['location_name'] = $sub_loc_list['location_name'];
+			}else{
+				$contributor_list[$ckey]['location_name'] = "";
+			}
 
 			$user_list =$this->db->select('first_name,last_name')->where('user_id', $contributor['user_id'])->where('status', 1)->get('tbl_users')->row_array();
-			$contributor_list[$ckey]['contributor_name'] = $user_list['first_name']." ".$user_list['last_name'];
+			if(!empty($user_list)){
+				$contributor_list[$ckey]['contributor_name'] = $user_list['first_name']." ".$user_list['last_name'];
+			}else{
+				$contributor_list[$ckey]['contributor_name'] = "";
+			}
 
 			$respondent_list =$this->db->select('first_name,last_name')->where('data_id', $contributor['respondent_id'])->where('status', 1)->get('tbl_respondent_users')->row_array();
-			$contributor_list[$ckey]['respondent_name'] = $respondent_list['first_name']." ".$respondent_list['last_name'];
+			if(!empty($respondent_list)){
+				$contributor_list[$ckey]['respondent_name'] = $respondent_list['first_name']." ".$respondent_list['last_name'];
+			}else{
+				$contributor_list[$ckey]['respondent_name'] = "";
+			}
 			// $contributor_list[$ckey]['respondent_name'] = $contributor['user_id'];
 
 			$this->db->select('name')->where('market_id', $contributor['market_id']);
