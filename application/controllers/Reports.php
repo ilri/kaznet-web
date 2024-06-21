@@ -107,9 +107,13 @@ class Reports extends CI_Controller {
 			else $surveys[$key]['rejected'] = 0;
 
 			$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-			$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+			if(!empty($payment_list)){
+				$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+			}else{
+				$surveys[$key]['payment_amount'] = "";
+			}
 		}
-		$result['surveys_tasks'] = $this->security->xss_clean($surveys);
+		$result['surveys_tasks'] = $surveys;
 
 		$this->db->select('*');
 		$this->db->where('role_id', 8);
@@ -129,7 +133,11 @@ class Reports extends CI_Controller {
 
 			foreach ($contributor_list as $ckey => $contributor) {
 				$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-				$temp_payment= $payment_list['price_per_survey'];
+				if(!empty($payment_list)){
+					$temp_payment= $payment_list['price_per_survey'];
+				}else{
+					$temp_payment= 0;
+				}
 				$payment_amount =$payment_amount+$temp_payment;
 				
 				// Get approved
@@ -178,7 +186,7 @@ class Reports extends CI_Controller {
 
 		// Get all tasks types
 		$tasks_types = $this->db->distinct()->select('type')->where('status', 1)->get('form')->result_array();
-		$result['tasks_types'] = $this->security->xss_clean($tasks_types);
+		$result['tasks_types'] = $tasks_types;
 
 		$result['contributor_list'] = $users_list;
 		$result['status'] =1;
