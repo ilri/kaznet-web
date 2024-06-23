@@ -2755,7 +2755,7 @@ class Reports_model extends CI_Model {
         $hh_array_data['payment_amount']=$hh_payment_amount;
         array_push($surveys,$hh_array_data);
 
-        $submited_data = $this->security->xss_clean($surveys);
+        $submited_data = $surveys;
         return $submited_data;
     }
     public function payment_tasks_records($data){
@@ -3193,7 +3193,7 @@ class Reports_model extends CI_Model {
 		}
         // exit();
         
-        $submited_data = $this->security->xss_clean($users_list);
+        $submited_data = $users_list;
         return $submited_data;
     }
     public function payment_contributors_records($data){
@@ -3375,7 +3375,11 @@ class Reports_model extends CI_Model {
         }
 		$hh_rejected_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
         $payment_list1 =$this->db->select('price_per_survey')->where('survey_id', 1)->where('status', 1)->get('lkp_payment')->row_array();
-		$hh_payment_amount = $payment_list1['price_per_survey'] * $hh_approved_data;
+		if(!empty($payment_list1)){
+            $hh_payment_amount = $payment_list1['price_per_survey'] * $hh_approved_data;
+        }else{
+            $hh_payment_amount = 0;
+        }
 
 
         $this->db->select('*');
@@ -3484,7 +3488,11 @@ class Reports_model extends CI_Model {
 			else $surveys[$key]['rejected'] = 0;
 
 			$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-			$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+			if(!empty($payment_list)){
+                $surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+            }else{
+                $surveys[$key]['payment_amount'] = 0;
+            }
 		}
        
         $hh_array_data = array();
@@ -3496,7 +3504,7 @@ class Reports_model extends CI_Model {
         $hh_array_data['payment_amount']=$hh_payment_amount;
         array_push($surveys,$hh_array_data);
 
-        $submited_data = $this->security->xss_clean($surveys);
+        $submited_data = $surveys;
         return $submited_data;
     }
     /*kaznet functions stat by end*/

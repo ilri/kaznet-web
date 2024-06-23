@@ -58,7 +58,7 @@ class Helper_model extends CI_Model {
 		if(!is_null($state)) $this->db->where_in('state_id', $state);
 		return $all_districts = $this->db->where('status', 1)->get('lkp_district')->result_array();
 	}
-	public function all_client_districts($state = NULL, $client)
+	public function all_client_districts($client, $state = NULL)
 	{
 		if(!is_array($state) && !is_null($state)) $state = explode(',', $state);
 

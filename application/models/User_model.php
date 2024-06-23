@@ -237,7 +237,7 @@ class User_model extends CI_Model {
 		// print_r($this->db->last_query());exit();
 		return $users;
 	}
-	public function get_users_location_based($userIds = array(), $roles = array(), $data){
+	public function get_users_location_based($data, $userIds = array(), $roles = array()){
 		$this->db->distinct()->select('users.user_id, users.added_by, users.username, users.email_id, users.first_name, users.last_name, users.status, users.mobile_number, tul.country_id,tul.uai_id,tul.sub_loc_id,tul.cluster_id')->from('tbl_users as users');
 		$this->db->join('tbl_user_unit_location as tul', 'tul.user_id = users.user_id');
 		if($this->session->userdata('role') != 1 && $this->session->userdata('role') != 2) {
