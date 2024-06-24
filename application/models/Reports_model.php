@@ -3056,7 +3056,11 @@ class Reports_model extends CI_Model {
 				$rejected_value =$rejected_value+$temp_rejected;
 				
 				$payment_list =$this->db->select('price_per_survey')->where('survey_id', $contributor['survey_id'])->where('status', 1)->get('lkp_payment')->row_array();
-				$temp_payment= $payment_list['price_per_survey'];
+				if(!empty($temp_payment)){
+                    $temp_payment= $payment_list['price_per_survey'];
+                }else{
+                    $temp_payment= 0;
+                }
 				// $payment_amount =$payment_amount+$temp_payment;
 				$payment_amount1 =$temp_payment * $approved_value;
 				$payment_amount =$payment_amount+$payment_amount1;
