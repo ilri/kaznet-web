@@ -3061,7 +3061,7 @@ class Reports_model extends CI_Model {
 				
 				$payment_list =$this->db->select('price_per_survey')->where('survey_id', $contributor['survey_id'])->where('status', 1)->get('lkp_payment')->row_array();
                 
-				if(!empty($temp_payment)){
+				if(!empty($payment_list)){
                     $temp_payment= $payment_list['price_per_survey'];
                 }else{
                     $temp_payment= 0;
@@ -3071,9 +3071,7 @@ class Reports_model extends CI_Model {
 				$payment_amount =$payment_amount+$payment_amount1;
 				$approved_value1 =$approved_value1+$approved_value;
 				$submitted_value1 =$submitted_value1+$submitted_value;
-				$rejected_value1 =$rejected_value1+$rejected_value;
-
-                
+				$rejected_value1 =$rejected_value1+$rejected_value;                
 			}
             // Get House hold survey submited Data
             $this->db->select('rp.*');
@@ -3137,11 +3135,8 @@ class Reports_model extends CI_Model {
             }
             $this->db->where('rp.status', 1);
             $this->db->where('rp.pa_verified_status', 2);
-            // if($data['is_pagination']){
-            //     $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
-            // }
+
             $hh_approved_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
-            // var_dump($this->db->last_query());
 
             // Get House hold survey rejected Data
             $this->db->select('rp.*');
@@ -3171,9 +3166,7 @@ class Reports_model extends CI_Model {
             }
             $this->db->where('rp.status', 1);
             $this->db->where('rp.pa_verified_status', 3);
-            // if($data['is_pagination']){
-            //     $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
-            // }
+
             $hh_rejected_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
             // var_dump($this->db->last_query());exit();
             $payment_list1 =$this->db->select('price_per_survey')->where('survey_id', 1)->where('status', 1)->get('lkp_payment')->row_array();
@@ -3394,7 +3387,6 @@ class Reports_model extends CI_Model {
             $hh_payment_amount = 0;
         }
 
-
         $this->db->select('*');
 		$this->db->where('status', 1);
         if(!empty($data['tasks']))
@@ -3407,7 +3399,7 @@ class Reports_model extends CI_Model {
         $this->db->order_by('type', 'ASC');
 		$surveys = $this->db->get('form')->result_array();
         $count=0;
-        // print_r($this->db->last_query());exit();
+        
 		foreach ($surveys as $key => $surv) {
             $count++;
 			// Get approved

@@ -554,28 +554,28 @@
                         if(submitedData[k]['payment_amount']){
                             tableBody += submitedData[k]['payment_amount'];
                         }else{
-                            tableBody +="N/A";
+                            tableBody +="0";
                         }
                         tableBody += `</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['approved']){
                             tableBody += submitedData[k]['approved'];
                         }else{
-                            tableBody +="N/A";
+                            tableBody +="0";
                         }
                         tableBody += `</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['submitted']){
                             tableBody += submitedData[k]['submitted'];
                         }else{
-                            tableBody +="N/A";
+                            tableBody +="0";
                         }
                         tableBody += `</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['rejected']){
                             tableBody += submitedData[k]['rejected'];
                         }else{
-                            tableBody +="N/A";
+                            tableBody +="0";
                         }
                         tableBody += `</td>`;                        
                         tableBody += `</tr>`;                        
