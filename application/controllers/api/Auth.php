@@ -149,7 +149,11 @@ class Auth extends CI_Controller {
 				}
 				// Get user avatar
 				$getImage = $this->db->where('user_id', $getData['user_id'])->where('status', 1)->get('tbl_images')->row_array();
-
+				if(!empty($getImage)){
+					$imageData=$getImage['image'];
+				}else{
+					$imageData="";
+				}
 				// // Get user account group
 				// $this->db->select('lagm.*')->from('lkp_account_group_master AS lagm');
 				// $this->db->join('tbl_user_account_group AS tuag', 'tuag.account_group_id = lagm.account_group_id');
@@ -179,7 +183,7 @@ class Auth extends CI_Controller {
 					'email_id'=>$getData['email_id'],
 					'mobile_number'=>$getData['mobile_number'],
 					'user_role'=>$getData['role_id'],
-					'image'=>$getImage['image'],
+					'image'=>$imageData,
 					'location'=>$location,
 					'profile'=>$profile
 					// 'fpo_fpc'=>(is_null($fpo_fpc) ? NULL : $fpo_fpc['fpo_fpc_id'])

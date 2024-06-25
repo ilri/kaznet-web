@@ -2743,7 +2743,11 @@ class Reports_model extends CI_Model {
 			else $surveys[$key]['rejected'] = 0;
 
 			$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-			$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+            if(!empty($payment_list)){
+                $surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+            }else{
+                $surveys[$key]['payment_amount'] = 0;
+            }
 		}
        
         $hh_array_data = array();
@@ -3056,6 +3060,7 @@ class Reports_model extends CI_Model {
 				$rejected_value =$rejected_value+$temp_rejected;
 				
 				$payment_list =$this->db->select('price_per_survey')->where('survey_id', $contributor['survey_id'])->where('status', 1)->get('lkp_payment')->row_array();
+                
 				if(!empty($temp_payment)){
                     $temp_payment= $payment_list['price_per_survey'];
                 }else{
@@ -3172,7 +3177,11 @@ class Reports_model extends CI_Model {
             $hh_rejected_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
             // var_dump($this->db->last_query());exit();
             $payment_list1 =$this->db->select('price_per_survey')->where('survey_id', 1)->where('status', 1)->get('lkp_payment')->row_array();
-            $hh_payment_amount = $payment_list1['price_per_survey'] * $hh_approved_data;
+            if(!empty($payment_list1)){
+                $hh_payment_amount = $payment_list1['price_per_survey'] * $hh_approved_data;
+            }else{
+                $hh_payment_amount = 0;
+            }
             $task_amount = $payment_amount+$hh_payment_amount;
 			$users_list[$ukey]['task_amount'] = $task_amount;
 			// $users_list[$ukey]['payment_amount'] = $task_amount +1800;

@@ -726,14 +726,14 @@
                                 if(submitedusertasksData[j]['submitted']){
                                     tasktableBody += submitedusertasksData[j]['submitted'];
                                 }else{
-                                    tasktableBody +="N/A";
+                                    tasktableBody +="0";
                                 }
                                 tasktableBody += `</td>`;
                                 tasktableBody += `<td>`;
                                 if(submitedusertasksData[j]['approved']){
                                     tasktableBody += submitedusertasksData[j]['approved'];
                                 }else{
-                                    tasktableBody +="N/A";
+                                    tasktableBody +="0";
                                 }
                                 tasktableBody += `</td>`;
                                 
@@ -741,14 +741,14 @@
                                 if(submitedusertasksData[j]['rejected']){
                                     tasktableBody += submitedusertasksData[j]['rejected'];
                                 }else{
-                                    tasktableBody +="N/A";
+                                    tasktableBody +="0";
                                 }
                                 tasktableBody += `</td>`; 
                                 tasktableBody += `<td>`;
                                 if(submitedusertasksData[j]['payment_amount']){
                                     tasktableBody += submitedusertasksData[j]['payment_amount'];
                                 }else{
-                                    tasktableBody +="N/A";
+                                    tasktableBody +="0";
                                 }
                                 tasktableBody += `</td>`;
                                 tasktableBody += `<td>N/A</td>`; 
