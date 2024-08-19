@@ -11290,5 +11290,364 @@ class Dashboard_model extends CI_Model {
 		return $bale_dry_fodder_date_graph_array;
 	}
     //mobile dashboard charts ends upto here
+    public function insert_suer_feedback_data($data){
+            // $category="";
+			// $insert_data = array(
+			// 	'category' => $category,
+			// 	'country_id' => $country_id,
+			// 	'market_id' => $market_id,
+			// 	'user_id' => $this->session->userdata('login_id'),
+			// 	'datetime' => date('Y-m-d H:i:s'),
+			// 	'status' => 1
+			// );
+            foreach ($data['market_id'] as $value) {
+                $insert_data = array(
+                    'category' => $data['category'],
+                    'country_id' => $data['country_id'],
+                    'market_id' =>  $value,
+                    'user_id' => $this->session->userdata('login_id'),
+                    'datetime' => date('Y-m-d H:i:s'),
+                    'status' => 1
+                );
+                // $insert_data = $this->security->xss_clean($insert_data);
+                $insert_query = $this->db->insert('dissemination_role_report', $insert_data);
+            }
+    }
     
+    public function f_m_ethiopia_market_data($data){
+		$f_m_ethiopia_market_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+        if(!empty($data['market_id'])) {
+            $this->db->where('s11.market_id', $data['market_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.category', "Market Task");
+        $this->db->where('s11.country_id', 1);  //ethiopia country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_market_map');
+        $this->db->where('status', 1);
+        if(!empty($data['market_id'])) {
+            $this->db->where('market_map_id', $data['market_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['market_map_id'];
+            $form_filed_name = $option['name'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['market_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_m_ethiopia_market_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_m_ethiopia_market_data;
+	}
+    public function f_m_kenya_market_data($data){
+		$f_m_kenya_market_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+        if(!empty($data['market_id'])) {
+            $this->db->where('s11.market_id', $data['market_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.category', "Market Task");
+        $this->db->where('s11.country_id', 2);  //kenya country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_market_map');
+        $this->db->where('status', 1);
+        if(!empty($data['market_id'])) {
+            $this->db->where('market_map_id', $data['market_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['market_map_id'];
+            $form_filed_name = $option['name'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['market_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_m_kenya_market_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_m_kenya_market_data;
+	}
+    
+    public function f_u_ethiopia_hh_data($data){
+		$f_u_ethiopia_hh_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+    
+        if(!empty($data['uai_id'])) {
+            $this->db->where('s11.uai_id', $data['uai_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        $this->db->where('s11.category', "Household Task");
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.country_id', 1);  //ethiopia country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_uai');
+        $this->db->where('status', 1);
+        if(!empty($data['uai_id'])) {
+            $this->db->where('uai_id', $data['uai_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['uai_id'];
+            $form_filed_name = $option['uai'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['uai_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_u_ethiopia_hh_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_u_ethiopia_hh_data;
+	}
+    public function f_u_ethiopia_tfc_data($data){
+		$f_u_ethiopia_tfc_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+    
+        if(!empty($data['uai_id'])) {
+            $this->db->where('s11.uai_id', $data['uai_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.category', "Rangeland Task");
+        $this->db->where('s11.country_id', 1);  //ethiopia country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_uai');
+        $this->db->where('status', 1);
+        if(!empty($data['uai_id'])) {
+            $this->db->where('uai_id', $data['uai_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['uai_id'];
+            $form_filed_name = $option['uai'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['uai_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_u_ethiopia_tfc_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_u_ethiopia_tfc_data;
+	}
+    public function f_u_kenya_hh_data($data){
+		$f_u_kenya_hh_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+        if(!empty($data['uai_id'])) {
+            $this->db->where('s11.uai_id', $data['uai_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.category', "Household Task");
+        $this->db->where('s11.country_id', 2);  //kenya country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_uai');
+        $this->db->where('status', 1);
+        if(!empty($data['uai_id'])) {
+            $this->db->where('uai_id', $data['uai_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['uai_id'];
+            $form_filed_name = $option['uai'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['uai_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_u_kenya_hh_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_u_kenya_hh_data;
+	}
+    public function f_u_kenya_tfc_data($data){
+		$f_u_kenya_tfc_data = array();
+        
+        // Get Survey submited Data
+        $this->db->select('s11.*');
+        $this->db->from('dissemination_role_report as s11');
+        // $this->db->join('tbl_users AS tu', 'tu.user_id = s11.user_id');
+        
+        if(!empty($data['uai_id'])) {
+            $this->db->where('s11.uai_id', $data['uai_id']);
+        }
+        if(!empty($data['user_id'])) {
+            $this->db->where('s11.user_id', $data['user_id']);
+        }
+        
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(s11.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(s11.datetime) <=', $data['end_date']);
+        }
+        $this->db->where('s11.category', "Rangeland Task");
+        $this->db->where('s11.country_id', 2);  //kenya country filter        
+        $this->db->where('s11.status', 1);             
+        
+        $submited_data = $this->db->order_by('s11.id', 'DESC')->get()->result_array();
+        // $totalUpload = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
+        // print_r($this->db->last_query());
+        // exit();
+        $this->db->select('*');
+        $this->db->from('lkp_uai');
+        $this->db->where('status', 1);
+        if(!empty($data['uai_id'])) {
+            $this->db->where('uai_id', $data['uai_id']);
+        }
+        $formfield_options = $this->db->get()->result_array();
+        foreach ($formfield_options as $option) {
+			$form_filed_id = $option['uai_id'];
+            $form_filed_name = $option['uai'];			
+			
+            $totalUpload = 0;	
+				foreach ($submited_data as $value) {
+                    $temp=0;
+                    if($value['uai_id'] == $form_filed_id)
+                    {
+                        if($value['user_id'] != NULL)
+                        {
+                            $totalUpload++ ;
+                        }
+                    }                   				
+				}
+				array_push($f_u_kenya_tfc_data, array(
+						'name' => $form_filed_name,
+						'y' => $totalUpload
+					));
+		}
+		return $f_u_kenya_tfc_data;
+	}
 }

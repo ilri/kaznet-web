@@ -7,8 +7,9 @@
     <hr>
     <nav id="sidebar">
         <ul class="list-unstyled components">
-            <li>
-                <a href="<?php echo base_url(); ?>dashboard/view_dashboard" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>">
+            <li class="<?php echo(($this->uri->segment(1)) == 'dashboard' ? 'active' : '');?>">
+                <a href="#dashboardSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                <!-- <a href="<?php echo base_url(); ?>dashboard/view_dashboard" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
                 <!-- <a href="<?php echo base_url(); ?>login/profile" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
                     <span class="logo-img-mt-4">
                         <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
@@ -25,6 +26,14 @@
                     </span>
                     <span class="collapse-text-none-nav mb-0">Dashboard</span>
                 </a>
+                <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'dashboard' ? 'show' : '');?>" id="dashboardSubmenu">
+                    <li>
+                        <a href="<?php echo base_url(); ?>dashboard/view_dashboard" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>">Summary</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>dashboard/view_dashboard_feedback" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard_feedback' ? 'active' : '');?>">Dissemination report</a>
+                    </li>
+                </ul>
             </li>
             
             <li class="<?php echo(($this->uri->segment(1)) == 'survey' ? 'active' : '');?>">
@@ -55,6 +64,9 @@
                     <li>
                         <a href="<?php echo base_url(); ?>survey/task_contributer" class="sub-menu <?php echo(($this->uri->segment(2)) == 'task_contributor' ? 'active' : '');?>">Task Contributor</a>
                     </li>
+                    <!-- <li>
+                        <a href="<?php echo base_url(); ?>reports/task_data_export" class="sub-menu <?php echo(($this->uri->segment(2)) == 'task_data_export' ? 'active' : '');?>">Task Data Export</a>
+                    </li> -->
                     
                     <!-- <li>
                         <a href="<?php echo base_url(); ?>survey/task_contributer" class="sub-menu <?php echo(($this->uri->segment(2)) == 'task_contributer' ? 'active' : '');?>">Task Contributers</a>
@@ -94,7 +106,7 @@
                         <a href="<?php echo base_url(); ?>users/manage_respondent" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_respondent' ? 'active' : '');?>">Manage Respondent</a>
                     </li> -->
                     <li>
-                        <a href="<?php echo base_url(); ?>users/manage_contributer_location" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_contributer_location' ? 'active' : '');?>">Manage Contributer Locations</a>
+                        <a href="<?php echo base_url(); ?>users/manage_contributer_location" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_contributer_location' ? 'active' : '');?>">Manage Contributor Locations</a>
                     </li>
                     <li>
                         <a href="<?php echo base_url(); ?>users/manage_cluster_location" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_cluster_location' ? 'active' : '');?>">Manage Cluster Admin Locations</a>
@@ -185,6 +197,34 @@
                     <span class="collapse-text-none-nav mb-0">Notification</span>
                 </a>
             </li>
+            <!-- <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
+                <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"> -->
+                <!-- <a href="<?php echo base_url(); ?>dashboard/view_dashboard" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
+                <!-- <a href="<?php echo base_url(); ?>login/profile" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
+                    <!-- <span class="logo-img-mt-4">
+                        <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" class="bg">
+                            <path
+                                d="M10.0208 0H1.89577C0.850388 0 0 0.850388 0 1.89577V6.77077C0 7.81635 0.850388 8.66673 1.89577 8.66673H10.0208C11.0663 8.66673 11.9167 7.81635 11.9167 6.77077V1.89577C11.9167 0.850388 11.0663 0 10.0208 0Z" />
+                            <path
+                                d="M10.0208 10.8333H1.89577C0.850388 10.8333 0 11.6836 0 12.7292V24.1042C0 25.1496 0.850388 26 1.89577 26H10.0208C11.0663 26 11.9167 25.1496 11.9167 24.1042V12.7292C11.9167 11.6836 11.0663 10.8333 10.0208 10.8333Z" />
+                            <path
+                                d="M24.1042 17.3333H15.9792C14.9336 17.3333 14.0833 18.1836 14.0833 19.2292V24.1042C14.0833 25.1496 14.9336 26 15.9792 26H24.1042C25.1496 26 26 25.1496 26 24.1042V19.2292C26 18.1836 25.1496 17.3333 24.1042 17.3333Z" />
+                            <path
+                                d="M24.1042 0H15.9792C14.9336 0 14.0833 0.850388 14.0833 1.89577V13.2708C14.0833 14.3163 14.9336 15.1667 15.9792 15.1667H24.1042C25.1496 15.1667 26 14.3163 26 13.2708V1.89577C26 0.850388 25.1496 0 24.1042 0V0Z" />
+                        </svg>
+                    </span>
+                    <span class="collapse-text-none-nav mb-0">Custom Templates</span>
+                </a>
+                <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'FormController' ? 'show' : '');?>" id="templateSubmenu">
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormController/create_form" class="sub-menu <?php echo(($this->uri->segment(2)) == 'create_form' ? 'active' : '');?>">Create Template</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormController/list_forms" class="sub-menu <?php echo(($this->uri->segment(2)) == 'list_forms' ? 'active' : '');?>">Manage Templates</a>
+                    </li>
+                </ul>
+            </li> -->
         </ul>
 
 

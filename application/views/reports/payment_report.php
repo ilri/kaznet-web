@@ -679,6 +679,7 @@
                 tableHead += `<th>Internet bundles</th>`;				
                 tableHead += `<th>Payment Amount</th>`;				
                 tableHead += `<th>MPesa Number</th>`;				
+                tableHead += `<th>Bank Name</th>`;	
                 tableHead += `<th>Account Number</th>`;	
 
                 $('#approved_head').html(tableHead);
@@ -751,6 +752,7 @@
                                     tasktableBody +="0";
                                 }
                                 tasktableBody += `</td>`;
+                                tasktableBody += `<td>N/A</td>`; 
                                 tasktableBody += `<td>N/A</td>`; 
                                 tasktableBody += `<td>N/A</td>`; 
                                 tasktableBody += `<td>N/A</td>`; 
@@ -855,6 +857,14 @@
                         }
                         tableBody += `</td>`;
 
+                        tableBody += `<td>`;
+                        if(submitedData[k]['bank_name']){
+                            
+                            tableBody += submitedData[k]['bank_name'];
+                        }else{
+                            tableBody +="N/A";
+                        }
+                        tableBody += `</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['account_number']){
                             
@@ -1178,10 +1188,10 @@
 				xcelHeader.push("S.No.")
 				tableHeaderFields.push('sno')
 
-				xcelHeader.push(...['CONTRIBUTOR USER NAME','CONTRIBUTOR NAME','TASK NAME','SUBMITTED','APPROVED','REJECTED','TASK AMOUNT','TRANSPORT','INTERNET BUNDLES','PAYMENT AMOUNT','MPESA NUMBER','ACCOUNT NUMBER']);
+				xcelHeader.push(...['CONTRIBUTOR USER NAME','CONTRIBUTOR NAME','TASK NAME','SUBMITTED','APPROVED','REJECTED','TASK AMOUNT','TRANSPORT','INTERNET BUNDLES','PAYMENT AMOUNT','MPESA NUMBER','BANK NAME','ACCOUNT NUMBER']);
 
 
-				tableHeaderFields.push(...['username','contributor_name','added_by','submitted','approved','rejected','task_amount','transport','int_bundles','payment_amount','mpesa_id','account_number']);
+				tableHeaderFields.push(...['username','contributor_name','added_by','submitted','approved','rejected','task_amount','transport','int_bundles','payment_amount','mpesa_id','bank_name','account_number']);
 				
 
                 let tamount = 0;

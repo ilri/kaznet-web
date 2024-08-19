@@ -460,6 +460,7 @@ class Dashboard extends CI_Controller {
 			$market_id = $this->input->post('market_id');
 			$start_date = $this->input->post('start_date');
 			$end_date = $this->input->post('end_date');
+			$user_id = $this->input->post('user_id');
 			
 			$this->db->select('*');
 			$this->db->from('lkp_market');
@@ -476,6 +477,7 @@ class Dashboard extends CI_Controller {
 				array_push($market_name_list,$form_filed_id);
 			}
 			
+
 			$data = array(
 				'country_id' => $country_id,
 				'timeline_id' => $timeline_id,
@@ -554,6 +556,32 @@ class Dashboard extends CI_Controller {
 			$result['market_name_list'] = $week_name_list;
 			$result['body_conditions'] = $body_conditions;
 			$result['body_conditions1'] = $body_conditions1;
+			//inserting user search data in feedback table added by sagar on July 3rd 
+			$this->db->select('role_id');
+			$this->db->from('tbl_users');
+			$this->db->where('status', 1);
+			$this->db->where('user_id', $user_id);
+			$user_id_list = $this->db->get()->row_array();  //checking if role is 9 dessimination role
+			if(isset($user_id_list)){
+				$user_id_role = $user_id_list['role_id'];
+				if($user_id_role==9 && !empty($market_id)){
+					$data['category']="Market Task";
+					foreach ($market_id as $value) {				
+						$insert_data = array(
+							'category' => $data['category'],
+							'country_id' => $data['country_id'],
+							'market_id' =>  $value,
+							'user_id' => $user_id,
+							'timeline' => $timeline_id,
+							'datetime' => date('Y-m-d H:i:s'),
+							'status' => 1
+						);
+						$insert_query = $this->db->insert('dissemination_role_report', $insert_data);
+					}
+				}
+			}
+			// $result['feedback_data'] = $this->Dashboard_model->insert_suer_feedback_data($data);
+			
 			$result['fielddata_camel_selling_price'] = $this->Dashboard_model->camel_final_price_date_graph_array($data);
 			$result['fielddata_cattle_selling_price'] = $this->Dashboard_model->cattle_final_price_date_graph_array($data);
 			$result['fielddata_goats_selling_price'] = $this->Dashboard_model->goats_final_price_graph_array($data);
@@ -581,7 +609,7 @@ class Dashboard extends CI_Controller {
 			$country_id = $this->input->post('country_id');
 			$timeline_id = $this->input->post('timeline_id');
 			$uai_id = $this->input->post('uai_id');
-			
+			$user_id = $this->input->post('user_id');
 			
 			$data = array(
 				'country_id' => $country_id,
@@ -602,6 +630,30 @@ class Dashboard extends CI_Controller {
 			$uai_list1 = $this->db->get()->result_array();
 			foreach ($uai_list1 as $uvalue1) {
 				array_push($uai_names,$uvalue1['uai']);
+			}
+			//inserting user search data in feedback table added by sagar on July 3rd 
+			$this->db->select('role_id');
+			$this->db->from('tbl_users');
+			$this->db->where('status', 1);
+			$this->db->where('user_id', $user_id);
+			$user_id_list = $this->db->get()->row_array();  //checking if role is 9 dessimination role
+			if(isset($user_id_list)){
+				$user_id_role = $user_id_list['role_id'];
+				if($user_id_role==9 && !empty($uai_id)){
+					$data['category']="Household Task";
+					foreach ($uai_id as $value) {				
+						$insert_data = array(
+							'category' => $data['category'],
+							'country_id' => $data['country_id'],
+							'uai_id' =>  $value,
+							'user_id' => $user_id,
+							'timeline' => $timeline_id,
+							'datetime' => date('Y-m-d H:i:s'),
+							'status' => 1
+						);
+						$insert_query = $this->db->insert('dissemination_role_report', $insert_data);
+					}
+				}
 			}
 			// $result['market_name_list'] = $week_name_list;
 			$result['uai_names'] = $uai_names;
@@ -632,7 +684,7 @@ class Dashboard extends CI_Controller {
 			$country_id = $this->input->post('country_id');
 			$timeline_id = $this->input->post('timeline_id');
 			$uai_id = $this->input->post('uai_id');
-			
+			$user_id = $this->input->post('user_id');
 			
 			$data = array(
 				'country_id' => $country_id,
@@ -693,6 +745,30 @@ class Dashboard extends CI_Controller {
 			$result['fielddata_current_forage_condition'] = $this->Dashboard_model->current_condition_date_graph_array($data);
 			$data['field2'] = 1;
 			$result['fielddata_bale_dry_fodder'] = $this->Dashboard_model->bale_dry_fodder_date_graph_array($data);
+			//inserting user search data in feedback table added by sagar on July 3rd 
+			$this->db->select('role_id');
+			$this->db->from('tbl_users');
+			$this->db->where('status', 1);
+			$this->db->where('user_id', $user_id);
+			$user_id_list = $this->db->get()->row_array();  //checking if role is 9 dessimination role
+			if(isset($user_id_list)){
+				$user_id_role = $user_id_list['role_id'];
+				if($user_id_role==9 && !empty($uai_id)){
+					$data['category']="Rangeland Task";
+					foreach ($uai_id as $value) {				
+						$insert_data = array(
+							'category' => $data['category'],
+							'country_id' => $data['country_id'],
+							'uai_id' =>  $value,
+							'user_id' => $user_id,
+							'timeline' => $timeline_id,
+							'datetime' => date('Y-m-d H:i:s'),
+							'status' => 1
+						);
+						$insert_query = $this->db->insert('dissemination_role_report', $insert_data);
+					}
+				}
+			}
 			// $data['field1'] = 4;
 			// $result['fielddata_sheep_births'] = $this->Dashboard_model->camel_births_date_graph_array($data);
 			// $data['field2'] = 1;
@@ -709,5 +785,244 @@ class Dashboard extends CI_Controller {
 		exit();
 	}
 	
-	
+	public function view_dashboard_feedback(){
+		$baseurl = base_url();
+		if(($this->session->userdata('login_id') == '')) {
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				echo json_encode(array(
+					'status' => 0,
+					'msg' => 'Session Expired! Please login again to continue.'
+				));
+				exit();
+			} else {
+				redirect($baseurl);
+			}
+		}
+		$user_id = $this->session->userdata('login_id');
+		//user data for profile info
+		$this->load->model('Dynamicmenu_model');
+		$profile_details = $this->Dynamicmenu_model->user_data();
+		$menu_result = array('profile_details' => $profile_details);
+		$result =array();
+
+		
+		$this->db->select('*');
+		$this->db->where('role_id', 9);
+		$this->db->where('status', 1);
+		$this->db->order_by('first_name');
+		$result['user_list'] = $this->db->get('tbl_users')->result_array();
+		$result['market_list'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
+
+		$this->load->view('header');
+		$this->load->view('sidebar');
+		$this->load->view('menu',$menu_result);
+		$this->load->view('reports/dashboard_feedback', $result);
+		$this->load->view('footer');
+	}
+
+	public function d_feedback_get_data()
+	{
+		if(($this->session->userdata('login_id') == '')) {
+			echo json_encode(array(
+				'status' => 0,
+				'msg' => 'Session Expired! Please login again to continue.'
+			));
+			exit();
+		}else{
+
+			$user_id = $this->input->post('user_id');
+			// $country_id = $this->input->post('country_id');
+			// $uai_id = $this->input->post('uai_id');
+			// $sub_location_id = $this->input->post('sub_location_id');
+			// $cluster_id = $this->input->post('cluster_id');
+			$start_date = $this->input->post('start_date');
+			$end_date = $this->input->post('end_date');
+			$page_no =  1;
+			$record_per_page = 100;
+			 if($this->input->post('pagination')){
+				$pagination = $this->input->post('pagination');
+				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
+				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
+			 }
+			$search_input = "";
+			 if ($this->input->post('search')) {
+				 $search = $this->input->post('search');
+				 $search_input = $search['search_input'] != null ? $search['search_input'] : "";
+			 }
+			
+			$data = array(
+				'user_id' => $user_id,
+				// 'country_id' => $country_id,
+				// 'uai_id' => $uai_id,
+				// 'sub_location_id' => $sub_location_id,
+				// 'cluster_id' => $cluster_id,
+				'search_input' => $search_input,
+				'start_date' => $start_date,
+				'end_date' => $end_date,
+				"page_no" => $page_no,
+				"record_per_page" => $record_per_page,				
+				"search_input" => $search_input,
+				"is_search" => $search_input != null,
+				"is_pagination" => $this->input->post('pagination') != null
+			);
+			
+			
+			$this->db->select('tu.*, drr.user_id, MAX(drr.datetime) AS max_date')->from('tbl_users as tu')->join('dissemination_role_report AS drr', 'drr.user_id = tu.user_id');
+			$this->db->join('lkp_market_map AS mp','mp.market_map_id = drr.market_id','left');
+			$this->db->join('lkp_uai AS uai','uai.uai_id = drr.uai_id','left');
+			if(!empty($user_id)){
+				$this->db->where('drr.user_id', $user_id);
+			}
+			if(!empty($data['start_date']) && !empty($data['end_date'])){
+				$this->db->where('DATE(drr.datetime) >=', $data['start_date']);
+				$this->db->where('DATE(drr.datetime) <=', $data['end_date']);
+			}
+			$this->db->group_by('drr.user_id');
+			// $this->db->order_by('drr.datetime','ASC');
+			if($data['is_search']){
+				
+				// search filters
+				$this->db->group_start();
+				$this->db->or_like('tu.first_name',$data['search_input']); //user table first name 
+				$this->db->or_like('tu.last_name',$data['search_input']); //user table last name 
+				$this->db->or_like('mp.name',$data['search_input']); // market name
+				$this->db->or_like('uai.uai',$data['search_input']); // uai name
+				$this->db->or_like('drr.category',$data['search_input']); // category 
+				$this->db->group_end();
+			}
+			$user_feedback_data = $this->db->where('tu.status', 1)->get()->result_array();
+			// print_r($this->db->last_query());exit();
+			foreach ($user_feedback_data as $key => $value) {
+				$avg_value=0;
+				$column_name="user_id";
+				$this->db->select('SUM(feedback) sumvalue,count(user_id) as rcount');
+				$this->db->where('status', 1);
+				$this->db->where('user_id', $value['user_id']);
+				if(!empty($data['start_date']) && !empty($data['end_date'])){
+					$this->db->where('DATE(datetime) >=', $data['start_date']);
+					$this->db->where('DATE(datetime) <=', $data['end_date']);
+				}
+				$avg_value1 = $this->db->get('disseminator_feedback')->row_array();
+				// print_r($this->db->last_query());exit();
+				if(isset($avg_value1['sumvalue'])){
+					$avg_value = ($avg_value1['sumvalue']/$avg_value1['rcount']);
+					$avg_value = round($avg_value , 0);
+				}else{
+					$avg_value = "N/A";
+				}
+				switch ($avg_value) {
+					case '1':
+						$avg_value="Very Bad";
+						break;
+					case '2':
+						$avg_value="Bad";
+						break;
+					case '3':
+						$avg_value="Average";
+						break;
+					case '4':
+						$avg_value="Good";
+						break;
+					case '5':
+						$avg_value="Very Good";
+						break;
+					
+					default:
+						$avg_value="N/A";
+						break;
+				}
+				$this->db->select('*');
+				$this->db->where('status', 1);
+				$this->db->where('user_id', $value['user_id']);
+				$this->db->where('datetime',  $value['max_date']);
+				if(!empty($data['start_date']) && !empty($data['end_date'])){
+					$this->db->where('DATE(datetime) >=', $data['start_date']);
+					$this->db->where('DATE(datetime) <=', $data['end_date']);
+				}
+				$lasttime = $this->db->get('dissemination_role_report')->row_array();
+				$country_name="N/A";
+				$uai_name="N/A";
+				$market_name="N/A";
+				// print_r($this->db->last_query());exit();
+				if($lasttime['country_id'] != NULL || $lasttime['country_id'] !=""){
+					$country_name = $this->db->select('name')->where('country_id', $lasttime['country_id'])->where('status', 1)->get('lkp_country')->row_array();
+					if(isset($country_name)){
+						
+						$country_name=$country_name['name'];
+					}
+				}
+				if($lasttime['uai_id'] != NULL || $lasttime['uai_id'] !=""){
+					$uai_name1 = $this->db->select('uai')->where('uai_id', $lasttime['uai_id'])->where('status', 1)->get('lkp_uai')->row_array();
+					// print_r($this->db->last_query());exit();
+					if(!empty($uai_name1)){
+						$uai_name=$uai_name1['uai'];
+					}
+				}
+				if($lasttime['market_id'] != NULL || $lasttime['market_id'] !=""){
+					$market_name = $this->db->select('name')->where('market_map_id', $lasttime['market_id'])->where('status', 1)->get('lkp_market_map')->row_array();
+					// print_r($this->db->last_query());exit();
+					if(isset($market_name)){
+						$market_name=$market_name['name'];
+					}
+				}
+				$user_feedback_data[$key]['category'] = $lasttime['category'];
+				$user_feedback_data[$key]['country_name'] = $country_name;
+				$user_feedback_data[$key]['uai_name'] = $uai_name;
+				$user_feedback_data[$key]['market_name'] = $market_name;
+				$user_feedback_data[$key]['datetime'] = $lasttime['datetime'];
+				$user_feedback_data[$key]['avg_value'] = $avg_value;
+				// print_r($this->db->last_query());exit();
+			}
+			// print_r($user_feedback_data);exit();
+			$result['user_feedback_data'] = $user_feedback_data;
+			$result['total_records'] = count($user_feedback_data);
+			
+		}
+		$result['status'] = 1;
+		echo json_encode($result);
+		exit();
+	}
+	public function d_feedback_get_graphs_data()
+	{
+		if(($this->session->userdata('login_id') == '')) {
+			echo json_encode(array(
+				'status' => 0,
+				'msg' => 'Session Expired! Please login again to continue.'
+			));
+			exit();
+		}else{
+
+			$user_id = $this->input->post('user_id');
+			// $country_id = $this->input->post('country_id');
+			// $uai_id = $this->input->post('uai_id');
+			// $sub_location_id = $this->input->post('sub_location_id');
+			// $cluster_id = $this->input->post('cluster_id');
+			$start_date = $this->input->post('start_date');
+			$end_date = $this->input->post('end_date');
+			
+			
+			$data = array(
+				'user_id' => $user_id,
+				// 'country_id' => $country_id,
+				// 'uai_id' => $uai_id,
+				// 'sub_location_id' => $sub_location_id,
+				// 'cluster_id' => $cluster_id,
+				'start_date' => $start_date,
+				'end_date' => $end_date
+			);
+			// $result['survey_id']=$survey_id;
+			$this->load->model('Dashboard_model');
+
+			$result['fielddata_ethiopia_market_users'] = $this->Dashboard_model->f_m_ethiopia_market_data($data);
+			$result['fielddata_kenya_market_users'] = $this->Dashboard_model->f_m_kenya_market_data($data);
+			$result['fielddata_ethiopia_hh_users'] = $this->Dashboard_model->f_u_ethiopia_hh_data($data);
+			$result['fielddata_ethiopia_tfc_users'] = $this->Dashboard_model->f_u_ethiopia_tfc_data($data);
+			$result['fielddata_kenya_hh_users'] = $this->Dashboard_model->f_u_kenya_hh_data($data);
+			$result['fielddata_kenya_tfc_users'] = $this->Dashboard_model->f_u_kenya_tfc_data($data);
+			
+		}
+		$result['status'] = 1;
+		echo json_encode($result);
+		exit();
+	}
 }

@@ -1663,6 +1663,109 @@ class Reports_model extends CI_Model {
         return $submited_data;
     }
 
+    public function survey_submited_data_export_all($data){
+        $survey_id = $data['survey_id'];
+        $user_id = $data['user_id'];
+
+        // $this->db->select('GROUP_CONCAT(field_id ",") as checkbox_fileds_ids');
+        // $this->db->where('id', $survey_id)->like('type', '%checkbox-group%')->where('status', 1);
+        // $checkbox_fileds_ids = $this->db->get('form_field')->row_array();
+        // $this->db->select('GROUP_CONCAT(value ",") as checkbox_fileds_values');
+        // $this->db->where('id', $survey_id)->like('type', '%checkbox-group%')->where('status', 1);
+        // $checkbox_fileds_values = $this->db->get('form_field')->row_array();
+
+        // $type = $form_type['type'];
+        
+        
+        // Get Survey submited Data
+        if($data['survey_type'] == "Household Task"){
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, concat(rp.first_name," ", rp.last_name) as respondent,rp.hhid, idl.lat, idl.lng');
+        }else  if($data['survey_type'] == "Rangeland Task"){
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
+        }else if($data['survey_type'] == "Market Task" ){
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+        }
+		$this->db->from('survey'.$survey_id.' AS survey');
+		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
+        if($data['survey_type'] != "Market Task" ){
+		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
+        }
+        if($data['survey_type'] == "Household Task"){
+            $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+        }
+        if($data['survey_type'] == "Rangeland Task"){
+            $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
+        }
+        if($data['survey_type'] == "Market Task"){
+            $this->db->join('lkp_market AS lm', 'lm.market_id = survey.market_id');
+        }
+        
+        if(!empty($data['country_id'])) {
+            $this->db->where('survey.country_id', $data['country_id']);
+        }
+        if(!empty($data['cluster_id'])) {
+            $this->db->where('survey.cluster_id', $data['cluster_id']);
+        }
+        if(!empty($data['uai_id'])) {
+            $this->db->where('survey.uai_id', $data['uai_id']);
+        }
+        if(!empty($data['sub_location_id'])) {
+            $this->db->where('survey.sub_location_id', $data['sub_location_id']);
+        }
+        if(!empty($data['contributor_id'])) {
+            $this->db->where('survey.user_id', $data['contributor_id']);
+        }
+        if(!empty($data['respondent_id'])) {
+            if($data['survey_type'] == "Market Task"){
+                $this->db->where('survey.market_id', $data['respondent_id']);
+            }else if($data['survey_type'] == "Rangeland Task" ){
+                $this->db->where('tp.pasture_type', $data['respondent_id']);
+            }else{
+                $this->db->where('survey.respondent_data_id', $data['respondent_id']);
+            }
+            
+        }
+        if(!empty($data['start_date']) && !empty($data['end_date'])){
+            $this->db->where('DATE(survey.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(survey.datetime) <=', $data['end_date']);
+        }
+		$this->db->where('survey.status', 1);
+        // if($data['is_pa_verified_status']){
+        //     $this->db->where('survey.pa_verified_status', $data['pa_verified_status']);
+        // }
+        // if($data['is_pagination']){
+        //     $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+        // }
+        // if($data['is_search']){
+        //     $this->db->group_start();
+        //     $this->db->or_like('tu.first_name',$data['search_input']); // contributor First name
+        //     $this->db->or_like('tu.last_name',$data['search_input']); // contributor last Name
+        //     $this->db->or_like('rp.first_name',$data['search_input']); // respondent First name
+        //     $this->db->or_like('rp.last_name',$data['search_input']); // respondent last Name
+        //     $this->db->or_like('rp.username',$data['search_input']); // respondent user name
+        //     $this->db->or_like('tu.username',$data['search_input']); // contributor user name
+        //     $this->db->group_end();
+        // }
+		$submited_data = $this->db->order_by('survey.id', 'DESC')->get()->result_array();
+        // print_r($this->db->last_query());exit;
+        // foreach($submited_data as $key => $value){
+        //     // if($checkbox_fileds_ids['checkbox_fileds_ids']){
+        //     //     $loop_value='';
+        //     //     foreach($checkbox_fileds_ids['checkbox_fileds_ids'] as $ckey => $cbvalue){
+        //     //         $loop_value += cbvalue[$value['field_'.$cbvalue]];
+        //     //     }
+        //     // }
+        //     $this->db->select('field_id,file_name');
+        //     $this->db->where('data_id',$value['data_id']);
+        //     $images = $this->db->where('status',1)->get('ic_data_file')->result_array();
+        //     foreach($images as $ikey => $ivalue){
+        //         $submited_data[$key]['field_'.$ivalue['field_id']] = $ivalue['file_name'];
+        //     }
+        // }
+        // print_r($this->db->last_query());exit;
+        return $submited_data;
+    }
+
     public function survey_submited_household_data($data){
         // $survey_id = $data['survey_id'];
         $user_id = $data['user_id'];
@@ -2922,11 +3025,12 @@ class Reports_model extends CI_Model {
             $submitted_value1=0;
             $rejected_value1=0;
 
-            $this->db->select('mpesa_id,account_number');
+            $this->db->select('mpesa_id,account_number,bank_name');
             $this->db->where('user_id', $user['user_id']);
             $user_profile = $this->db->where('status', 1)->get('tbl_user_profile')->row_array();
             $users_list[$ukey]['mpesa_id'] = $user_profile['mpesa_id'];
             $users_list[$ukey]['account_number'] = $user_profile['account_number'];
+            $users_list[$ukey]['bank_name'] = $user_profile['bank_name'];
 
 			// $this->db->distinct('survey_id');
 			$this->db->select('user_id,survey_id');

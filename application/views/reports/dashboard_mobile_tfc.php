@@ -306,6 +306,7 @@
 
         loginrole = 1;
 	});
+    var user_id = <?php echo $this->uri->segment(3)?>;
     // $( document ).ready(function() {
     //     $('.get_data').trigger('click');
     // });
@@ -503,6 +504,7 @@
                 // filter_survey: filter,
                 country_id : country_id,
                 timeline_id : timeline_id,
+                user_id : user_id,
                 uai_id : selectedValues
                 // sub_location_id : sub_location_id,
                 // cluster_id : cluster_id,

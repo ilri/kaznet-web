@@ -639,6 +639,42 @@ class Reports extends CI_Controller {
 		$this->load->view('footer');
 	}
 	
+	public function task_data_export(){
+		$baseurl = base_url();
+		if(($this->session->userdata('login_id') == '')) {
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				echo json_encode(array(
+					'status' => 0,
+					'msg' => 'Session Expired! Please login again to continue.'
+				));
+				exit();
+			} else {
+				redirect($baseurl);
+			}
+		}
+		$survey_id = $this->uri->segment(3);
+		$user_id = $this->session->userdata('login_id');
+		//user data for profile info
+		$this->load->model('Dynamicmenu_model');
+		$profile_details = $this->Dynamicmenu_model->user_data();
+		$menu_result = array('profile_details' => $profile_details);
+		$result =array();
+
+		$this->db->select('lc.*, tul.country_id')->from('lkp_country as lc')->join('tbl_user_unit_location AS tul', 'tul.country_id = lc.country_id');
+		if($this->session->userdata('role') != 1){
+			$this->db->where('tul.user_id', $user_id);
+		}
+		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
+		// $result['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
+		$result['survey_type'] = $this->db->select('type')->where('id', $survey_id)->where('status', 1)->get('form')->row_array();
+		// $result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
+
+		$this->load->view('header');
+		$this->load->view('sidebar');
+		$this->load->view('menu',$menu_result);
+		$this->load->view('reports/task_data_export', $result);
+		$this->load->view('footer');
+	}
 
 	public function get_submited_data(){
 		$baseurl = base_url();
@@ -8662,5 +8698,142 @@ class Reports extends CI_Controller {
 		}
 
 	}
+	public function get_data_to_export_server(){
+		
 
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$name = $_POST['name'];
+			// Check if the file is uploaded
+			if (isset($_FILES['file']) && $_FILES['file']['error'] == UPLOAD_ERR_OK) {
+				// Temporary file path
+				$tmp_name = $_FILES['file']['tmp_name'];
+		
+				// Target path to save the file
+				// $target_path = 'path/to/save/result.xlsx';
+				$target_path = $baseurl.'uploads/surveydata/'.$name.'.xlsx';
+		
+				// Move the uploaded file to the target path
+				if (move_uploaded_file($tmp_name, $target_path)) {
+					echo 'File saved successfully.';
+				} else {
+					echo 'Failed to save the file.';
+				}
+			} else {
+				echo 'No file uploaded or file upload error.';
+			}
+		}
+	}
+	public function exportExcel_all() {
+		
+		
+		// Set initial response and variables
+		// $response = [
+		// 	'status' => 0,
+		// 	'msg' => 'No data found',
+		// 	'submited_data' => [],
+		// 	'user_role' => 'user_role_example',
+		// 	'fields' => [
+		// 		// Example fields structure
+		// 		0 => ['field_id' => 1, 'label' => 'Country', 'type' => 'lkp_country'],
+		// 		// Add more fields as necessary
+		// 	],
+		// 	'lkp_country' => [
+		// 		// Example lookup structure
+		// 		0 => ['country_id' => 1, 'name' => 'Country1'],
+		// 		// Add more countries as necessary
+		// 	],
+		// 	// Add more lookup arrays as necessary
+		// ];
+		
+		// Assuming $this->uri->segment(3) is a method to get URI segment
+		$survey_id = $_POST['survey_id'];
+		$survey_type = $_POST['survey_type'];
+		$respondent_id = '';
+	
+		if ($survey_type == "Market Task") {
+			$respondent_id = '';
+		} else if ($survey_type == "Rangeland Task") {
+			$respondent_id = '';
+		} else {
+			$respondent_id = '';
+		}
+		$user_id = null;
+		$data = [
+			'country_id' => $_POST['country_id'] ?? '',
+			'uai_id' => $_POST['uai_id'] ?? '',
+			'sub_location_id' => $_POST['sub_location_id'] ?? '',
+			'cluster_id' => $_POST['cluster_id'] ?? '',
+			'contributor_id' => $_POST['contributor_id'] ?? '',
+			'respondent_id' => $respondent_id,
+			'start_date' => $_POST['start_date'] ?? '',
+			'end_date' => $_POST['end_date'] ?? '',
+			'survey_id' => $_POST['survey_id'] ?? '',
+			'user_id' => $user_id,
+			'survey_type' => $survey_type,
+			'pa_verified_status' => null,
+			'pagination' => null,
+		];
+		
+		// print_r($data);exit();
+		// Perform your database query here to get the data
+
+		$this->load->model('Reports_model');
+		$result = $this->Reports_model->survey_details($survey_id);
+		$result['submited_data'] = $this->Reports_model->survey_submited_data_export_all($data);
+		// print_r($result['submited_data']);exit();
+		// $result['total_records'] = $this->Reports_model->survey_records($data);
+		$result['user_role'] = $this->session->userdata('role');
+		$result['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
+		$result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
+		$result['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
+		$result['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
+		
+		$result['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
+		$result['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
+		$result['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
+		$result['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
+		$result['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
+		$result['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
+		$result['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
+		$result['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
+		$result['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
+		$result['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
+		$result['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
+		$result['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
+
+		
+		$result['title'] = $this->Reports_model->export_survey_title($survey_id);
+		
+	
+		// echo $output;
+		$result['msg'] = "downloaded";
+		$result['status'] = 1;
+			echo json_encode($result);
+			exit();
+	}
+	
+	function exportToExcel($title, $data) {
+		// Load PHPExcel library or similar
+		require_once 'PHPExcel.php';
+		$objPHPExcel = new PHPExcel();
+		$objPHPExcel->setActiveSheetIndex(0);
+		$sheet = $objPHPExcel->getActiveSheet();
+		$sheet->setTitle($title);
+	
+		foreach ($data as $rowIndex => $row) {
+			foreach ($row as $colIndex => $cell) {
+				$sheet->setCellValueByColumnAndRow($colIndex, $rowIndex + 1, $cell);
+			}
+		}
+	
+		$filename = $title . '.xlsx';
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="' . $filename . '"');
+		header('Cache-Control: max-age=0');
+	
+		$writer = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+		$writer->save('php://output');
+	}
+	
+	
 }

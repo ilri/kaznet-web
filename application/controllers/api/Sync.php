@@ -116,7 +116,9 @@ class Sync extends CI_Controller {
 			'tbl_survey_assignee' => 'assignee_id',
 			'lkp_payment' => 'survey_id',
 			'tbl_user_profile' => 'id',
-			'tbl_transect_pastures' => 'id'
+			'tbl_transect_pastures' => 'id',
+			'forms' => 'id',
+			'submitted_data' => 'id'
 		);
 		$structure = $records = array();
 		

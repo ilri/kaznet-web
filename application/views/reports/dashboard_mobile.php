@@ -298,14 +298,16 @@
     <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script> -->
 
 <script>
     $(function(){
         // getSurveyDeatilsViewT1();
         // $( '.selectpicker' ).multiselect();
-
         loginrole = 1;
 	});
+    var user_id = <?php echo $this->uri->segment(3)?>;
     // $( document ).ready(function() {
     //     $('.get_data').trigger('click');
     // });
@@ -343,8 +345,10 @@
                 type: 'POST',  // http method
                 data: { country_id: country_id },  // data to submit
                 success: function (data) {
+                    $('#market_id').html("");
                     $('#market_id').html(data);
-                    $( '.selectpicker' ).multiselect( 'refresh' );
+                    // $( '.selectpicker' ).multiselect( 'refresh' );
+                    $('#market_id').multiselect( 'refresh' );
                 }
             });
             // if(loginrole==1){
@@ -547,8 +551,8 @@
                 // start_date : formatDate(start_date),
                 // end_date : formatDate(end_date)
                 start_date : start_date,
-                end_date : end_date
-
+                end_date : end_date,
+                user_id : user_id
             };
                 $('.div_survey_deatils_view').html('<h4 class="text-center loading">Please Wait. Getting Data</h4>');
                 $.ajax({

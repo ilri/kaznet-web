@@ -2874,6 +2874,7 @@
         XLSX.utils.book_append_sheet(wb, ws, name);
         XLSX.writeFile(wb, name+'.xlsx');
 	}
+	
 	function exportXcel(event) {
 		$('#overlay').fadeIn();
         $('#loader').fadeIn();
@@ -2934,7 +2935,7 @@
 			data: query_data,
 			type: "POST",
 			dataType: "JSON",
-			error: function() {
+			error: function(response) {
 				$.toast({
 					heading: 'Error!',
 					text: response.msg,
