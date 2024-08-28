@@ -30,9 +30,24 @@ class FormModel extends CI_Model {
     }
 
     public function get_submitted_data($form_id) {
-        $this->db->where('form_id', $form_id);
-        $query = $this->db->get('submitted_data');
-        return $query->result_array();
+        $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
+        $columns = (array)json_decode($form_details['form_data']);
+        
+        $query = "";
+        if(isset($columns) && count($columns) > 0) {
+            $query = "SELECT s.id, s.form_id";
+            foreach ($columns as $key => $col) {
+                $col = (array)$col;
+                $columns[$key] = $col;
+                $query .= ", JSON_UNQUOTE(JSON_EXTRACT(s.data, '$.\"".$col['name']."\"')) AS '".$col['name']."'";
+            }
+            $query .= "FROM
+                submitted_data s
+            WHERE
+                s.form_id = $form_id";
+        }
+        $data = $this->db->query($query)->result_array();
+        return array('data' => $data, 'columns' => $columns);
     }
 }
 ?>

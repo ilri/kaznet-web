@@ -912,19 +912,24 @@ class Dashboard extends CI_Controller {
 				}
 				switch ($avg_value) {
 					case '1':
-						$avg_value="Very Bad";
+						// $avg_value="Very Bad";
+						$avg_value="Extremely useful";
 						break;
 					case '2':
-						$avg_value="Bad";
+						// $avg_value="Bad";
+						$avg_value="Useful";
 						break;
 					case '3':
-						$avg_value="Average";
+						// $avg_value="Average";
+						$avg_value="Satisfactory";
 						break;
 					case '4':
-						$avg_value="Good";
+						// $avg_value="Good";
+						$avg_value="Somewhat useful";
 						break;
 					case '5':
-						$avg_value="Very Good";
+						// $avg_value="Very Good";
+						$avg_value="Not useful";
 						break;
 					
 					default:

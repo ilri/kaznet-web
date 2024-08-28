@@ -73,19 +73,12 @@ class FormController extends CI_Controller {
         $this->load->view('footer');
     }
 
-    public function submit_form() {
+    /*public function submit_form() {
     header('Content-Type: application/json');
-
-    // Log the start of the request
-    log_message('debug', 'submit_form method called');
 
     // Get POST data
     $form_id = $this->input->post('form_id');
     $submitted_data = $this->input->post('submitted_data');
-
-    // Log incoming data
-    log_message('debug', 'Form ID: ' . $form_id);
-    log_message('debug', 'Submitted Data: ' . json_encode($submitted_data));
 
     if (empty($form_id) || empty($submitted_data)) {
         log_message('error', 'Invalid form data. Form ID or Submitted Data is empty.');
@@ -96,11 +89,8 @@ class FormController extends CI_Controller {
     // Process the data (you can customize this part as needed)
     $data = [
         'form_id' => $form_id,
-        'data' => json_encode($submitted_data) // Ensure this is JSON encoded
+        'data' => $submitted_data // Ensure this is JSON encoded
     ];
-
-    // Log the data being inserted
-    log_message('debug', 'Data to be inserted: ' . json_encode($data));
 
     // Attempt to insert data
     if ($this->db->insert('submitted_data', $data)) {
@@ -115,7 +105,99 @@ class FormController extends CI_Controller {
 
     // Ensure script terminates after outputting the response
     exit();
+}*/
+
+    public function submit_form() {
+    header('Content-Type: application/json');
+
+    $form_id = $this->input->post('form_id');
+    $submitted_data = $this->input->post();
+
+    if (empty($form_id)) {
+        log_message('error', 'Invalid form data. Form ID is empty.');
+        echo json_encode(['status' => 'error', 'message' => 'Invalid form data']);
+        exit();
+    }
+
+    // Handle file uploads
+    if (!empty($_FILES)) {
+        $this->load->library('upload');
+        $uploaded_files = [];
+
+        foreach ($_FILES as $field => $file) {
+            // Handle multiple files
+            if (is_array($file['name'])) {
+                foreach ($file['name'] as $key => $value) {
+                    if ($file['error'][$key] == UPLOAD_ERR_OK) {
+                        $_FILES[$field]['name'] = $file['name'][$key];
+                        $_FILES[$field]['type'] = $file['type'][$key];
+                        $_FILES[$field]['tmp_name'] = $file['tmp_name'][$key];
+                        $_FILES[$field]['error'] = $file['error'][$key];
+                        $_FILES[$field]['size'] = $file['size'][$key];
+
+                        // Set upload configuration
+                        $config['upload_path'] = './uploads/survey'; // Ensure this directory exists
+                        $config['allowed_types'] = 'jpg|png|gif|pdf|docx'; // Adjust according to your needs
+                        $this->upload->initialize($config);
+
+                        if ($this->upload->do_upload($field)) {
+                            $uploaded_data = $this->upload->data();
+                            $uploaded_files[$field][] = $uploaded_data['file_name'];
+                        } else {
+                            log_message('error', 'File upload error: ' . $this->upload->display_errors());
+                            echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
+                            exit();
+                        }
+                    } else {
+                        log_message('error', 'File upload error: ' . $file['error'][$key]);
+                        echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $file['error'][$key]]);
+                        exit();
+                    }
+                }
+            } else { // Handle single file
+                $config['upload_path'] = './uploads/survey';
+                $config['allowed_types'] = 'jpg|png|gif|pdf|docx';
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload($field)) {
+                    $uploaded_data = $this->upload->data();
+                    $uploaded_files[$field] = $uploaded_data['file_name'];
+                } else {
+                    log_message('error', 'File upload error: ' . $this->upload->display_errors());
+                    echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
+                    exit();
+                }
+            }
+        }
+
+        // Merge uploaded file names with submitted data
+        foreach ($uploaded_files as $field => $file_names) {
+            $submitted_data[$field] = is_array($file_names) ? $file_names : $file_names;
+        }
+    }
+
+    // Process the rest of the data
+    $data = [
+        'form_id' => $form_id,
+        'data' => json_encode($submitted_data)
+    ];
+
+    // Insert data into the database
+    if ($this->db->insert('submitted_data', $data)) {
+        log_message('debug', 'Data successfully inserted into the database.');
+        echo json_encode(['status' => 'success']);
+    } else {
+        $error = $this->db->error();
+        log_message('error', 'Database insertion failed: ' . json_encode($error));
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save form data']);
+    }
+
+    exit();
 }
+
+
+
+
 
 
 
