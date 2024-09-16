@@ -198,10 +198,8 @@
                 </a>
             </li>
             <!-- <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
-                <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"> -->
-                <!-- <a href="<?php echo base_url(); ?>dashboard/view_dashboard" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
-                <!-- <a href="<?php echo base_url(); ?>login/profile" class="sub-menu <?php echo(($this->uri->segment(2)) == 'view_dashboard' ? 'active' : '');?>"> -->
-                    <!-- <span class="logo-img-mt-4">
+                <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <span class="logo-img-mt-4">
                         <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
                             xmlns="http://www.w3.org/2000/svg" class="bg">
                             <path

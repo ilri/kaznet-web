@@ -80,40 +80,40 @@ class Reports extends CI_Controller {
 		$this->db->select('*');
 		$this->db->where('status', 1);
 		$surveys = $this->db->get('form')->result_array();
-		foreach ($surveys as $key => $surv) {
+		// foreach ($surveys as $key => $surv) {
 			
-			// Get approved
-			$this->db->distinct()->select('*');
-			$this->db->where('pa_verified_status',2);
-			$approved = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
+		// 	// Get approved
+		// 	$this->db->distinct()->select('*');
+		// 	$this->db->where('pa_verified_status',2);
+		// 	$approved = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
 
-			if($approved) $surveys[$key]['approved'] = $approved;
-			else $surveys[$key]['approved'] = 0;
+		// 	if($approved) $surveys[$key]['approved'] = $approved;
+		// 	else $surveys[$key]['approved'] = 0;
 
-			// get submitted
-			$this->db->distinct()->select('*');
-			$this->db->where('pa_verified_status',1);
-			$submitted = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
+		// 	// get submitted
+		// 	$this->db->distinct()->select('*');
+		// 	$this->db->where('pa_verified_status',1);
+		// 	$submitted = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
 
-			if($submitted) $surveys[$key]['submitted'] = $submitted;
-			else $surveys[$key]['submitted'] = 0;
+		// 	if($submitted) $surveys[$key]['submitted'] = $submitted;
+		// 	else $surveys[$key]['submitted'] = 0;
 
-			// get rejected
-			$this->db->distinct()->select('*');
-			$this->db->where('pa_verified_status',3);
-			$rejected = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
+		// 	// get rejected
+		// 	$this->db->distinct()->select('*');
+		// 	$this->db->where('pa_verified_status',3);
+		// 	$rejected = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
 
-			if($rejected) $surveys[$key]['rejected'] = $rejected;
-			else $surveys[$key]['rejected'] = 0;
+		// 	if($rejected) $surveys[$key]['rejected'] = $rejected;
+		// 	else $surveys[$key]['rejected'] = 0;
 
-			$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-			if(!empty($payment_list)){
-				$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
-			}else{
-				$surveys[$key]['payment_amount'] = "";
-			}
-		}
-		$result['surveys_tasks'] = $surveys;
+		// 	$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
+		// 	if(!empty($payment_list)){
+		// 		$surveys[$key]['payment_amount'] = $payment_list['price_per_survey'] * $surveys[$key]['approved'];
+		// 	}else{
+		// 		$surveys[$key]['payment_amount'] = "";
+		// 	}
+		// }
+		// $result['surveys_tasks'] = $surveys;
 
 		$this->db->select('*');
 		$this->db->where('role_id', 8);
@@ -121,63 +121,63 @@ class Reports extends CI_Controller {
 		$users_list = $this->db->get('tbl_users')->result_array();
 
 		// $contributor_list = $this->db->select('tu.*,tsa.*')->from('tbl_users as tu')->join('tbl_survey_assignee AS tsa', 'tsa.user_id = tu.user_id')->where('tu.role_id',8)->where('tu.status',1)->where('tsa.status',1)->group_by('tsa.user_id')->get()->result_array();
-		foreach ($users_list as $ukey => $user) {
-			$payment_amount=0;
-			$approved_value=0;
-			$submitted_value=0;
-			$rejected_value=0;
-			$this->db->distinct('survey_id');
-			$this->db->select('*');
-			$this->db->where('user_id', $user['user_id']);		
-			$contributor_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
+		// foreach ($users_list as $ukey => $user) {
+		// 	$payment_amount=0;
+		// 	$approved_value=0;
+		// 	$submitted_value=0;
+		// 	$rejected_value=0;
+		// 	$this->db->distinct('survey_id');
+		// 	$this->db->select('*');
+		// 	$this->db->where('user_id', $user['user_id']);		
+		// 	$contributor_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
 
-			foreach ($contributor_list as $ckey => $contributor) {
-				$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
-				if(!empty($payment_list)){
-					$temp_payment= $payment_list['price_per_survey'];
-				}else{
-					$temp_payment= 0;
-				}
-				$payment_amount =$payment_amount+$temp_payment;
+		// 	foreach ($contributor_list as $ckey => $contributor) {
+		// 		$payment_list =$this->db->select('price_per_survey')->where('survey_id', $surv['id'])->where('status', 1)->get('lkp_payment')->row_array();
+		// 		if(!empty($payment_list)){
+		// 			$temp_payment= $payment_list['price_per_survey'];
+		// 		}else{
+		// 			$temp_payment= 0;
+		// 		}
+		// 		$payment_amount =$payment_amount+$temp_payment;
 				
-				// Get approved
-				$this->db->distinct()->select('*');
-				$this->db->where('pa_verified_status',2);
-				$approved = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();				
+		// 		// Get approved
+		// 		$this->db->distinct()->select('*');
+		// 		$this->db->where('pa_verified_status',2);
+		// 		$approved = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();				
 
-				$temp_approved= $approved;
-				$approved_value =$approved_value+$temp_approved;
+		// 		$temp_approved= $approved;
+		// 		$approved_value =$approved_value+$temp_approved;
 	
-				// get submitted
-				$this->db->distinct()->select('*');
-				$this->db->where('pa_verified_status',1);
-				$submitted = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
-				$temp_submitted= $submitted;
-				$submitted_value =$submitted_value+$temp_submitted;			
+		// 		// get submitted
+		// 		$this->db->distinct()->select('*');
+		// 		$this->db->where('pa_verified_status',1);
+		// 		$submitted = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
+		// 		$temp_submitted= $submitted;
+		// 		$submitted_value =$submitted_value+$temp_submitted;			
 	
-				// get rejected
-				$this->db->distinct()->select('*');
-				$this->db->where('pa_verified_status',3);
-				$rejected = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
-				$temp_rejected= $rejected;
-				$rejected_value =$rejected_value+$temp_rejected;
+		// 		// get rejected
+		// 		$this->db->distinct()->select('*');
+		// 		$this->db->where('pa_verified_status',3);
+		// 		$rejected = $this->db->where('status', 1)->get('survey'.$surv['id'])->num_rows();
+		// 		$temp_rejected= $rejected;
+		// 		$rejected_value =$rejected_value+$temp_rejected;
 
 				
 
 				
-			}
-			$users_list[$ukey]['payment_amount'] = $payment_amount;
-			if($approved_value) $users_list[$ukey]['approved'] = $approved_value;
-				else $users_list[$ukey]['approved'] = 0;
+		// 	}
+		// 	$users_list[$ukey]['payment_amount'] = $payment_amount;
+		// 	if($approved_value) $users_list[$ukey]['approved'] = $approved_value;
+		// 		else $users_list[$ukey]['approved'] = 0;
 
-			if($submitted_value) $users_list[$ukey]['submitted'] = $submitted_value;
-				else $users_list[$ukey]['submitted'] = 0;
+		// 	if($submitted_value) $users_list[$ukey]['submitted'] = $submitted_value;
+		// 		else $users_list[$ukey]['submitted'] = 0;
 
-			if($rejected_value) $users_list[$ukey]['rejected'] = $rejected_value;
-				else $users_list[$ukey]['rejected'] = 0;
-			$users_list[$ukey]['contributor_name'] = $user['first_name']." ".$user['last_name'];
+		// 	if($rejected_value) $users_list[$ukey]['rejected'] = $rejected_value;
+		// 		else $users_list[$ukey]['rejected'] = 0;
+		// 	$users_list[$ukey]['contributor_name'] = $user['first_name']." ".$user['last_name'];
 			
-		}
+		// }
 		$this->db->select('lc.*, tul.country_id')->from('lkp_country as lc')->join('tbl_user_unit_location AS tul', 'tul.country_id = lc.country_id');
 		if($this->session->userdata('role') != 1){
 			$this->db->where('tul.user_id', $user_id);
@@ -386,9 +386,9 @@ class Reports extends CI_Controller {
 		$survey_id = $this->uri->segment(3);
 		$user_id = $this->session->userdata('login_id');
 		//user data for profile info
-		$this->load->model('Dynamicmenu_model');
-		$profile_details = $this->Dynamicmenu_model->user_data();
-		$menu_result = array('profile_details' => $profile_details);
+		// $this->load->model('Dynamicmenu_model');
+		// $profile_details = $this->Dynamicmenu_model->user_data();
+		// $menu_result = array('profile_details' => $profile_details);
 		
 		$country_id = $this->input->post('country_id');
 		$uai_id = $this->input->post('uai_id');

@@ -3071,7 +3071,7 @@ class Reports_model extends CI_Model {
                 $submitted_value=0;
                 $rejected_value=0;
 				// Get approved
-				$this->db->distinct()->select('*');
+				$this->db->distinct()->select('id');
 				$this->db->where('pa_verified_status',2);
 				$this->db->where('user_id', $contributor['user_id']);
 				if(!empty($data['country_id'])) {
@@ -3104,7 +3104,7 @@ class Reports_model extends CI_Model {
 				$approved_value =$approved_value+$temp_approved;
 	
 				// get submitted
-				$this->db->distinct()->select('*');
+				$this->db->distinct()->select('id');
 				$this->db->where('pa_verified_status',1);
                 $this->db->where('user_id', $contributor['user_id']);
 				if(!empty($data['country_id'])) {
@@ -3134,7 +3134,7 @@ class Reports_model extends CI_Model {
 				$submitted_value =$submitted_value+$temp_submitted;			
 	
 				// get rejected
-				$this->db->distinct()->select('*');
+				$this->db->distinct()->select('id');
 				$this->db->where('pa_verified_status',3);
                 $this->db->where('user_id', $contributor['user_id']);
 				if(!empty($data['country_id'])) {
@@ -3178,7 +3178,7 @@ class Reports_model extends CI_Model {
 				$rejected_value1 =$rejected_value1+$rejected_value;                
 			}
             // Get House hold survey submited Data
-            $this->db->select('rp.*');
+            $this->db->select('rp.id');
             $this->db->from('tbl_respondent_users as rp');
             $this->db->where('rp.added_by', $user['user_id']);
             if(!empty($data['country_id'])) {
@@ -3212,7 +3212,7 @@ class Reports_model extends CI_Model {
             // var_dump($this->db->last_query());
 
             // Get House hold survey approved Data
-            $this->db->select('rp.*');
+            $this->db->select('rp.id');
             $this->db->from('tbl_respondent_users as rp');
             $this->db->where('rp.added_by', $user['user_id']);
             if(!empty($data['country_id'])) {
@@ -3243,7 +3243,7 @@ class Reports_model extends CI_Model {
             $hh_approved_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
 
             // Get House hold survey rejected Data
-            $this->db->select('rp.*');
+            $this->db->select('rp.id');
             $this->db->from('tbl_respondent_users as rp');
             $this->db->where('rp.added_by', $user['user_id']);
             if(!empty($data['country_id'])) {

@@ -1133,11 +1133,28 @@
 					$('#loader').fadeOut();
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
-				const totalRecords= response.total_records;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
+				const totalRecords= submitted_record_count;
 				const currentRecords = submitedData.length;
-				pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				alert(submitedData.length);
+				if(submitedData.length === 0){
+					document.getElementById('submited_pagination').style.display = 'none';
+				} else{
+					document.getElementById('submited_pagination').style.display = 'flex';
+					pagination.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 
 			}
 		});
