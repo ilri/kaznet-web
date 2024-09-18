@@ -35,7 +35,7 @@ $(document).ready(function() {
     // if (acceptedTypes) {
         // fileInput.after('<small class="accepted-types">Accepted file types: ' + acceptedTypes.split(', ').join(', ') + '</small>');
         // }
-        fileInput.after('<small class="accepted-types">Accepted file types:  .jpg, .png, .gif, .pdf, .csv, .doc, .xlsx</small>');
+        fileInput.before('<br/><small class="accepted-types">Accepted file types:  .jpg, .png, .gif, .pdf, .csv, .doc, .xlsx</small>');
 
     // Allowed file types
 //   var allowedFileTypes = ['image/jpeg', 'image/png','image/gif', 'application/pdf', 'text/xlsx'];
@@ -172,10 +172,35 @@ $(document).ready(function() {
                             
                         }
                     } else {
-                        
-                        // Remove the error message if the field is not empty
-                        $this.removeClass('error');
-                        $this.next('.error-message').remove();
+                        if ($(this).attr('type') === 'number'){
+                            if($this.val() < $this.prop('min')){
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.next('.error-message').length === 0) {
+                                    $this.after('<span class="error-message">Enter value grater than '+$this.prop('min')+' minimum value.</span>');
+                                }else{
+                                    $this.removeClass('error');
+                                    $this.closest('.radio-group').next('.error-message').remove();
+                                }
+
+                            }else if($this.val() > $this.prop('max')){
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.next('.error-message').length === 0) {
+                                    $this.after('<span class="error-message">Enter value less than '+$this.prop('max')+' maximum value.</span>');
+                                }else{
+                                    $this.removeClass('error');
+                                    $this.closest('.radio-group').next('.error-message').remove();
+                                }
+                            }else{
+                                $this.removeClass('error');
+                                $this.closest('.radio-group').next('.error-message').remove();
+                            }
+                        }else{
+                            // Remove the error message if the field is not empty
+                            $this.removeClass('error');
+                            $this.next('.error-message').remove();
+                        }
                     }
                 }
             }
@@ -211,28 +236,43 @@ $(document).ready(function() {
                 var fileInput = $(name1)[0];
                 // var file = fileInput.files[0]; // Get the first (and likely only) file
                 var files = this.files;
-                alert(files.type);
+                // alert(files.type);
                 if (files.length > 0) {
+                    var maxSize = 2 * 1024 * 1024; // 2 MB in bytes
                     if (files.length > 1) {
-                        files.forEach(element => {
-                            var fileType = element.type;
+                        
+                        for (let i = 0; i < files.length; i++) {
+                        // files.forEach(element => {
+                            // var fileType = element.type;
+                            var fileType = files[i].type;
+                            // alert(fileType);
                             // Check if the file type is allowed
                             if ($.inArray(fileType, allowedFileTypes) === -1) {
-                                alert(fileType);
+                                // alert(fileType);
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Invalid file type. Allowed types are: .jpg, .png, .gif, .pdf, .xlsx</span>');
+                                    $this.after('<span class="error-message">Invalid file type/s. Allowed types are: .jpg, .png, .gif, .pdf, .xlsx</span>');
+                                }else{
+                                    $this.removeClass('error');
+                                    $this.closest('.radio-group').next('.error-message').remove();
+                                }
+                            }else if (files[i].size > maxSize) {
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.next('.error-message').length === 0) {
+                                    $this.after('<span class="error-message">Uploaded file size less than 2MB.</span>');
                                 }else{
                                     $this.removeClass('error');
                                     $this.closest('.radio-group').next('.error-message').remove();
                                 }
                             }else{
-                                alert("no");
+                                // alert("no");
                                 $this.removeClass('error');
                                 $this.closest('.radio-group').next('.error-message').remove();
                             }
-                        });
+                        // });
+                        }
                     }else{
                         //single file
                         var fileType = files[0].type;
@@ -241,11 +281,20 @@ $(document).ready(function() {
                             isValid = false;
                             $this.addClass('error');
                             if ($this.next('.error-message').length === 0) {
-                                $this.after('<span class="error-message">Invalid file type. Please upload valid file</span>');
+                                $this.after('<span class="error-message">Invalid file type/s. Please upload valid file/s</span>');
                             }else{
                                 $this.removeClass('error');
                                 $this.closest('.radio-group').next('.error-message').remove();
                             }
+                        }else if (files[0].size > maxSize) {
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.next('.error-message').length === 0) {
+                                    $this.after('<span class="error-message">Uploaded file size less than 2MB.</span>');
+                                }else{
+                                    $this.removeClass('error');
+                                    $this.closest('.radio-group').next('.error-message').remove();
+                                }
                         }else{
                             $this.removeClass('error');
                             $this.closest('.radio-group').next('.error-message').remove();

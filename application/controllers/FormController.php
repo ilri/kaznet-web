@@ -123,40 +123,14 @@ class FormController extends CI_Controller {
         if (!empty($_FILES)) {
             $this->load->library('upload');
             $uploaded_files = [];
-
+            $files_value = '';
+            $count=0;
+            // $totalFiles = count($_FILES['files']['name']);
             foreach ($_FILES as $field => $file) {
+                $count++;
                 // Check if the file field is empty
-                if (!empty($file['name'][0])) {
-                    // Handle multiple files
-                    if (is_array($file['name'])) {
-                        foreach ($file['name'] as $key => $value) {
-                            if ($file['error'][$key] == UPLOAD_ERR_OK) {
-                                $_FILES[$field]['name'] = $file['name'][$key];
-                                $_FILES[$field]['type'] = $file['type'][$key];
-                                $_FILES[$field]['tmp_name'] = $file['tmp_name'][$key];
-                                $_FILES[$field]['error'] = $file['error'][$key];
-                                $_FILES[$field]['size'] = $file['size'][$key];
-
-                                // Set upload configuration
-                                $config['upload_path'] = './uploads/survey'; // Ensure this directory exists
-                                $config['allowed_types'] = 'jpg|png|gif|pdf|docx|csv|xlsx'; // Adjust according to your needs
-                                $this->upload->initialize($config);
-
-                                if ($this->upload->do_upload($field)) {
-                                    $uploaded_data = $this->upload->data();
-                                    $uploaded_files[$field][] = $uploaded_data['file_name'];
-                                } else {
-                                    log_message('error', 'File upload error: ' . $this->upload->display_errors());
-                                    echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
-                                    exit();
-                                }
-                            } else {
-                                log_message('error', 'File upload error: ' . $file['error'][$key]);
-                                echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $file['error'][$key]]);
-                                exit();
-                            }
-                        }
-                    } else { // Handle single file
+                if (!empty($file['name'])) {
+                    
                         $config['upload_path'] = './uploads/survey';
                         $config['allowed_types'] = 'jpg|png|gif|pdf|docx|csv|xlsx';
                         $this->upload->initialize($config);
@@ -164,19 +138,24 @@ class FormController extends CI_Controller {
                         if ($this->upload->do_upload($field)) {
                             $uploaded_data = $this->upload->data();
                             $uploaded_files[$field] = $uploaded_data['file_name'];
+                            // $files_value .= $count. ', ';
                         } else {
                             log_message('error', 'File upload error: ' . $this->upload->display_errors());
                             // echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
                             // exit();
                         }
-                    }
+                    
                 }
             }
-
+            
             // Merge uploaded file names with submitted data
             foreach ($uploaded_files as $field => $file_names) {
                 $submitted_data[$field] = is_array($file_names) ? $file_names : $file_names;
+                // $files_value .= $file_names. ', ';
             }
+            // Trim the trailing comma and space
+            // $files_value = rtrim($files_value, ', ');
+            $submitted_data[$field] = $files_value;
         }
 
         // Process the rest of the data

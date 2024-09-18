@@ -3389,7 +3389,7 @@ class Reports_model extends CI_Model {
 
 
         // Get House hold survey submited Data
-		$this->db->select('rp.*, concat(tu.first_name," ", tu.last_name) as added_by');
+		$this->db->select('rp.id, concat(tu.first_name," ", tu.last_name) as added_by');
         $this->db->from('tbl_respondent_users as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
         if(!empty($data['country_id'])) {
@@ -3422,7 +3422,7 @@ class Reports_model extends CI_Model {
 		$hh_submited_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
 
         // Get House hold survey approved Data
-		$this->db->select('rp.*');
+		$this->db->select('rp.id');
         $this->db->from('tbl_respondent_users as rp');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
@@ -3454,7 +3454,7 @@ class Reports_model extends CI_Model {
 		$hh_approved_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
 
         // Get House hold survey rejected Data
-		$this->db->select('rp.*');
+		$this->db->select('rp.id');
         $this->db->from('tbl_respondent_users as rp');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
@@ -3507,7 +3507,7 @@ class Reports_model extends CI_Model {
 		foreach ($surveys as $key => $surv) {
             $count++;
 			// Get approved
-			$this->db->distinct()->select('*');
+			$this->db->distinct()->select('id');
 			$this->db->where('pa_verified_status',2);
 			if(!empty($data['country_id'])) {
 				$this->db->where('country_id', $data['country_id']);
@@ -3537,7 +3537,7 @@ class Reports_model extends CI_Model {
 			else $surveys[$key]['approved'] = 0;
 
 			// get submitted
-			$this->db->distinct()->select('*');
+			$this->db->distinct()->select('id');
 			$this->db->where('pa_verified_status',1);
 			if(!empty($data['country_id'])) {
 				$this->db->where('country_id', $data['country_id']);
@@ -3567,7 +3567,7 @@ class Reports_model extends CI_Model {
 			else $surveys[$key]['submitted'] = 0;
 
 			// get rejected
-			$this->db->distinct()->select('*');
+			$this->db->distinct()->select('id');
 			$this->db->where('pa_verified_status',3);
 			if(!empty($data['country_id'])) {
 				$this->db->where('country_id', $data['country_id']);
