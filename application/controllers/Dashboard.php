@@ -890,6 +890,9 @@ class Dashboard extends CI_Controller {
 				$this->db->or_like('drr.category',$data['search_input']); // category 
 				$this->db->group_end();
 			}
+			if($data['is_pagination']){
+				$this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+			}
 			$user_feedback_data = $this->db->where('tu.status', 1)->get()->result_array();
 			// print_r($this->db->last_query());exit();
 			foreach ($user_feedback_data as $key => $value) {
@@ -980,7 +983,32 @@ class Dashboard extends CI_Controller {
 			}
 			// print_r($user_feedback_data);exit();
 			$result['user_feedback_data'] = $user_feedback_data;
-			$result['total_records'] = count($user_feedback_data);
+
+			$this->db->select('tu.*, drr.user_id, MAX(drr.datetime) AS max_date')->from('tbl_users as tu')->join('dissemination_role_report AS drr', 'drr.user_id = tu.user_id');
+			$this->db->join('lkp_market_map AS mp','mp.market_map_id = drr.market_id','left');
+			$this->db->join('lkp_uai AS uai','uai.uai_id = drr.uai_id','left');
+			if(!empty($user_id)){
+				$this->db->where('drr.user_id', $user_id);
+			}
+			if(!empty($data['start_date']) && !empty($data['end_date'])){
+				$this->db->where('DATE(drr.datetime) >=', $data['start_date']);
+				$this->db->where('DATE(drr.datetime) <=', $data['end_date']);
+			}
+			$this->db->group_by('drr.user_id');
+			// $this->db->order_by('drr.datetime','ASC');
+			if($data['is_search']){
+				
+				// search filters
+				$this->db->group_start();
+				$this->db->or_like('tu.first_name',$data['search_input']); //user table first name 
+				$this->db->or_like('tu.last_name',$data['search_input']); //user table last name 
+				$this->db->or_like('mp.name',$data['search_input']); // market name
+				$this->db->or_like('uai.uai',$data['search_input']); // uai name
+				$this->db->or_like('drr.category',$data['search_input']); // category 
+				$this->db->group_end();
+			}
+			$user_feedback_data1 = $this->db->where('tu.status', 1)->get()->num_rows();
+			$result['total_records'] = $user_feedback_data1;
 			
 		}
 		$result['status'] = 1;

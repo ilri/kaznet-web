@@ -118,11 +118,57 @@
 		color:#fff;
 	}
 </style>
+<style>
+        /* Styles for loader */
+		#overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5); /* semi-transparent */
+			z-index: 1000;
+			display: none;
+		}
+
+		#content {
+			position: relative;
+			z-index: 2000;
+		}
+
+		#loader {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 3000;
+			display: none;
+		}
+
+		.spinner {
+			border: 4px solid rgba(255, 255, 255, 0.3);
+			border-top: 4px solid #ffffff;
+			border-radius: 50%;
+			width: 50px;
+			height: 50px;
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+    </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
-
+<!-- Loader markup -->
+<div id="overlay"></div>
+	<div id="loader">
+		<div class="spinner ml-4"></div>
+		<div style="color:white;"><b>Loading please wait...</b></div>
+	</div>
    <div class="container-fluid">
         <div class="row">
 			<?php 
@@ -483,13 +529,15 @@
 			}
 		};
 		$("#info_data").css("display","none");
-		var imageLoader = `<div class="loaders">
-				<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-					<img class="map_icon" src="<?php echo base_url(); ?>include/img/Loader_new.svg" alt="loader">
-					<p class="text-color"><strong> Loading...</strong></p>
-				</div>
-			</div>`;
-		$('#submited_body').html(imageLoader);
+		// var imageLoader = `<div class="loaders">
+		// 		<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
+		// 			<img class="map_icon" src="<?php echo base_url(); ?>include/img/Loader_new.svg" alt="loader">
+		// 			<p class="text-color"><strong> Loading...</strong></p>
+		// 		</div>
+		// 	</div>`;
+		// $('#submited_body').html(imageLoader);
+        $('#overlay').fadeIn();
+        $('#loader').fadeIn();
 		$.ajax({
             url: "<?php echo base_url(); ?>reports/get_payment_report_tasks/",
             data: query_data,
@@ -581,14 +629,18 @@
                         tableBody += `</tr>`;                        
                         $('#submited_body').append(tableBody);                        
                     }
+                    $('#overlay').fadeOut();
+						$('#loader').fadeOut();
                 }else{
                     $('#submited_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
+                    $('#overlay').fadeOut();
+						$('#loader').fadeOut();
                 }
-				// const curentPage = pageNo;
-				// const totalRecordsPerPage = recordperpage;
-				// const totalRecords= response.total_records;
-				// const currentRecords = submitedData.length;
-				// pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100));
+				const curentPage = pageNo;
+				const totalRecordsPerPage = recordperpage;
+				const totalRecords= response.total_records;
+				const currentRecords = submitedData.length;
+				pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100));
 			}
 		});
 	}
@@ -625,13 +677,15 @@
 			}
 		};
 		$("#info_data").css("display","none");
-		var imageLoader = `<div class="loaders">
-				<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-					<img class="map_icon" src="<?php echo base_url(); ?>include/img/Loader_new.svg" alt="loader">
-					<p class="text-color"><strong> Loading...</strong></p>
-				</div>
-			</div>`;
-		$('#approved_body').html(imageLoader);
+		// var imageLoader = `<div class="loaders">
+		// 		<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
+		// 			<img class="map_icon" src="<?php echo base_url(); ?>include/img/Loader_new.svg" alt="loader">
+		// 			<p class="text-color"><strong> Loading...</strong></p>
+		// 		</div>
+		// 	</div>`;
+		// $('#approved_body').html(imageLoader);
+        $('#overlay').fadeIn();
+        $('#loader').fadeIn();
 		$.ajax({
             url: "<?php echo base_url(); ?>reports/get_payment_report_contributors/",
             data: query_data,
@@ -878,8 +932,12 @@
                         tableBody += `</tr>`;                        
                         $('#approved_body').append(tableBody);                        
                     }
+                    $('#overlay').fadeOut();
+						$('#loader').fadeOut();
                 }else{
                     $('#approved_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
+                    $('#overlay').fadeOut();
+						$('#loader').fadeOut();
                 }
 				const curentPage = pageNo;
 				const totalRecordsPerPage = recordperpage;
@@ -889,6 +947,22 @@
                 const totalRecords= count;
 				const currentRecords = count;
 				pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100));
+                // const totalRecords= count;
+				// const currentRecords = count;
+				// let curentPage = pageNo
+				// let totalRecordsPerPage = recordperpage
+				// if(pageNo == 1){
+				// 	curentPage = submitedData.length === 0 ? 0 : pageNo;
+				// }
+				// if(recordperpage == 100){
+				// 	totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				// }
+				// if(submitedData.length === 0){
+				// 	document.getElementById('submited_pagination').style.display = 'none';
+				// } else{
+				// 	document.getElementById('submited_pagination').style.display = 'flex';
+				// 	pagination1.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				// }
 			}
 		});
 		
@@ -1153,7 +1227,8 @@
             end_date : end_date,
 			pagination:null
 		};
-
+        $('#overlay').fadeIn();
+        $('#loader').fadeIn();
 		$.ajax({
 			url: "<?php echo base_url(); ?>reports/get_payment_report_contributors/",
 			data: query_data,
@@ -1282,8 +1357,12 @@
 					exportToXcel("Contributors_Payment_report", xcelData);
 					$("#export_sub").prop('disabled', false);
                 	$("#export_sub").html("Export data");
+                    $('#overlay').fadeOut();
+					$('#loader').fadeOut();
 				}else{
 					// comment
+                    $('#overlay').fadeOut();
+					$('#loader').fadeOut();
 				}
 			}
 		});		

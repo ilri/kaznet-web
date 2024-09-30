@@ -10,6 +10,8 @@
 }
     </style>
 <div class="container mt-5">
+    <!-- <h3>View Form :</h3> <br/> -->
+    <h5><?php echo $form_title?></h5>
     <div id="success-message" class="alert alert-success d-none" role="alert">
         Form submitted successfully!
     </div>
@@ -18,6 +20,22 @@
 </div>
 <script>
 $(document).ready(function() {
+    // $(document).on('change', '.formbuilder-file-field', function () {
+    $(document).on('change', '#rendered-form input[type="file"]', function () {
+        var $this = $(this); // the file input field
+        var isMultiple = $this.prop('multiple'); // check if 'multiple' is enabled
+        
+        // Get the current name attribute
+        var fieldName = $this.attr('name');
+        
+        // If 'multiple' is enabled and '[]' is not already present, append it
+        if (isMultiple && !fieldName.endsWith('[]')) {
+            $this.attr('name', fieldName + '[]');
+        } else if (!isMultiple && fieldName.endsWith('[]')) {
+            // If 'multiple' is disabled and '[]' is present, remove it
+            $this.attr('name', fieldName.slice(0, -2));
+        }
+    });
     $('#my-form').on('input', 'input, textarea, select', function() {
         $(this).removeClass('error');
         $(this).next('.error-message').remove();
@@ -35,7 +53,7 @@ $(document).ready(function() {
     // if (acceptedTypes) {
         // fileInput.after('<small class="accepted-types">Accepted file types: ' + acceptedTypes.split(', ').join(', ') + '</small>');
         // }
-        fileInput.before('<br/><small class="accepted-types">Accepted file types:  .jpg, .png, .gif, .pdf, .csv, .doc, .xlsx</small>');
+        fileInput.before('<br/><small class="accepted-types">Accepted file types:  .jpg, .png, .gif, .pdf, .csv, .doc, docx, .xlsx</small>');
 
     // Allowed file types
 //   var allowedFileTypes = ['image/jpeg', 'image/png','image/gif', 'application/pdf', 'text/xlsx'];
@@ -45,7 +63,9 @@ $(document).ready(function() {
         'image/gif',
         'application/pdf',
         'text/csv',          // MIME type for CSV
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // MIME type for XLSX
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' , // MIME type for XLSX
+        'application/msword', //fro DOC
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // for DOCX
     ];
     // Listen for changes on the file input field
     // $('#rendered-form').on('change', 'input[type="file"]', function() {
@@ -92,7 +112,8 @@ $(document).ready(function() {
         // Loop through each input field in the form
         $('#rendered-form').find('input, textarea, select').each(function() {
             var $this = $(this);
-            
+            $this.removeClass('error');
+            $this.next('.error-message').remove();
             // Skip validation for file inputs that are not required
             // if ($this.attr('type') === 'file' && !$this.prop('required') && $this.val() === '') {
             //     return true; // Skip this iteration
@@ -100,48 +121,60 @@ $(document).ready(function() {
             // Check if the field is required
             if ($this.prop('required')) {
                 if ($(this).attr('type') != 'hidden'){
-                    // Check if the field is empty
-                    if ($this.val().trim() === '') {
-                        // Check if the input type is 'radio'
-                        if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
-                            // alert($(this).attr('type'));
-                            //
-                            if ($('.other-option').is(':checked')) {
-                                if ($('.other-val').val().trim() === '') {
-                                    isValid = false;
-                                    // Add an inline error message
-                                    $this.addClass('error'); // Add a class to highlight the field
-                                    if ($this.next('.error-message').length === 0) {
-                                        $this.after('<span class="error-message">' + errorMessage + '</span>');
+                    if ($(this).is('select')) {
+
+                        //skipping file value requierd is its empty
+                    }else{
+                        // Check if the field is empty
+                        if ($this.val().trim() === '') {
+                            // Check if the input type is 'radio'
+                            if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
+                                // alert($(this).attr('type'));
+                                //
+                                if ($('.other-option').is(':checked')) {
+                                    if ($('.other-val').val().trim() === '') {
+                                        isValid = false;
+                                        // Add an inline error message
+                                        $this.addClass('error'); // Add a class to highlight the field
+                                        if ($this.next('.error-message').length === 0) {
+                                            $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                        }
+                                    }else{
+                                        $this.removeClass('error');
+                                        $this.closest('.radio-group').next('.error-message').remove();
                                     }
                                 }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
-                                }
+                                    // alert("test");
+                                        $this.removeClass('error');
+                                        $this.closest('.radio-group').next('.error-message').remove();
+                                    }
                             }else{
-                                // alert("test");
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
-                                }
-                        }else{
-                            
-                            
-                            if($(this).attr('type') ==undefined){
                                 
-                                // alert($this.closest('.fb-autocomplete-label'));
-                                isValid = false;
-                                // Add an inline error message
-                                // $this.addClass('error'); // Add a class to highlight the field
-                                if ($this.closest('.form-group').next('.error-message').length === 0) {
-                                    // $this.after('<span class="error-message">' + errorMessage + '</span>');
-                                    $this.closest('.form-group').after('<span class="error-message">' + errorMessage + '</span>');
-                                }
-
-                            }else{
-                                if($(this).attr('type')=="text"){
-                                    if ($this.closest('.other-option').is(':checked')) {
+                                
+                                if($(this).attr('type') ==undefined){
                                     
-                                        if ($('.other-val').val().trim() === '') {
+                                    // alert($this.closest('.fb-autocomplete-label'));
+                                    isValid = false;
+                                    // Add an inline error message
+                                    // $this.addClass('error'); // Add a class to highlight the field
+                                    if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                        // $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                        $this.closest('.form-group').after('<span class="error-message">' + errorMessage + '</span>');
+                                    }
+
+                                }else{
+                                    if($(this).attr('type')=="text"){
+                                        if ($this.closest('.other-option').is(':checked')) {
+                                        
+                                            if ($('.other-val').val().trim() === '') {
+                                                isValid = false;
+                                                // Add an inline error message
+                                                $this.addClass('error'); // Add a class to highlight the field
+                                                if ($this.next('.error-message').length === 0) {
+                                                    $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                                }
+                                            }
+                                        }else{
                                             isValid = false;
                                             // Add an inline error message
                                             $this.addClass('error'); // Add a class to highlight the field
@@ -150,6 +183,7 @@ $(document).ready(function() {
                                             }
                                         }
                                     }else{
+                                        // alert($(this).attr('type'));
                                         isValid = false;
                                         // Add an inline error message
                                         $this.addClass('error'); // Add a class to highlight the field
@@ -157,49 +191,54 @@ $(document).ready(function() {
                                             $this.after('<span class="error-message">' + errorMessage + '</span>');
                                         }
                                     }
-                                }else{
-                                    alert($(this).attr('type'));
-                                    isValid = false;
-                                    // Add an inline error message
-                                    $this.addClass('error'); // Add a class to highlight the field
-                                    if ($this.next('.error-message').length === 0) {
-                                        $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                    
+                                    
+                                }
+                                
+                            }
+                        } else {
+                            if ($(this).attr('type') === 'number'){                                
+                                if (typeof $this.prop('min') === 'undefined' || $this.prop('min') === '') {
+                                    
+                                    //skip
+                                }else{                                    
+                                    if (parseFloat($this.val()) < parseFloat($this.prop('min'))) {
+                                        isValid = false;
+                                        $this.addClass('error');
+                                        if ($this.next('.error-message').length === 0) {
+                                            $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
+                                        }else{
+                                            $this.removeClass('error');
+                                            $this.next('.error-message').remove();
+                                        }
+                                    }else{
+                                       
+                                        $this.removeClass('error');
+                                        $this.next('.error-message').remove();
                                     }
                                 }
-                                
-                                
-                            }
-                            
-                        }
-                    } else {
-                        if ($(this).attr('type') === 'number'){
-                            if($this.val() < $this.prop('min')){
-                                isValid = false;
-                                $this.addClass('error');
-                                if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Enter value grater than '+$this.prop('min')+' minimum value.</span>');
+                                if(typeof $this.prop('max') === 'undefined' || $this.prop('max') === '') { 
+                                    // skip
                                 }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
-                                }
-
-                            }else if($this.val() > $this.prop('max')){
-                                isValid = false;
-                                $this.addClass('error');
-                                if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Enter value less than '+$this.prop('max')+' maximum value.</span>');
-                                }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
+                                    if (parseFloat($this.val()) > parseFloat($this.prop('max'))) {
+                                        isValid = false;
+                                        $this.addClass('error');
+                                        if ($this.next('.error-message').length === 0) {
+                                            $this.after('<span class="error-message">Maximum value allowed is ( '+$this.prop('max')+' ).</span>');
+                                        }else{
+                                            $this.removeClass('error');
+                                            $this.next('.error-message').remove();
+                                        }
+                                    }else{
+                                        $this.removeClass('error');
+                                        $this.next('.error-message').remove();
+                                    }
                                 }
                             }else{
+                                // Remove the error message if the field is not empty
                                 $this.removeClass('error');
-                                $this.closest('.radio-group').next('.error-message').remove();
+                                $this.next('.error-message').remove();
                             }
-                        }else{
-                            // Remove the error message if the field is not empty
-                            $this.removeClass('error');
-                            $this.next('.error-message').remove();
                         }
                     }
                 }
@@ -233,7 +272,7 @@ $(document).ready(function() {
                 var name1 ='#'+name+''; 
                 // Get the file input element
                 // if ($this.val().trim() === '') {
-                var fileInput = $(name1)[0];
+                // var fileInput = $(name1)[0];
                 // var file = fileInput.files[0]; // Get the first (and likely only) file
                 var files = this.files;
                 // alert(files.type);
@@ -252,7 +291,7 @@ $(document).ready(function() {
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Invalid file type/s. Allowed types are: .jpg, .png, .gif, .pdf, .xlsx</span>');
+                                    $this.after('<span class="error-message">Invalid file type/s. Please upload valid file/s</span>');
                                 }else{
                                     $this.removeClass('error');
                                     $this.closest('.radio-group').next('.error-message').remove();
@@ -261,7 +300,7 @@ $(document).ready(function() {
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Uploaded file size less than 2MB.</span>');
+                                    $this.after('<span class="error-message">One or more selected files exceed 2 MB. Please choose smaller files.</span>');
                                 }else{
                                     $this.removeClass('error');
                                     $this.closest('.radio-group').next('.error-message').remove();
@@ -290,7 +329,7 @@ $(document).ready(function() {
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
-                                    $this.after('<span class="error-message">Uploaded file size less than 2MB.</span>');
+                                    $this.after('<span class="error-message">The selected file exceeds 2 MB. Please choose a smaller file.</span>');
                                 }else{
                                     $this.removeClass('error');
                                     $this.closest('.radio-group').next('.error-message').remove();

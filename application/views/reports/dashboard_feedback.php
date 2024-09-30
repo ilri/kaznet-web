@@ -608,10 +608,11 @@
                             // foreach ($user_feedback_data as $key => $value) {
                                 
                                 
-                                loopcount++;
+                                // loopcount++;
                                 
                                 tableBody += `<tr>`;
-                                tableBody += `<td>`+loopcount+`</td>`;
+                                // tableBody += `<td>`+loopcount+`</td>`;
+                                tableBody += `<td>`+count++ +`</td>`;
                                 tableBody += `<td>`+submitedData[k]['first_name']+` `+submitedData[k]['last_name']+`</td>`;
                                 tableBody += `<td>`+submitedData[k]['category']+`</td>`;
                                 tableBody += `<td>`+submitedData[k]['country_name']+`</td>`;

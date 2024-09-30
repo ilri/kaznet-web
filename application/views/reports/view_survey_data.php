@@ -1138,7 +1138,7 @@
 				// const totalRecords= response.total_records;
 				// const currentRecords = submitedData.length;
 				// pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-				const totalRecords= submitted_record_count;
+				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
 				let curentPage = pageNo
 				let totalRecordsPerPage = recordperpage
@@ -1148,7 +1148,6 @@
 				if(recordperpage == 100){
 					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
 				}
-				alert(submitedData.length);
 				if(submitedData.length === 0){
 					document.getElementById('submited_pagination').style.display = 'none';
 				} else{

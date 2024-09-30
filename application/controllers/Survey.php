@@ -1605,6 +1605,9 @@ class Survey extends CI_Controller {
 				# code...
 				break;
 		}
+		if($data['is_pagination']){
+            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+        }
 		$contributor_list = $this->db->where('status', 1)->get('tbl_survey_assignee as survey')->result_array();
 		// print_r($this->db->last_query());exit();
 		foreach ($contributor_list as $ckey => $contributor) {

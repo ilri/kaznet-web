@@ -1,3 +1,12 @@
+<style>
+
+td {
+    word-wrap: break-word;  /* Allows long text to wrap */
+    word-break: break-word; /* Prevents text overflow */
+    max-width: 200px;       /* Set a max width for the column to enforce wrapping */
+    white-space: normal !important;    /* Ensure normal line breaks */
+}
+    </style>
 <div class="container mt-5">
         <h1>List of Forms</h1>
         <table class="table table-bordered">

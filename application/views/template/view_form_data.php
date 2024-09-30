@@ -212,60 +212,65 @@
 		<div class="spinner ml-4"></div>
 		<div style="color:white;"><b>Loading please wait...</b></div>
 	</div>
-    <div class="col-sm-12 col-md-12 col-lg-12">
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="dataview" role="tabpanel"
-                            aria-labelledby="dataview-tab">
-                <div class="row">
-                    <div class="col-sm-10 col-md-10 col-lg-10 mb-3">
-                        <ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
-                            role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active disabledTab" id="Submitted-tab" data-toggle="tab"
-                                    data-target="#Submitted" type="button" role="tab"
-                                    aria-controls="Submitted" aria-selected="false">Details</button>
-                            </li>
-                            
-                        </ul>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="Submitted" role="tabpanel"
-                            aria-labelledby="Submitted-tab">
-                                <?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
-                                    <!-- <div class="col-md-12 export_align">
-                                        <button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
-                                    </div> -->
-                                    <!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
-                                        <div class="mt-10">
-                                        <?php if ($this->session->userdata('role') == 6) {?>
-                                            <button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
-                                            <button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
-                                        <?php } ?>
-                                        </div>
-                                    </div> -->
-                                    <div class="table-responsive" style="height:290px;">
-                                        <div class="loaders" id="info_data">
-                                            <div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-                                                <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
-                                            </div>
-                                        </div>
-                                        <table class="table table-striped" style="width:100%">
-                                            <thead class="bg-dataTable" id="submited_head">
-                                            </thead>
-                                            <tbody id="submited_body">
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="submited_pagination" id="submited_pagination"></div>
-                                <?php echo form_close(); ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="container mt-5">
+		<!-- <h3>View Form :</h3> <br/> -->
+		<h5><?php echo $form_title?></h5>
+		</div>
+		<div class="col-sm-12 col-md-12 col-lg-12">
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show active" id="dataview" role="tabpanel"
+								aria-labelledby="dataview-tab">
+					<div class="row">
+						<div class="col-sm-10 col-md-10 col-lg-10 mb-3">
+							<ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
+								role="tablist">
+								<li class="nav-item" role="presentation">
+									<button class="nav-link active disabledTab" id="Submitted-tab" data-toggle="tab"
+										data-target="#Submitted" type="button" role="tab"
+										aria-controls="Submitted" aria-selected="false">Details</button>
+								</li>
+								
+							</ul>
+						</div>
+						<div class="col-sm-12 col-md-12 col-lg-12">
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="Submitted" role="tabpanel"
+								aria-labelledby="Submitted-tab">
+									<?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
+										<!-- <div class="col-md-12 export_align">
+											<button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
+										</div> -->
+										<!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
+											<div class="mt-10">
+											<?php if ($this->session->userdata('role') == 6) {?>
+												<button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
+												<button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
+											<?php } ?>
+											</div>
+										</div> -->
+										<div class="table-responsive" style="height:290px;">
+											<div class="loaders" id="info_data">
+												<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
+													<p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
+												</div>
+											</div>
+											<table class="table table-striped" style="width:100%">
+												<thead class="bg-dataTable" id="submited_head">
+												</thead>
+												<tbody id="submited_body">
+												</tbody>
+											</table>
+										</div>
+										<div class="submited_pagination" id="submited_pagination"></div>
+									<?php echo form_close(); ?>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
     <script src="<?php echo base_url(); ?>include/js/pagination.js"></script>
 <script src="<?php echo base_url(); ?>include/js/bootstrap.min.js" ></script>
 <script>
@@ -375,6 +380,7 @@
 							// const field = 'field_'+fields[key]['field_id'];
 							const field = fields[key]['name'];
 							const type = fields[key]['type'];
+							const multiple = fields[key]['multiple'];
                             displayData = "";
                             if(type=="checkbox-group" || type=="radio-group" || type=="select" || type=='autocomplete'){
                                 for (let key1 = 0; key1 < formdetails.length; key1++) {
@@ -393,11 +399,21 @@
                                     if (!Array.isArray(submitedData[k][field])) {
                                         submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
                                     }
-                                    if (isArrayEmpty(submitedData[k][field])) {
-                                        displayData = "N/A";
-                                    }else{
-                                        displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
-                                    }
+									if(multiple){ // check if multiple
+										if (isArrayEmpty(JSON.parse(submitedData[k][field]))) {
+											displayData = "N/A";
+										}else{
+											// displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
+											displayData = mapValuesToLabels(JSON.parse(submitedData[k][field]), fieldOPtions);
+										}
+									}else{ // check if single
+										if (isArrayEmpty(submitedData[k][field])) {
+											displayData = "N/A";
+										}else{
+											// displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
+											displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
+										}
+									}
                                 }
 
                             }

@@ -64,8 +64,10 @@ class FormController extends CI_Controller {
         $profile_details = $this->Dynamicmenu_model->user_data();
         $menu_result = array('profile_details' => $profile_details);
         $form_data = $this->FormModel->get_form($form_id);
+        $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
         $data['form_data'] = $form_data;
         $data['form_id'] = $form_id;
+        $data['form_title'] = $form_details['title'];
         $this->load->view('header');
         $this->load->view('sidebar');
         $this->load->view('menu', $menu_result);
@@ -128,34 +130,63 @@ class FormController extends CI_Controller {
             // $totalFiles = count($_FILES['files']['name']);
             foreach ($_FILES as $field => $file) {
                 $count++;
-                // Check if the file field is empty
-                if (!empty($file['name'])) {
-                    
-                        $config['upload_path'] = './uploads/survey';
-                        $config['allowed_types'] = 'jpg|png|gif|pdf|docx|csv|xlsx';
-                        $this->upload->initialize($config);
+                // Check if multiple files are uploaded (for fields with multiple files)
+                if (is_array($file['name'])) {
+                    $fileCount = count($file['name']);
+                        
+                    // Loop through all files in the field
+                    for ($i = 0; $i < $fileCount; $i++) {
+                        $fileName = $file['name'][$i];
+                        $fileTmpName = $file['tmp_name'][$i];
+                        $fileError = $file['error'][$i];
+                        // $config['upload_path'] = './uploads/survey';
+                        // $config['allowed_types'] = 'jpg|png|gif|pdf|docx|csv|xlsx';
+                        // $this->upload->initialize($config);
 
-                        if ($this->upload->do_upload($field)) {
-                            $uploaded_data = $this->upload->data();
-                            $uploaded_files[$field] = $uploaded_data['file_name'];
-                            // $files_value .= $count. ', ';
+                        // if ($this->upload->do_upload($field[$i])) {
+                            // $uploaded_data = $this->upload->data();
+                        $targetDir = './uploads/survey';
+                        $targetFile = $targetDir . basename($fileName);
+
+                        // Only pass a single string (the temp file path) to move_uploaded_file
+                        if (move_uploaded_file($fileTmpName, $targetFile)) {
+                            $uploaded_files[$field] = $fileName;
+                            $files_value .= $fileName. ', ';
+                            
                         } else {
                             log_message('error', 'File upload error: ' . $this->upload->display_errors());
                             // echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
                             // exit();
                         }
+                    }
                     
+                }else{
+                    $fileName = $file['name'];
+                    $fileTmpName = $file['tmp_name'];
+                    $fileError = $file['error'];
+                    $targetDir = './uploads/survey';
+                    $targetFile = $targetDir . basename($fileName);
+                    // Only pass a single string (the temp file path) to move_uploaded_file
+                    if (move_uploaded_file($fileTmpName, $targetFile)) {
+                        $uploaded_files[$field] = $fileName;
+                        $files_value .= $fileName. ', ';
+                        
+                    } else {
+                        log_message('error', 'File upload error: ' . $this->upload->display_errors());
+                        // echo json_encode(['status' => 'error', 'message' => 'File upload failed: ' . $this->upload->display_errors()]);
+                        // exit();
+                    }
                 }
             }
-            
-            // Merge uploaded file names with submitted data
-            foreach ($uploaded_files as $field => $file_names) {
-                $submitted_data[$field] = is_array($file_names) ? $file_names : $file_names;
-                // $files_value .= $file_names. ', ';
-            }
-            // Trim the trailing comma and space
-            // $files_value = rtrim($files_value, ', ');
+            $files_value = rtrim($files_value, ', ');
             $submitted_data[$field] = $files_value;
+            
+            
+            // // Merge uploaded file names with submitted data
+            // foreach ($uploaded_files as $field => $file_names) {
+            //     // $submitted_data[$field] = is_array($file_names) ? $file_names : $file_names;
+            // }
+            // $submitted_data[$field_name] = $files_value;
         }
 
         // Process the rest of the data
@@ -236,6 +267,8 @@ class FormController extends CI_Controller {
         // $submitted_data = $this->FormModel->get_submitted_data($form_id);
         // $data['submitted_data'] = $submitted_data;
         $data = array();
+        $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
+        $data['form_title'] = $form_details['title'];
         /*echo '<pre>';
             print_r($submitted_data);
         echo '</pre>';

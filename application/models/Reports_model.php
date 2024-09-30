@@ -2669,7 +2669,7 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 1);
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$hh_submited_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
 
@@ -2701,7 +2701,7 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 2);
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$hh_approved_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
 
@@ -2733,7 +2733,7 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 3);
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$hh_rejected_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
         $payment_list1 =$this->db->select('price_per_survey')->where('survey_id', 1)->where('status', 1)->get('lkp_payment')->row_array();
@@ -2747,7 +2747,7 @@ class Reports_model extends CI_Model {
             $this->db->where_in('id', $data['tasks']);
         }
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
         $this->db->order_by('type', 'ASC');
 		$surveys = $this->db->get('form')->result_array();
@@ -2994,7 +2994,7 @@ class Reports_model extends CI_Model {
         $this->db->where('tul.status', 1);
 		$this->db->where('tu.role_id', 8);
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$users_list = $this->db->order_by('tu.user_id', 'DESC')->get()->result_array();
         // var_dump($this->db->last_query());exit();
@@ -3337,7 +3337,7 @@ class Reports_model extends CI_Model {
         $this->db->where('tul.status', 1);
 		$this->db->where('tu.role_id', 8);
         if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
+            // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$submited_data = $this->db->order_by('tu.user_id', 'DESC')->get()->num_rows();
 		// $this->db->select('*');

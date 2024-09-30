@@ -28,7 +28,7 @@
         
             const options = {
                 // fields: fields,
-                disableFields: ['hidden','tinymce'],
+                disableFields: ['hidden','tinymce','paragraph'],
                 disabledAttrs: [
                     'access'
                 ],
@@ -148,12 +148,53 @@
                 $('#form_subject').focus();
                 return false;
             }
+            let isValid = true; // To track if the field configuration is valid
+            // Loop through all checkbox options (assuming you have a class or ID to identify the option elements)
+            $('.field-options').each(function() {
+                $(this).find('li').each(function() {
+
+                    let label = $(this).find('.option-label').val(); // Get the label of the option
+                    let value = $(this).find('.option-value').val(); // Get the value of the option
+                    
+                    // Check if both label and value are filled
+                    if (!label || !value) {
+                        isValid = false;
+                        $(this).addClass('error');
+                        if ($(this).next('.error-message').length === 0) {
+                            $(this).after('<span class="error-message" style="color:red;">Both label and value are required.</span>');
+                            $(this).focus();
+                            $(this).prev('form-field').after('<span class="error-message" style="color:red;">Both label and value are required.</span>');
+                        }
+                        return false;
+                    }else{
+                        // alert("test");
+                        $(this).removeClass('error');
+                        $(this).next('.error-message').remove();
+                        $(this).prev('form-field').next('.error-message').remove();
+                    }
+                });
+            });
+            $('.radio-group').each(function() {
+                var radioGroup = $(this);
+                var defaultSelected = radioGroup.find('input[type="radio"]:checked').length;
+
+                if (!defaultSelected) {
+                    alert('Please select a default option for the radio group.');
+                    hasError = true;
+                    isValid = false; // Stop validation after the first error
+                    return false;
+                }
+            });
 
             var formData = fb.actions.getData('json');
             const formJSON = JSON.parse(formData);
             let hasRequired = formJSON.some(field => field.required === true);
-            if (!hasRequired) {
-                alert("Please make at least one field mandatory.");
+            if (!hasRequired || isValid == false) {
+                if(!hasRequired){
+                    alert("Please make at least one field mandatory.");
+                }else{
+                    //
+                }
             }else{
                 $('#save-form').prop('disabled', true); //added by sagar to disable save button not to resubmit while form saving
                 $.post('<?php echo site_url('FormController/save_form'); ?>', {
