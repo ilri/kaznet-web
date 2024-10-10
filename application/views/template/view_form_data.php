@@ -293,7 +293,10 @@
         // Now safely use every method on the array
         return arr.length === 0 || arr.every(item => item === "");
     }
-
+	function isArrayEmptyOrNull(arr) {
+		// Check if the array is null, undefined, or has a length of 0
+		return arr == null || arr.length === 0;
+	}
     function getSubmitedDataView(pageNo =1, recordperpage = 100, search_input = null){
 		var survey_id=<?php echo $this->uri->segment(3); ?>;
 		var query_data = {
@@ -389,7 +392,9 @@
                                     }
                                 }
                                 if(type=="checkbox-group"){
-                                    if (isArrayEmpty(JSON.parse(submitedData[k][field]))) {
+									// alert(JSON.parse(submitedData[k][field]));
+                                    // if (isArrayEmpty(JSON.parse(submitedData[k][field]))) {
+                                    if (isArrayEmptyOrNull(JSON.parse(submitedData[k][field]))) {
                                         displayData = "N/A";
                                     }else{
                                         displayData = mapValuesToLabels(JSON.parse(submitedData[k][field]), fieldOPtions);
@@ -400,14 +405,16 @@
                                         submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
                                     }
 									if(multiple){ // check if multiple
-										if (isArrayEmpty(JSON.parse(submitedData[k][field]))) {
+										// if (isArrayEmpty(JSON.parse(submitedData[k][field])) ) {
+										if (isArrayEmptyOrNull(JSON.parse(submitedData[k][field])) ) {
 											displayData = "N/A";
 										}else{
 											// displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
 											displayData = mapValuesToLabels(JSON.parse(submitedData[k][field]), fieldOPtions);
 										}
 									}else{ // check if single
-										if (isArrayEmpty(submitedData[k][field])) {
+										// if (isArrayEmpty(submitedData[k][field]) ) {
+										if (isArrayEmptyOrNull(submitedData[k][field])) {
 											displayData = "N/A";
 										}else{
 											// displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);

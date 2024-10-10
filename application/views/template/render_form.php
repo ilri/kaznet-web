@@ -120,9 +120,10 @@ $(document).ready(function() {
             // }
             // Check if the field is required
             if ($this.prop('required')) {
+                
                 if ($(this).attr('type') != 'hidden'){
                     if ($(this).is('select')) {
-
+                        
                         //skipping file value requierd is its empty
                     }else{
                         // Check if the field is empty
@@ -130,9 +131,8 @@ $(document).ready(function() {
                             // Check if the input type is 'radio'
                             if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
                                 // alert($(this).attr('type'));
-                                //
-                                if ($('.other-option').is(':checked')) {
-                                    if ($('.other-val').val().trim() === '') {
+                                if ($this.closest('.other-option').is(':checked')) {
+                                    if ($this.next('.other-val').val().trim() === '') {
                                         isValid = false;
                                         // Add an inline error message
                                         $this.addClass('error'); // Add a class to highlight the field
@@ -142,11 +142,13 @@ $(document).ready(function() {
                                     }else{
                                         $this.removeClass('error');
                                         $this.closest('.radio-group').next('.error-message').remove();
+                                        $this.closest('.checkbox-group').next('.error-message').remove();
                                     }
                                 }else{
                                     // alert("test");
                                         $this.removeClass('error');
                                         $this.closest('.radio-group').next('.error-message').remove();
+                                        $this.closest('.checkbox-group').next('.error-message').remove();
                                     }
                             }else{
                                 
@@ -164,22 +166,16 @@ $(document).ready(function() {
 
                                 }else{
                                     if($(this).attr('type')=="text"){
-                                        if ($this.closest('.other-option').is(':checked')) {
-                                        
-                                            if ($('.other-val').val().trim() === '') {
+                                        if ($this.is(':visible')) {
+                                            // alert("test");
+
+                                            if ($this.val().trim() === '') {
                                                 isValid = false;
                                                 // Add an inline error message
                                                 $this.addClass('error'); // Add a class to highlight the field
                                                 if ($this.next('.error-message').length === 0) {
                                                     $this.after('<span class="error-message">' + errorMessage + '</span>');
                                                 }
-                                            }
-                                        }else{
-                                            isValid = false;
-                                            // Add an inline error message
-                                            $this.addClass('error'); // Add a class to highlight the field
-                                            if ($this.next('.error-message').length === 0) {
-                                                $this.after('<span class="error-message">' + errorMessage + '</span>');
                                             }
                                         }
                                     }else{
@@ -197,42 +193,53 @@ $(document).ready(function() {
                                 
                             }
                         } else {
-                            if ($(this).attr('type') === 'number'){                                
+                            if ($(this).attr('type') === 'number'){   
+                                $this =$(this);
                                 if (typeof $this.prop('min') === 'undefined' || $this.prop('min') === '') {
                                     
                                     //skip
-                                }else{                                    
+                                }else{   
+                                    isValid1 =true;                         
                                     if (parseFloat($this.val()) < parseFloat($this.prop('min'))) {
                                         isValid = false;
+                                        isValid1 = false;
                                         $this.addClass('error');
-                                        if ($this.next('.error-message').length === 0) {
-                                            $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
+                                        
+                                        if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                            // $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
+                                            $this.closest('.form-group').after('<span class="error-message" style="color:red;">Minimum value allowed is  '+$this.prop('min')+' .</span>');
                                         }else{
-                                            $this.removeClass('error');
-                                            $this.next('.error-message').remove();
+                                            $this.closest('.form-group').removeClass('error');
+                                            $this.closest('.form-group').next('.error-message').remove();
                                         }
                                     }else{
                                        
-                                        $this.removeClass('error');
-                                        $this.next('.error-message').remove();
+                                        $this.closest('.form-group').removeClass('error');
+                                        $this.closest('.form-group').next('.error-message').remove();
                                     }
                                 }
                                 if(typeof $this.prop('max') === 'undefined' || $this.prop('max') === '') { 
                                     // skip
                                 }else{
-                                    if (parseFloat($this.val()) > parseFloat($this.prop('max'))) {
-                                        isValid = false;
-                                        $this.addClass('error');
-                                        if ($this.next('.error-message').length === 0) {
-                                            $this.after('<span class="error-message">Maximum value allowed is ( '+$this.prop('max')+' ).</span>');
-                                        }else{
-                                            $this.removeClass('error');
-                                            $this.next('.error-message').remove();
-                                        }
+                                    if(isValid1 == false){
+                                        //skip if alread min errorr
                                     }else{
-                                        $this.removeClass('error');
-                                        $this.next('.error-message').remove();
+                                        if (parseFloat($this.val()) > parseFloat($this.prop('max'))) {
+                                            isValid = false;
+                                            $this.addClass('error');
+                                            if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                                // $this.after('<span class="error-message">Maximum value allowed is ( '+$this.prop('max')+' ).</span>');
+                                                $this.closest('.form-group').after('<span class="error-message">Maximum value allowed is  '+$this.prop('max')+' .</span>');
+                                            }else{
+                                                $this.closest('.form-group').removeClass('error');
+                                                $this.closest('.form-group').next('.error-message').remove();
+                                            }
+                                        }else{
+                                            $this.closest('.form-group').removeClass('error');
+                                            $this.closest('.form-group').next('.error-message').remove();
+                                        }
                                     }
+                                    
                                 }
                             }else{
                                 // Remove the error message if the field is not empty
@@ -242,7 +249,32 @@ $(document).ready(function() {
                         }
                     }
                 }
+            }else{
+                if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
+                    // alert($(this).attr('type'));
+                    if ($this.closest('.other-option').is(':checked')) {
+                        // alert($this.next('.other-val'))
+                        if ($this.next('.other-val').val().trim() === '') {
+                            isValid = false;
+                            // Add an inline error message
+                            $this.addClass('error'); // Add a class to highlight the field
+                            if ($this.next('.error-message').length === 0) {
+                                $this.after('<span class="error-message">' + errorMessage + '</span>');
+                            }
+                        }else{
+                            $this.removeClass('error');
+                            $this.closest('.radio-group').next('.error-message').remove();
+                            $this.closest('.checkbox-group').next('.error-message').remove();
+                        }
+                    }else{
+                        // alert("test");
+                        $this.removeClass('error');
+                        $this.closest('.radio-group').next('.error-message').remove();
+                        $this.closest('.checkbox-group').next('.error-message').remove();
+                        }
+                }
             }
+            
             // if($(this).attr('type') === 'checkbox' ) {
             //     // alert($(this).attr('type'));
             //     //
@@ -357,10 +389,57 @@ $(document).ready(function() {
                 }
             }
         });
+        // // Iterate over each checkbox group that has aria-required set to true
+        // $('#rendered-form').find('.checkbox-group input[type="checkbox"]').each(function() {
+        //     var $this = $(this);
+        //     var isAriaRequired = $this.attr('aria-required') === 'true';
+        //     var isChecked = $this.is(':checked');
+        //     // If aria-required is true and the checkbox is checked
+        //     // if (isAriaRequired && isChecked) {
+        //     if (isChecked) {
+        //         // var $otherInput = $this.closest('.checkbox-group').find('.other-value');
+        //         var otherInput = $this.next('.other-value');
+        //         // alert("tets");
+        //         alert(otherInput.val());
+                
+        //         // Check if the 'Other' input field is empty
+        //         if(!$this.next('.other-value').val()) {
+        //             // alert('Please fill out the "Other" field.');
+        //             // hasError = true;
+        //             // return false;  // Stop further validation
+        //             isValid = false;
+        //             // Add an inline error message
+        //             $this.addClass('error'); // Add a class to highlight the field
+        //             if ($this.closest('.radio-group').next('.error-message').length === 0) {
+        //                 $this.closest('.radio-group').after('<span class="error-message">' + errorMessage + '</span>');
+        //             }
+        //         }else{
+        //             $this.removeClass('error');
+        //             $this.closest('.radio-group').next('.error-message').remove();
+        //         }
+            
+        //         if($checkbox.next('.other-value').val().trim() === ''){
+        //             isValid = false;
+        //             // Add an inline error message
+        //             $this.addClass('error'); // Add a class to highlight the field
+        //             if ($this.next('.error-message').length === 0) {
+        //                 $this.after('<span class="error-message">' + errorMessage + '</span>');
+        //             }
+        //         }else{
+        //             $this.removeClass('error');
+        //             $this.closest('.radio-group').next('.error-message').remove();
+        //         }
+            
+        //     }
+        // });
+
         // Loop through each select, radio, and checkbox group in the form
         $('#rendered-form').find('select, input[type="radio"], input[type="checkbox"]').each(function() {
             var $this = $(this);
+            var reqValue =$(this).prop('aria-required');
+            // alert(reqValue);
             // Check if the field is required
+            // if ($this.prop('aria-required')) {
             if ($this.prop('required')) {
 
                 if ($this.is('select')) {
@@ -413,7 +492,7 @@ $(document).ready(function() {
                 }
 
                 if ($this.is('input[type="checkbox"]')) {
-                    // alert("test");
+                    // alert("test2");
                     // Check if any checkbox in the group is selected
                     var name = $this.attr('name');
                     if ($('input[name="' + name + '"]:checked').length === 0) {
@@ -461,7 +540,7 @@ $(document).ready(function() {
             });
         });
         
-
+        
         // If the form is valid, submit it
         if (isValid) {
             // Create a FormData object
@@ -474,7 +553,7 @@ $(document).ready(function() {
             console.log('Form Data:', formDataObj); // Debugging line
             $('#rendered-form').find('select, input[type="radio"], input[type="checkbox"]').each(function() {
                 // Capture the form data
-            var formData = $('#rendered-form').serializeArray(); // Serialize form data into an array of name-value pairs
+                var formData = $('#rendered-form').serializeArray(); // Serialize form data into an array of name-value pairs
 
                 // Initialize an object to store the data
                 var dataToSave = {};

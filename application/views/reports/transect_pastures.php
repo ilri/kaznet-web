@@ -101,6 +101,31 @@
 	.mt-10{
 		margin-top:10px;
 	}
+	
+	#export_sub{
+		background-color: rgb(111, 27, 40);
+		color:#fff;
+	}
+	#export_sub:hover{
+		/* background-color: rgb(111, 27, 40); */
+		color:#fff;
+	}
+	#export_ap{
+		background-color: rgb(111, 27, 40);
+		color:#fff;
+	}
+	#export_ap:hover{
+		/* background-color: rgb(111, 27, 40); */
+		color:#fff;
+	}
+	#export_rej{
+		background-color: rgb(111, 27, 40);
+		color:#fff;
+	}
+	#export_rej:hover{
+		/* background-color: rgb(111, 27, 40); */
+		color:#fff;
+	}
    
 </style>
    <div class="container-fluid">
@@ -271,13 +296,14 @@
 												</div>
 											</div>
 											<!-- <button type="button" class="btn btn-sm btn-primary hidden"  id="export_sub" onclick="exportXcel()">Export data</button> -->
-											<div class="mt-10">
+											<button type="button" class="btn btn-sm mt-2 mb-2 hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
 											<?php if ($this->session->userdata('role') == 6) {?>
+												<div class="mt-10">
 												<button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
 												<button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
 												<!-- <button type="button" class="btn btn-sm btn-danger delete hidden ml-2" data-status="delete">Delete</button> -->
-											<?php } ?>
 											</div>
+											<?php } ?>
 										</div>
                                         <div class="table-responsive" style="height:345px;">
 											<div class="loaders" id="info_data">
@@ -305,6 +331,7 @@
 												</div>
 											</span>
 											<!-- <button type="button" class="btn btn-sm btn-primary" id="export_ap" onclick="approvedeExportXcel()">Export data</button> -->
+											<button type="button" class="btn btn-sm mt-2 mb-2 hidden"  id="export_ap" data-tabvalue=2 onclick="exportXcel(event)">Export data</button>
 										</div>
                                         <div class="table-responsive" style="height:345px;">
                                             <table class="table table-striped" style="width:100%">
@@ -324,6 +351,7 @@
 												</div>
 											</div>
 											<!-- <button type="button" class="btn btn-sm btn-primary hidden" id="export_rej" onclick="rejectedExportXcel()">Export data</button> -->
+											<button type="button" class="btn btn-sm mt-2 mb-2 hidden"  id="export_rej" data-tabvalue=3 onclick="exportXcel(event)">Export data</button>
 										</div>
                                         <div class="table-responsive" style="height:345px;">
                                             <table class="table table-striped" style="width:100%">
@@ -395,6 +423,7 @@
 			cluster_id: cluster_id,
 			contributor_id: contributor_id,
 			pasture_type: pasture_type,
+			pa_verified_status:"1",
 			pagination:{pageNo,recordperpage},
 			search: {
 				search_input
@@ -574,15 +603,31 @@
 						
 					}
 				}else{
+					$('#export_sub').addClass('hidden');
 					$('#submited_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('submited_pagination').style.display = 'none';
+				} else{
+					document.getElementById('submited_pagination').style.display = 'flex';
+					pagination.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -787,15 +832,31 @@
 						
 					
 				}else{
+					$('#export_ap').addClass('hidden');
 					$('#approved_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('approved_pagination').style.display = 'none';
+				} else{
+					document.getElementById('approved_pagination').style.display = 'flex';
+					pagination1.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -1006,15 +1067,31 @@
 						
 					
 				}else{
+					$('#export_rej').addClass('hidden');
 					$('#rejected_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('rejected_pagination').style.display = 'none';
+				} else{
+					document.getElementById('rejected_pagination').style.display = 'flex';
+					pagination2.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -1060,8 +1137,14 @@
 	var loginrole=<?php echo $this->session->userdata('role')?>;
 	$('.reset').on('click', function(){
 		location.reload();
+		$('#export_sub').addClass('hidden');
+		$('#export_ap').addClass('hidden');
+		$('#export_rej').addClass('hidden');
 	});
 	 $('#country_id').on('change', function(){
+		$('#export_sub').addClass('hidden');
+		$('#export_ap').addClass('hidden');
+		$('#export_rej').addClass('hidden');
         var country_id=$(this).val();
         if(country_id != '')
         {
@@ -1109,6 +1192,9 @@
         }   
     });
 	 $('#cluster_id').on('change', function(){
+		$('#export_sub').addClass('hidden');
+		$('#export_ap').addClass('hidden');
+		$('#export_rej').addClass('hidden');
         var cluster_id=$(this).val();
         if(cluster_id != '')
         {
@@ -1149,6 +1235,9 @@
     });
 
 	$('#uai_id').on('change', function(){
+		$('#export_sub').addClass('hidden');
+		$('#export_ap').addClass('hidden');
+		$('#export_rej').addClass('hidden');
         var uai_id=$(this).val();
         if(uai_id != '')
         {
@@ -1198,6 +1287,9 @@
         }   
     });
 	$('#sub_location_id').on('change', function(){
+		$('#export_sub').addClass('hidden');
+		$('#export_ap').addClass('hidden');
+		$('#export_rej').addClass('hidden');
         var sub_location_id=$(this).val();
         if(sub_location_id != '')
         {
@@ -1526,5 +1618,372 @@
 				}
 			}
 		});
+	}
+</script>
+<!-- export data js -->
+<script src="<?php echo base_url(); ?>include/js/xlsx.full.min.js"></script>
+<script>
+	function exportToXcel(name,data){
+		const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, name);
+        XLSX.writeFile(wb, name+'.xlsx');
+	}
+	
+	function exportXcel(event) {
+		$('#overlay').fadeIn();
+        $('#loader').fadeIn();
+		var button = event.target;
+    	var dataValue = button.getAttribute('data-tabvalue');
+		switch (dataValue) {
+			case "1":
+				$("#export_sub").prop('disabled', true);
+				$("#export_sub").html("Please wait ...");
+				break;
+			case "2":
+				$("#export_ap").prop('disabled', true);
+				$("#export_ap").html("Please wait ...");
+				break;
+			case "3":
+				$("#export_rej").prop('disabled', true);
+				$("#export_rej").html("Please wait ...");
+				break;
+		
+			default:
+				break;
+		}
+
+		var country_id = $('select[name="country_id"]').val();
+		var uai_id = $('select[name="uai_id"]').val();
+		var sub_location_id = $('select[name="sub_location_id"]').val();
+		var cluster_id = $('select[name="cluster_id"]').val();
+		var contributor_id = $('select[name="contributor_id"]').val();
+		var pasture_type = $('select[name="pasture_type"]').val();
+		// var survey_id = <?php echo $this->uri->segment(3); ?>;
+		
+		
+		var query_data = {
+			country_id: country_id,
+			uai_id: uai_id,
+			sub_location_id: sub_location_id,
+			cluster_id: cluster_id,
+			contributor_id: contributor_id,
+			pasture_type: pasture_type,
+			pa_verified_status:dataValue,
+			pagination:null
+		};
+		
+		
+		$.ajax({
+			url: "<?php echo base_url(); ?>reports/get_submited_transect_data/<?php echo $this->uri->segment(3); ?>",
+			data: query_data,
+			type: "POST",
+			dataType: "JSON",
+			error: function(response) {
+				$.toast({
+					heading: 'Error!',
+					text: response.msg,
+					icon: 'error'
+				});
+			},
+			success: function(response) {
+				if (response.status == 0) {
+					$.toast({
+						heading: 'Error!',
+						text: response.msg,
+						icon: 'error'
+					});
+					$('#submited_body').html('<h4 class="text-center">No data Found</h4>');
+					return false;
+				}
+				var role = response.user_role;
+				var fields = response.fields;
+				var submitedData = response.submited_data;
+				var lkp_country = response.lkp_country;
+				var lkp_cluster = response.lkp_cluster;
+				var lkp_uai = response.lkp_uai;
+				var lkp_sub_location = response.lkp_sub_location;
+				var lkp_location_type = response.lkp_location_type;
+				var lkp_animal_type_lactating = response.lkp_animal_type_lactating;
+				var respondent_name = response.respondent_name;
+				// var lkp_market = response.lkp_market;
+				// var lkp_transect_pastures = response.lkp_transect_pasture;
+				// var lkp_lr_body_condition = response.lkp_lr_body_condition;
+				// var lkp_sr_body_condition = response.lkp_sr_body_condition;
+				// var lkp_animal_type = response.lkp_animal_type;
+				// var lkp_animal_herd_type = response.lkp_animal_herd_type;
+				// var lkp_food_groups = response.lkp_food_groups;
+				// var lkp_transect_pasture = response.lkp_transect_pasture;
+				// var lkp_dry_wet_pasture = response.lkp_dry_wet_pasture;
+				// var lkp_transport_means = response.lkp_transport_means;
+
+				// var myArray = $.makeArray({ foo: "bar", hello: "world
+				var verified_list = $.makeArray({"1":"Submitted","2":"Approved","3":"Rejected"});
+				const lkpData = {};
+				const imageData = {};
+				const lkpDataMultiple = {};
+
+				const countries = {};
+				for (let sid = 0; sid < lkp_country.length; sid++) {
+					const element = lkp_country[sid];
+					countries[element.country_id] = element.name;
+				}
+				const uais = {};
+				for (let uaiid = 0; uaiid < lkp_uai.length; uaiid++) {
+					const element = lkp_uai[uaiid];
+					uais[element.uai_id] = element.uai;
+				}
+				const subLocations = {};
+				for (let dsid = 0; dsid < lkp_sub_location.length; dsid++) {
+					const element = lkp_sub_location[dsid];
+					subLocations[element.sub_loc_id] = element.location_name;
+				}
+				const clusters = {};
+				for (let cid = 0; cid < lkp_cluster.length; cid++) {
+					const element = lkp_cluster[cid];
+					clusters[element.cluster_id] = element.name;
+				}
+
+				const locationtypes = {};
+				for (let bk = 0; bk < lkp_location_type.length; bk++) {
+					const element = lkp_location_type[bk];
+					locationtypes[element.location_id] = element.name;
+				}
+				// const markets = {};
+				// for (let gn = 0; gn < lkp_market.length; gn++) {
+				// 	const element = lkp_market[gn];
+				// 	markets[element.market_id] = element.name;
+				// }
+				// const animaltypelactatings = {};
+				// for (let vkey = 0; vkey < lkp_animal_type_lactating.length; vkey++) {
+				// 	const element = lkp_animal_type_lactating[vkey];
+				// 	animaltypelactatings[element.animal_type_lactating_id] = element.name;
+				// }
+				
+				// const lrBodyConditions = {};
+				// for (let cp = 0; cp < lkp_lr_body_condition.length; cp++) {
+				// 	const element = lkp_lr_body_condition[cp];
+				// 	lrBodyConditions[element.id] = element.name;
+				// }
+				// const srBodyConditions = {};
+				// for (let cp = 0; cp < lkp_sr_body_condition.length; cp++) {
+				// 	const element = lkp_sr_body_condition[cp];
+				// 	srBodyConditions[element.id] = element.name;
+				// }
+				// const animalTypes = {};
+				// for (let cp = 0; cp < lkp_animal_type.length; cp++) {
+				// 	const element = lkp_animal_type[cp];
+				// 	animalTypes[element.animal_type_id] = element.name;
+				// }
+				// const animalHerdTypes = {};
+				// for (let cp = 0; cp < lkp_animal_herd_type.length; cp++) {
+				// 	const element = lkp_animal_herd_type[cp];
+				// 	animalHerdTypes[element.id] = element.name;
+				// }
+				// const foodGroups = {};
+				// for (let cp = 0; cp < lkp_food_groups.length; cp++) {
+				// 	const element = lkp_food_groups[cp];
+				// 	foodGroups[element.id] = element.name;
+				// }
+				// const transectPastures = {};
+				// for (let cp = 0; cp < lkp_transect_pasture.length; cp++) {
+				// 	const element = lkp_transect_pasture[cp];
+				// 	transectPastures[element.id] = element.name;
+				// }
+				// const dryWetPastures = {};
+				// for (let cp = 0; cp < lkp_dry_wet_pasture.length; cp++) {
+				// 	const element = lkp_dry_wet_pasture[cp];
+				// 	dryWetPastures[element.id] = element.name;
+				// }
+				// const transportMeans = {};
+				// for (let cp = 0; cp < lkp_transport_means.length; cp++) {
+				// 	const element = lkp_transport_means[cp];
+				// 	transportMeans[element.transport_id] = element.name;
+				// }
+
+				// const branchs = {};
+				// for (let bkey = 0; bkey < branch_list.length; bkey++) {
+				// 	const element = branch_list[bkey];
+				// 	branchs[element.branch_id] = element.branch_name;
+				// }
+				// const banks = {};
+				// for (let bnkey = 0; bnkey < bank_list.length; bnkey++) {
+				// 	const element = bank_list[bnkey];
+				// 	banks[element.bank_id] = element.bank_name;
+				// }
+
+				let xcelData = [];
+				let xcelHeader = [];
+				let tableHeaderFields = [];
+
+				
+				
+				xcelHeader.push("S.No.")
+				tableHeaderFields.push('sno')
+				// xcelHeader.push("Contributor")
+				// tableHeaderFields.push('first_name')
+				// if(survey_id == 5 || survey_id == 7 || survey_id == 11){
+				// 	xcelHeader.push("Market")
+				// 	tableHeaderFields.push('market_name')
+				// }else if(survey_id == 9 ){
+				// 	xcelHeader.push("Transect Pastures")
+				// 	tableHeaderFields.push('contributor_name')
+				// }else{
+				// 	xcelHeader.push("Respondent")
+				// 	xcelHeader.push("Respondent HHID")
+				// 	tableHeaderFields.push('respondent')
+				// 	tableHeaderFields.push('hhid')
+				// }
+				
+				
+				xcelHeader.push(...['Country','UAI','Sub Location','Cluster']);
+				tableHeaderFields.push(...['country_id','uai_id','sub_location_id','cluster_id']);
+				xcelHeader.push("Pasture Name");
+				tableHeaderFields.push('pasture_name')
+				xcelHeader.push("Pasture Type");
+				tableHeaderFields.push('pasture_type')
+
+				for (const key in fields) {
+					const label = fields[key]['label'];
+					const type = fields[key]['type'];
+					const subtype = fields[key]['subtype'];
+					if(type?.startsWith('lkp_') ){
+						if(type == 'lkp_country'){
+							lkpData['field_'+fields[key]['field_id']] = countries;
+						}else if(type == 'lkp_uai'){
+							lkpData['field_'+fields[key]['field_id']] = uais;
+						}else if(type == 'lkp_sub_location'){
+							lkpData['field_'+fields[key]['field_id']] = subLocations;
+						}else if(type == 'lkp_cluster'){
+							lkpData['field_'+fields[key]['field_id']] = clusters;
+						}else if(type == 'lkp_location_type'){
+							lkpData['field_'+fields[key]['field_id']] = locationtypes;
+						}else if(type == 'lkp_market'){
+							lkpData['field_'+fields[key]['field_id']] = markets;
+						}else if(type == 'lkp_animal_type_lactating'){
+							lkpData['field_'+fields[key]['field_id']] = animaltypelactatings;
+							lkpDataMultiple['field_'+fields[key]['field_id']] ="Multiple";
+						}else if(type == 'lkp_lr_body_condition'){
+							lkpData['field_'+fields[key]['field_id']] = lrBodyConditions;
+						}else if(type == 'lkp_sr_body_condition'){
+							lkpData['field_'+fields[key]['field_id']] = srBodyConditions;
+						}else if(type == 'lkp_animal_type'){
+							lkpData['field_'+fields[key]['field_id']] = animalTypes;
+							lkpDataMultiple['field_'+fields[key]['field_id']] ="Multiple";
+						}else if(type == 'lkp_animal_herd_type'){
+							lkpData['field_'+fields[key]['field_id']] = animalHerdTypes;
+							lkpDataMultiple['field_'+fields[key]['field_id']] ="Multiple";
+						}else if(type == 'lkp_food_groups'){
+							lkpData['field_'+fields[key]['field_id']] = foodGroups;
+							lkpDataMultiple['field_'+fields[key]['field_id']] ="Multiple";
+						}else if(type == 'lkp_transect_pasture'){
+							lkpData['field_'+fields[key]['field_id']] = transectPastures;
+						}else if(type == 'lkp_dry_wet_pasture'){
+							lkpData['field_'+fields[key]['field_id']] = dryWetPastures;
+						}else if(type == 'lkp_transport_means'){
+							lkpData['field_'+fields[key]['field_id']] = transportMeans;
+						}else if(type == 'lkp_branch_details'){
+							lkpData['field_'+fields[key]['field_id']] = branchs;
+						}else if(type == 'lkp_farmer_bank_details'){
+							lkpData['field_'+fields[key]['field_id']] = banks;
+						}
+					}
+					if(type=='file' && subtype == 'image'){
+						imageData['field_'+fields[key]['field_id']]="<?php echo base_url(); ?>uploads/survey/";
+					}
+					// if(type?.startsWith('checkbox') ){
+					// 	if(type == 'checkbox-group'){
+					// 		lkpData['field_'+fields[key]['field_id']] = banks;
+					// 	}
+					// }
+					if(label != "Declaration"){
+						// if (type == 'kml') {
+						// 		// tableHead += `<th>`+label+`</th>`;
+						// 		xcelHeader.push(label)
+						// 		tableHeaderFields.push('field_'+fields[key]['field_id']);
+							
+						// }else{
+						// 	// tableHead += `<th>`+label+`</th>`;
+						
+							xcelHeader.push(label)
+							tableHeaderFields.push('field_'+fields[key]['field_id']);
+
+						// }
+					}
+				}
+				// tableHead += `<th>Uploaded By</th><th>Uploaded Datetime</th>`;
+				xcelHeader.push(...['Latitude','Longitude','Uploaded By','Uploaded Datetime','Verification status']);
+				tableHeaderFields.push(...['lat','lng','added_by','added_datetime','pa_verified_status']);
+
+
+				if(submitedData.length > 0){
+					const xcelBody = [];
+					// var tableBody ="";
+					
+					for (let i=0; i<submitedData.length; i++){
+						const elemnt = submitedData[i];
+						const row = [];
+						elemnt.sno = i+1;
+						elemnt.country_id = countries[elemnt.country_id] || elemnt.country_id || "N/A";
+						elemnt.uai_id = uais[elemnt.uai_id] || elemnt.uai_id || "N/A";
+						elemnt.sub_location_id = subLocations[elemnt.sub_location_id] || elemnt.sub_location_id || "N/A";
+						elemnt.cluster_id = clusters[elemnt.cluster_id] || elemnt.cluster_id || "N/A";
+						elemnt.pa_verified_status = verified_list[0][elemnt.pa_verified_status] || elemnt.pa_verified_status || "N/A";
+						for (let k = 0; k < tableHeaderFields.length; k++) {
+							const key = tableHeaderFields[k];
+							if(lkpData[key]){
+								var Multiple_options = '';
+								if(!lkpDataMultiple[key]){
+									row.push(lkpData[key][elemnt[key]] || elemnt[key] || "N/A");									
+								}else{
+									var field_val_array = elemnt[key].split("&#44;");
+									for (let j = 0; j < field_val_array.length; j++) {
+										const f_loop_key = field_val_array[j];
+										Multiple_options += ''+lkpData[key][f_loop_key]+',';
+									}
+									row.push(Multiple_options|| lkpData[key][elemnt[key]] || elemnt[key] || "N/A");
+								}
+							}else{
+								if(imageData[key]){
+									const imgvalue=''+imageData[key]+''+elemnt[key];
+									row.push(imgvalue || elemnt[key] || 'N/A');
+								}else{
+									row.push(elemnt[key] || elemnt[key] || 'N/A');
+								}
+							}
+						}
+						xcelBody.push(row);
+					}
+					xcelData.push(xcelHeader)
+					xcelData.push(...xcelBody)
+					exportToXcel("Transect Pastures", xcelData);
+					// $("#export_sub").prop('disabled', false);
+                	// $("#export_sub").html("Export data");
+					
+				}else{
+					// comment
+				}
+				$('#overlay').fadeOut();
+				$('#loader').fadeOut();	
+				switch (dataValue) {
+					case "1":
+						$("#export_sub").prop('disabled', false);
+						$("#export_sub").html("Export data");
+						break;
+					case "2":
+						$("#export_ap").prop('disabled', false);
+						$("#export_ap").html("Export data");
+						break;
+					case "3":
+						$("#export_rej").prop('disabled', false);
+						$("#export_rej").html("Export data");
+						break;
+				
+					default:
+						break;
+				}
+			}
+		});
+			
 	}
 </script>

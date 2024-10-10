@@ -247,6 +247,36 @@ class FormController extends CI_Controller {
         $this->load->view('template/list_forms', $data);
         $this->load->view('footer');
     }
+    public function get_forms_list() {
+        if(($this->session->userdata('login_id') == '')) {
+            $baseurl = base_url();
+            redirect($baseurl);
+        }
+        $survey_id = $this->input->post('survey_id');
+        // $survey_id = $this->input->post('survey_id');
+        // $survey_id = $this->input->post('survey_id');
+        $page_no =  1;
+        $record_per_page = 100;
+        if($this->input->post('pagination')){
+            $pagination = $this->input->post('pagination');
+            $page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
+            $record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
+        }
+        $data = array(
+            'survey_id' => $survey_id,
+            "page_no" => $page_no,
+            "record_per_page" => $record_per_page,
+            "is_pagination" => $this->input->post('pagination') != null
+        );
+        // print_r($data);exit();
+        // $submitted_data = $this->FormModel->get_forms_list($data);
+        // $submitted_data['total_records'] = $this->FormModel->get_forms_list_r_count($survey_id); //added by sagar for pagenation
+        $submitted_data['data'] = $this->FormModel->get_all_forms_p($data);
+        $submitted_data['total_records'] = count($this->FormModel->get_all_forms());
+        // $result['submitted_data'] = $submitted_data;
+        echo json_encode($submitted_data);
+		exit();
+    }
 
     // View form data by form ID
     public function view_form_data($form_id) {

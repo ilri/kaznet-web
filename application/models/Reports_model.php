@@ -2362,7 +2362,10 @@ class Reports_model extends CI_Model {
         //     $this->db->where('rp.id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
-		$this->db->where('rp.pa_verified_status', 1);
+		// $this->db->where('rp.pa_verified_status', 1);
+        if($data['is_pa_verified_status']){
+            $this->db->where('rp.pa_verified_status', $data['pa_verified_status']);
+        }
         if($data['is_pagination']){
             $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
@@ -2610,34 +2613,34 @@ class Reports_model extends CI_Model {
 			$respondent_list = $this->db->where('status', 1)->get('tbl_respondent_users')->row_array();
 			// var_dump($this->db->last_query());exit;
 		}
-        $this->db->select('survey_id');
-        if(!empty($data['country_id'])) {
-            $this->db->where('country_id', $data['country_id']);
-        }
-        if(!empty($data['cluster_id'])) {
-            $this->db->where('cluster_id', $data['cluster_id']);
-        }
-        if(!empty($data['uai_id'])) {
-            $this->db->where('uai_id', $data['uai_id']);
-        }
-        if(!empty($data['sub_location_id'])) {
-            $this->db->where('sub_loc_id', $data['sub_location_id']);
-        }
-        if(!empty($data['contributor_id'])) {
-            $this->db->where('user_id', $data['contributor_id']);
-        }
-        if(!empty($data['respondent_id'])) {
+        // $this->db->select('survey_id');
+        // if(!empty($data['country_id'])) {
+        //     $this->db->where('country_id', $data['country_id']);
+        // }
+        // if(!empty($data['cluster_id'])) {
+        //     $this->db->where('cluster_id', $data['cluster_id']);
+        // }
+        // if(!empty($data['uai_id'])) {
+        //     $this->db->where('uai_id', $data['uai_id']);
+        // }
+        // if(!empty($data['sub_location_id'])) {
+        //     $this->db->where('sub_loc_id', $data['sub_location_id']);
+        // }
+        // if(!empty($data['contributor_id'])) {
+        //     $this->db->where('user_id', $data['contributor_id']);
+        // }
+        // if(!empty($data['respondent_id'])) {
             
-            $this->db->where('respondent_id', $respondent_list['data_id']);
-        }	
-        // $this->db->where('respondent_id !=', NULL);
-        $this->db->group_by('survey_id');
-        $survey_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
-        // print_r($this->db->last_query());exit();
-        $survey_list1 = array();
-        foreach ($survey_list as $key => $survey) {
-            array_push($survey_list1,$survey['survey_id']);
-        }
+        //     $this->db->where('respondent_id', $respondent_list['data_id']);
+        // }	
+        // // $this->db->where('respondent_id !=', NULL);
+        // $this->db->group_by('survey_id');
+        // $survey_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
+        // // print_r($this->db->last_query());exit();
+        // $survey_list1 = array();
+        // foreach ($survey_list as $key => $survey) {
+        //     array_push($survey_list1,$survey['survey_id']);
+        // }
 
 
         // Get House hold survey submited Data
@@ -2990,8 +2993,9 @@ class Reports_model extends CI_Model {
         if(!empty($data['contributor_id'])) {
             $this->db->where('tu.user_id', $data['contributor_id']);
         }
-		$this->db->where('tu.status', 1);
-        $this->db->where('tul.status', 1);
+        // $this->db->where('uai_id !=', NULL);
+		// $this->db->where('tu.status', 1);
+        // $this->db->where('tul.status', 1);
 		$this->db->where('tu.role_id', 8);
         if($data['is_pagination']){
             // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
@@ -3059,7 +3063,8 @@ class Reports_model extends CI_Model {
 			}	
 			// $this->db->where('respondent_id !=', NULL);
             $this->db->group_by('survey_id');
-			$contributor_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
+			// $contributor_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();
+			$contributor_list = $this->db->get('tbl_survey_assignee')->result_array();
 			// if($user['user_id']==63){
 			// 	var_dump($this->db->last_query());exit;
 			// }
@@ -3241,7 +3246,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pa_verified_status', 2);
 
             $hh_approved_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
-
+            // var_dump($this->db->last_query());
             // Get House hold survey rejected Data
             $this->db->select('rp.id');
             $this->db->from('tbl_respondent_users as rp');
@@ -3333,8 +3338,9 @@ class Reports_model extends CI_Model {
         if(!empty($data['contributor_id'])) {
             $this->db->where('tu.user_id', $data['contributor_id']);
         }
-		$this->db->where('tu.status', 1);
-        $this->db->where('tul.status', 1);
+        // $this->db->where('uai_id !=', NULL);
+		// $this->db->where('tu.status', 1);
+        // $this->db->where('tul.status', 1);
 		$this->db->where('tu.role_id', 8);
         if($data['is_pagination']){
             // $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
@@ -3378,6 +3384,7 @@ class Reports_model extends CI_Model {
             
             $this->db->where('respondent_id', $respondent_list['data_id']);
         }	
+        // $this->db->where('uai_id !=', NULL);
         // $this->db->where('respondent_id !=', NULL);
         $this->db->group_by('survey_id');
         $survey_list = $this->db->where('status', 1)->get('tbl_survey_assignee')->result_array();

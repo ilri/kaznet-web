@@ -2444,6 +2444,11 @@ class Reports extends CI_Controller {
 				$search = $this->input->post('search');
 				$search_input = $search['search_input'] != null ? $search['search_input'] : "";
 			}
+			$pa_verified_status = "";
+			if ($this->input->post('pa_verified_status')) {
+				$verified_status = $this->input->post('pa_verified_status');
+				$pa_verified_status = $verified_status != null ? $verified_status : "";
+			}
 
 
 			$data = array(
@@ -2458,6 +2463,8 @@ class Reports extends CI_Controller {
 				"page_no" => $page_no,
 				"search_input" => $search_input,
 				"is_search" => $search_input != null,
+				"is_pa_verified_status" => $pa_verified_status != null,
+				"pa_verified_status" => $pa_verified_status,
 				"record_per_page" => $record_per_page,
 				"is_pagination" => $this->input->post('pagination') != null
 			);

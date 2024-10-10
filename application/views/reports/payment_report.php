@@ -748,16 +748,32 @@
                         var id = submitedData[k]['user_id'];
                         var tasktableBody ="";
                         var tasklistcount = 0;
+                        var contributorStatus = "";
                         var submitedusertasksData = submitedData[k]['usertasksData'];
+                        //getting contributor status
+                        switch (submitedData[k]['status']) {
+                            case '1':
+                                contributorStatus="Active";
+                                break;
+                        
+                            case '0':
+                                contributorStatus="Inactive";
+                                break;
+                        
+                            default:
+                                contributorStatus="N/A";
+                                break;
+                        }
                         if(submitedusertasksData.length > 0){
                             for (let j = 0; j < submitedusertasksData.length; j++) {
                                 // tasklistcount++;
+                                
                                 
                                 tasktableBody += `<tr class="`+id+`_`+j+` text-left" data-id="`+id+`_`+j+`">`;                 
                                 tasktableBody += `<td>`+ count++ +`</td>`;
                                 tasktableBody += `<td>`;
                                 if(submitedData[k]['username']){
-                                    tasktableBody += submitedData[k]['username'];
+                                    tasktableBody += submitedData[k]['username']+' ('+contributorStatus+')';
                                 }else{
                                     tasktableBody +="N/A";
                                 }
@@ -829,7 +845,7 @@
                         tableBody += `<td>`+  count++ +`</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['username']){
-                            tableBody += submitedData[k]['username'];
+                            tableBody += submitedData[k]['username']+' ('+contributorStatus+')';
                         }else{
                             tableBody +="N/A";
                         }
@@ -1289,10 +1305,11 @@
                                 taskRow.push(elemnt['username'] || elemnt['username'] || 'N/A');
                                 taskRow.push(elemnt['contributor_name'] || elemnt['contributor_name'] || 'N/A');
                                 taskRow.push(taskElement['title'] || taskElement['title'] || 'N/A');
-                                taskRow.push(taskElement['submitted'] || taskElement['submitted'] || 'N/A');
-                                taskRow.push(taskElement['approved'] || taskElement['approved'] || 'N/A');
-                                taskRow.push(taskElement['rejected'] || taskElement['rejected'] || 'N/A');
-                                taskRow.push(taskElement['payment_amount'] || taskElement['payment_amount'] || 'N/A');
+                                taskRow.push(taskElement['submitted'] || taskElement['submitted'] || '0');
+                                taskRow.push(taskElement['approved'] || taskElement['approved'] || '0');
+                                taskRow.push(taskElement['rejected'] || taskElement['rejected'] || '0');
+                                taskRow.push(taskElement['payment_amount'] || taskElement['payment_amount'] || '0');
+                                taskRow.push('N/A');
                                 taskRow.push('N/A');
                                 taskRow.push('N/A');
                                 taskRow.push('N/A');

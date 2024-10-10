@@ -1719,11 +1719,27 @@
 					$('#loader').fadeOut();
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('approved_pagination').style.display = 'none';
+				} else{
+					document.getElementById('approved_pagination').style.display = 'flex';
+					pagination1.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 
 			}
 		});
@@ -2286,12 +2302,27 @@
 				}
 				$('#overlay').fadeOut();
 				$('#loader').fadeOut();
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('rejected_pagination').style.display = 'none';
+				} else{
+					document.getElementById('rejected_pagination').style.display = 'flex';
+					pagination2.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}

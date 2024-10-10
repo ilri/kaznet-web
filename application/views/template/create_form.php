@@ -149,13 +149,54 @@
                 return false;
             }
             let isValid = true; // To track if the field configuration is valid
+            $('.select-field').each(function() {
+                var select = $(this);
+                select.find('.fld-multiple')
+                if (select.find('.fld-multiple').is(':checked')) {
+                    //if multi select 
+                    // var defaultSelected = select.find('input[type="checkbox"]:checked').length;
+                    var defaultSelected = select.find('.option-selected').is(':checked');
+                    if (!defaultSelected) {
+                        alert('Please select a default option for the select.');
+                        isValid = false;
+                        $(this).addClass('error');
+                        if ($(this).next('.error-message').length === 0) {
+                            // $(this).after('<span class="error-message" style="color:red;">Please select a default option for the select.</span>');
+                            $(this).focus();
+                            // $(this).prev('form-field').after('<span class="error-message" style="color:red;">Please select a default option for the select.</span>');
+                        }
+                        return false;
+                    }else{
+                        $(this).removeClass('error');
+                        $(this).closest('.form-field').next('.error-message').remove();
+                    }
+                }else{
+                    
+                    //if single select need to check
+                    var defaultSelected = select.find('input[type="radio"]:checked').length;
+                    if (!defaultSelected) {
+                        alert('Please select a default option for the select.');
+                        isValid = false;
+                        $(this).addClass('error');
+                        if ($(this).next('.error-message').length === 0) {
+                            // $(this).after('<span class="error-message" style="color:red;">Please select a default option for the select.</span>');
+                            $(this).focus();
+                            // $(this).prev('form-field').after('<span class="error-message" style="color:red;">Please select a default option for the select.</span>');
+                        }
+                        return false;
+                    }else{
+                        $(this).removeClass('error');
+                        $(this).closest('.form-field').next('.error-message').remove();
+                    }
+                }
+
+            });
             // Loop through all checkbox options (assuming you have a class or ID to identify the option elements)
             $('.field-options').each(function() {
                 $(this).find('li').each(function() {
-
                     let label = $(this).find('.option-label').val(); // Get the label of the option
                     let value = $(this).find('.option-value').val(); // Get the value of the option
-                    
+                    // if($(this).next('.error-message'))
                     // Check if both label and value are filled
                     if (!label || !value) {
                         isValid = false;
@@ -163,27 +204,59 @@
                         if ($(this).next('.error-message').length === 0) {
                             $(this).after('<span class="error-message" style="color:red;">Both label and value are required.</span>');
                             $(this).focus();
-                            $(this).prev('form-field').after('<span class="error-message" style="color:red;">Both label and value are required.</span>');
+                            // $(this).prev('form-field').after('<span class="error-message" style="color:red;">Both label and value are required.</span>');
                         }
                         return false;
                     }else{
                         // alert("test");
                         $(this).removeClass('error');
                         $(this).next('.error-message').remove();
-                        $(this).prev('form-field').next('.error-message').remove();
+                        // $(this).prev('form-field').next('.error-message').remove();
                     }
                 });
             });
+            
             $('.radio-group').each(function() {
                 var radioGroup = $(this);
                 var defaultSelected = radioGroup.find('input[type="radio"]:checked').length;
-
+                
                 if (!defaultSelected) {
                     alert('Please select a default option for the radio group.');
-                    hasError = true;
-                    isValid = false; // Stop validation after the first error
+                    isValid = false;
+                    $(this).addClass('error');
+                    if ($(this).next('.error-message').length === 0) {
+                        // $(this).after('<span class="error-message" style="color:red;">Please select a default option for the radio group.</span>');
+                        $(this).focus();
+                        // $(this).prev('.form-group').after('<span class="error-message" style="color:red;">Please select a default option for the radio group.</span>');
+                    }
                     return false;
-                }
+                }else{
+                        // alert("test");
+                        $(this).removeClass('error');
+                        $(this).next('.error-message').remove();
+                        // $(this).prev('.form-group').next('.error-message').remove();
+                    }
+            });
+            $('.checkbox-group').each(function() {
+                var radioGroup = $(this);
+                var defaultSelected = radioGroup.find('input[type="checkbox"]:checked').length;
+                
+                if (!defaultSelected) {
+                    alert('Please select a default option for the checkbox group.');
+                    isValid = false;
+                    $(this).addClass('error');
+                    if ($(this).next('.error-message').length === 0) {
+                        // $(this).after('<span class="error-message" style="color:red;">Please select a default option for the radio group.</span>');
+                        $(this).focus();
+                        // $(this).prev('.form-group').after('<span class="error-message" style="color:red;">Please select a default option for the radio group.</span>');
+                    }
+                    return false;
+                }else{
+                        // alert("test");
+                        $(this).removeClass('error');
+                        $(this).next('.error-message').remove();
+                        // $(this).prev('.form-group').next('.error-message').remove();
+                    }
             });
 
             var formData = fb.actions.getData('json');

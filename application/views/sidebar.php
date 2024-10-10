@@ -197,7 +197,7 @@
                     <span class="collapse-text-none-nav mb-0">Notification</span>
                 </a>
             </li>
-            <!-- <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
+            <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
                 <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <span class="logo-img-mt-4">
                         <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
@@ -222,7 +222,7 @@
                         <a href="<?php echo base_url(); ?>FormController/list_forms" class="sub-menu <?php echo(($this->uri->segment(2)) == 'list_forms' ? 'active' : '');?>">Manage Templates</a>
                     </li>
                 </ul>
-            </li> -->
+            </li>
         </ul>
 
 

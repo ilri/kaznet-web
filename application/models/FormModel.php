@@ -43,10 +43,26 @@ class FormModel extends CI_Model {
         return $this->db->query($query)->result_array();
     }
 
+    public function get_all_forms_p($data) {
+        $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
+        
+        // if($from_id != null){
+        //     $query ="select f.* from forms f where id=".$from_id."";
+        // }else{
+            $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by ";
+        // }
+        if($data['is_pagination']){
+            $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
+        }
+        // print_r($query);exit();
+        return $this->db->query($query)->result_array();
+    }
+
     public function get_submitted_data($data) {
         $form_details = $this->db->where('id', $data['survey_id'])->get('forms')->row_array();
         $columns = (array)json_decode($form_details['form_data']);
         $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
+        // print_r($recordcounttoprint);exit();
         $query = "";
         if(isset($columns) && count($columns) > 0) {
             // $query = "SELECT s.id, s.form_id,s.user_id,s.datetime";

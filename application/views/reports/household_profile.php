@@ -915,12 +915,27 @@
 					$('#submited_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('submited_pagination').style.display = 'none';
+				} else{
+					document.getElementById('submited_pagination').style.display = 'flex';
+					pagination.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -1415,12 +1430,27 @@
 					$('#approved_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination1.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('approved_pagination').style.display = 'none';
+				} else{
+					document.getElementById('approved_pagination').style.display = 'flex';
+					pagination1.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -1918,12 +1948,27 @@
 					$('#rejected_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
 				}
 
-				const curentPage = pageNo;
-				const totalRecordsPerPage = recordperpage;
+				// const curentPage = pageNo;
+				// const totalRecordsPerPage = recordperpage;
+				// const totalRecords= response.total_records;
+				// const currentRecords = submitedData.length;
+				// pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
 				const totalRecords= response.total_records;
 				const currentRecords = submitedData.length;
-				pagination2.refreshPagination (Number(curentPage || 1),totalRecords,currentRecords, Number(totalRecordsPerPage || 100))
-
+				let curentPage = pageNo
+				let totalRecordsPerPage = recordperpage
+				if(pageNo == 1){
+					curentPage = submitedData.length === 0 ? 0 : pageNo;
+				}
+				if(recordperpage == 100){
+					totalRecordsPerPage = submitedData.length === 0 ? 0 : recordperpage;
+				}
+				if(submitedData.length === 0){
+					document.getElementById('rejected_pagination').style.display = 'none';
+				} else{
+					document.getElementById('rejected_pagination').style.display = 'flex';
+					pagination2.refreshPagination (Number(curentPage),totalRecords,currentRecords, Number(totalRecordsPerPage))
+				}
 			}
 		});
 	}
@@ -2690,6 +2735,16 @@
                 	$("#export_sub").html("Export data");
 				}else{
 					// comment
+					// alert("No data for export");
+
+					Swal.fire({
+						title: 'Note!',
+						text: 'No data for export.',
+						icon: 'error',  // You can use 'success', 'error', 'warning', 'info', 'question'
+						confirmButtonText: 'OK'
+					});
+					$("#export_sub").prop('disabled', false);
+        			$("#export_sub").html("Export data");
 				}
 			}
 		});		
