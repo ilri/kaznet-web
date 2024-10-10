@@ -45,15 +45,15 @@ class FormModel extends CI_Model {
 
     public function get_all_forms_p($data) {
         $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
-        
-        // if($from_id != null){
-        //     $query ="select f.* from forms f where id=".$from_id."";
-        // }else{
+        if($data['status'] != null){
+            $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by where f.status = ".$data['status']." ";
+        }else{
             $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by ";
-        // }
+        }
         if($data['is_pagination']){
             $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
         }
+        // print_r($data['status']);exit();
         // print_r($query);exit();
         return $this->db->query($query)->result_array();
     }

@@ -265,6 +265,7 @@ class FormController extends CI_Controller {
         $data = array(
             'survey_id' => $survey_id,
             "page_no" => $page_no,
+            "status" => $this->input->post('status'),
             "record_per_page" => $record_per_page,
             "is_pagination" => $this->input->post('pagination') != null
         );
@@ -272,7 +273,7 @@ class FormController extends CI_Controller {
         // $submitted_data = $this->FormModel->get_forms_list($data);
         // $submitted_data['total_records'] = $this->FormModel->get_forms_list_r_count($survey_id); //added by sagar for pagenation
         $submitted_data['data'] = $this->FormModel->get_all_forms_p($data);
-        $submitted_data['total_records'] = count($this->FormModel->get_all_forms());
+        $submitted_data['total_records'] = count($this->FormModel->get_all_forms_p($data));
         // $result['submitted_data'] = $submitted_data;
         echo json_encode($submitted_data);
 		exit();
@@ -338,5 +339,38 @@ class FormController extends CI_Controller {
         echo json_encode($submitted_data);
 		exit();
     }
+    
+	public function deleteData()
+	{
+		if(($this->session->userdata('login_id') == '')) {
+			echo json_encode(array(
+				'msg' => 'Your session has expired. Please login and try again',
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+				'status' => 0
+			));
+			exit();
+		}else{
+			$delete_data = $this->db->where('id', $_POST['id'])->update('forms', array('status' => '0'));
+			if($delete_data){
+				$msg = 'Data deleted Successfully!';
+				$result = array(
+					'csrfName' => $this->security->get_csrf_token_name(),
+					'csrfHash' => $this->security->get_csrf_hash(),
+					'msg' => $msg,
+					'status'=> 1
+				);
+			} else {
+				$result = array(
+					'msg' => 'Something went wrong. Please try again later !',
+					'csrfName' => $this->security->get_csrf_token_name(),
+					'csrfHash' => $this->security->get_csrf_hash(),
+					'status'=> 0
+				);
+			}
+			echo json_encode($result);
+			exit();
+		}
+	}
 }
 ?>
