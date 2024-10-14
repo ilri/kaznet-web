@@ -6,8 +6,8 @@
 }
 
     </style>
-<div class="container mt-5">
-    <h1>Create Form</h1>
+<div class="container mt-2">
+    <h2>Create Form</h2>
     <form id="form-meta" class="mb-3">
         <div class="mb-3">
             <label for="form_title" class="form-label">Form Title <span class="text-danger">*</span></label>

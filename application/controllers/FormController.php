@@ -46,6 +46,20 @@ class FormController extends CI_Controller {
 		exit();
         // echo json_encode(['form_id' => $form_id]);
     }
+    // Save form to database
+    public function update_form() {
+        $form_id = $this->input->post('form_id');
+        $form_data = $this->input->post('form_data');
+        $form_title = $this->input->post('form_title');
+        $form_subject = $this->input->post('form_subject');
+        $form_id = $this->FormModel->update_form($form_id, $form_data, $form_title, $form_subject);
+        $result['status'] = 1;
+        $result['form_id'] = $form_id;
+		$result['msg'] = 'Successfully updated form.';
+		echo json_encode($result);
+		exit();
+        // echo json_encode(['form_id' => $form_id]);
+    }
 
     // Load form by ID and render it
     public function render_form($form_id) {
@@ -72,6 +86,35 @@ class FormController extends CI_Controller {
         $this->load->view('sidebar');
         $this->load->view('menu', $menu_result);
         $this->load->view('template/render_form', $data);
+        $this->load->view('footer');
+    }
+
+     // Load form by ID and  form edit
+     public function edit_form($form_id) {
+        if(($this->session->userdata('login_id') == '')) {
+            $baseurl = base_url();
+            redirect($baseurl);
+        }
+        
+        $result = array();
+        
+        $all_roles = $this->User_model->all_roles();
+        $result['all_roles'] = $all_roles;
+
+        //user data for profile info
+        $this->load->model('Dynamicmenu_model');
+        $profile_details = $this->Dynamicmenu_model->user_data();
+        $menu_result = array('profile_details' => $profile_details);
+        $form_data = $this->FormModel->get_form_fields_data($form_id);
+        $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
+        $data['form_data'] = $form_data;
+        $data['form_id'] = $form_id;
+        $data['form_title'] = $form_details['title'];
+        $data['form_subject'] = $form_details['subject'];
+        $this->load->view('header');
+        $this->load->view('sidebar');
+        $this->load->view('menu', $menu_result);
+        $this->load->view('template/edit_form', $data);
         $this->load->view('footer');
     }
 
@@ -241,6 +284,7 @@ class FormController extends CI_Controller {
         $menu_result = array('profile_details' => $profile_details);
         $forms = $this->FormModel->get_all_forms();
         $data['forms'] = $forms;
+        
         $this->load->view('header');
         $this->load->view('sidebar');
         $this->load->view('menu', $menu_result);
@@ -272,8 +316,9 @@ class FormController extends CI_Controller {
         // print_r($data);exit();
         // $submitted_data = $this->FormModel->get_forms_list($data);
         // $submitted_data['total_records'] = $this->FormModel->get_forms_list_r_count($survey_id); //added by sagar for pagenation
+        $submitted_data['user_role'] = $this->session->userdata('role');
         $submitted_data['data'] = $this->FormModel->get_all_forms_p($data);
-        $submitted_data['total_records'] = count($this->FormModel->get_all_forms_p($data));
+        $submitted_data['total_records'] = count($this->FormModel->get_all_forms_count($data));
         // $result['submitted_data'] = $submitted_data;
         echo json_encode($submitted_data);
 		exit();
@@ -351,9 +396,16 @@ class FormController extends CI_Controller {
 			));
 			exit();
 		}else{
-			$delete_data = $this->db->where('id', $_POST['id'])->update('forms', array('status' => '0'));
+            
+            $time = time();
+            date_default_timezone_set('UTC');
+            $currentDateTime = date('Y-m-d H:i:s');
+            $data['status'] = '0';
+            $data['deleted_by'] = $this->session->userdata('login_id');
+            $data['deleted_datetime']=$currentDateTime;
+			$delete_data = $this->db->where('id', $_POST['id'])->update('forms', $data);
 			if($delete_data){
-				$msg = 'Data deleted Successfully!';
+				$msg = 'Form deleted Successfully!';
 				$result = array(
 					'csrfName' => $this->security->get_csrf_token_name(),
 					'csrfHash' => $this->security->get_csrf_hash(),

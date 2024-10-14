@@ -209,6 +209,60 @@
                 font-size: 24px; /* Change icon size */
             }
         </style>
+        <style>
+                        
+                        
+            a.btn.btn-outline-view-form {
+                background: transparent !important;
+                border-radius: 5px !important;
+                height: auto !important;
+                /* line-height: 25px  !important; */
+                font-weight: 500  !important;
+                width: 100px !important;
+                font-size: 12px !important;
+                margin-top:0px !important;
+                color: #173846 !important;
+                border: 1px solid #173846 !important;
+            }
+
+            a.btn.btn-outline-view-data {
+                background: transparent;
+                border-radius: 5px !important;
+                width: 100px !important;
+                font-style: normal !important;
+                font-weight: 500 !important;
+                height: auto !important;
+                font-size: 12px !important;
+                line-height: 16px !important;
+                color: #28a745 !important;
+                border: 1px solid #28a745 !important;
+            }
+            a.btn.btn-outline-delete {
+                border-color: #dc3545 !important;
+                background: transparent;
+                border-radius: 5px !important;
+                width: 100px !important;
+                font-style: normal;
+                font-weight: 500 !important;
+                height: auto !important;
+                font-size: 12px !important;
+                line-height: 16px !important;
+                color: #dc3545 !important;
+                border: 1px solid #dc3545 !important;
+            }
+            a.btn.btn-outline-edit {
+                background: transparent;
+                border-radius: 5px !important;
+                font-style: normal;
+                font-weight: 500;
+                width: 100px !important;
+                height: auto;
+                font-size: 12px !important;
+                line-height: 16px !important;
+                color: #000 !important;
+                border: 1px solid #17a2b8 !important;
+            }
+        </style>
     </head>
     <body>
 
@@ -284,7 +338,7 @@
                                             <?php } ?>
                                             </div>
                                         </div> -->
-                                        <div class="table-responsive" style="height:290px;">
+                                        <div class="table-responsive" style="height:65vh;">
                                             <div class="loaders" id="info_data">
                                                 <div class="d-flex flex-column align-items-center justify-content-center loader-height" >
                                                     <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
@@ -313,7 +367,8 @@
                                         </span> 
                                         <button type="button" class="btn btn-sm btn-primary" id="export_ap" onclick="approvedeExportXcel()">Export data</button>-->
                                     </div> 
-                                    <div class="table-responsive" style="height:290px;">
+                                    <!-- <div class="table-responsive" style="height:290px;"> -->
+                                    <div class="table-responsive" style="height:65vh;">
                                         <table class="table table-striped" style="width:100%">
                                             <thead class="bg-dataTable" id="approved_head">
                                             </thead>
@@ -404,21 +459,30 @@
                         var count = (pageNo*recordperpage-recordperpage+1);
                         for (let k = 0; k < submitedData.length; k++) {
                             var data_id = submitedData[k]['id'];
+                            if(submitedData[k]['first_name'] == null ){
+                                $added_name = "N/A";
+                            }else{
+                                $added_name = submitedData[k]['first_name'] +` `+ submitedData[k]['last_name']
+                            }
                             tableBody = `<tr class="`+data_id+` text-left" data-id="`+data_id+`">`;
                             
                             tableBody += `<td>`+ count++ +`</td>`;
                             
-                            // tableBody += `<td>`+ submitedData[k]['first_name'] +` `+ submitedData[k]['last_name'] +`</td>`;
-                            // tableBody += `<td><a href="#" class="delete_submited  btn btn-secondary btn-sm mr-2" onClick="deleteData(event);" data-id="`+data_id+`">Delete form</a></td>`;
-                            // tableBody += `<td><a href="javascript:void(0);" class="delete_submited text-danger" onClick="deleteRecord(`+submitedData[k]['id']+`);"><i class="fa fa-trash-o"></i></a></td>`;
                             tableBody += `<td>`+ submitedData[k]['title'] +`</td>`;
                             tableBody += `<td>`+ submitedData[k]['subject'] +`</td>`;
-                            tableBody += `<td>`+ submitedData[k]['first_name'] +` `+ submitedData[k]['last_name'] +`</td>`;
-                            tableBody += `<td>`+ submitedData[k]['datetime'] +`</td>`;
-                            tableBody += `<td><div> <a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-submit text-white  mb-2">Form</a> `;
-                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-submit text-white  mb-2">Data</a></div>`;
-                            tableBody += `<a href="#" class="delete_submited  btn btn-submit text-white  mr-2" onClick="deleteData(event);" data-id="`+data_id+`">Delete</a>`;
-                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-submit text-white ">Edit</a></td>`;
+                            tableBody += `<td>`+ $added_name +`</td>`;
+                            tableBody += `<td>`;
+                            tableBody += submitedData[k]['datetime'] != null ? submitedData[k]['datetime']  : `N/A`;
+                            tableBody += `</td>`;
+                            tableBody += `<td><a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form  ">View form</a> `;
+                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-data  ">View data</a> </br>`;
+                            if(role==1){
+                                tableBody += `<a href="#" class="delete_submited  btn btn-outline-delete mt-1" onClick="deleteData(event);" data-id="`+data_id+`">Delete form</a>`;
+                                tableBody += `<a href="<?php echo base_url(); ?>FormController/edit_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-edit mt-1 mx-1">Edit form</a></td>`;
+                            }else{
+                                tableBody += `</td>`;
+                            }
+                            
                             tableBody += `</tr>`;
                             
                             $('#submited_body').append(tableBody);
@@ -497,25 +561,20 @@
                         return false;
                     }
                     var role = response.user_role;
-                    // var fields = response.columns;
                     var submitedData = response.data;
-                    // var formdetails = JSON.parse(response.formdetails[0].form_data);
-                    // var formdetails = JSON.parse(response.formdetails[0].form_data);
 
                     var td_count = 0;
                     var tableHead = `<tr style="position: sticky;top: -1px;background: #000;background:black;">`;
                     // tableHead += `<th>S.No.</th>`;
                     
-                    // tableHead += `<th>Uploaded By</th>`;
-                    // tableHead += `<th>Uploaded Date</th>`;
-                        tableHead += `<th>S.no</th>`;
-                        tableHead += `<th>Form Title</th>`;
-                        tableHead += `<th>Form Subject</th>`;
-                        tableHead += `<th>Added By</th>`;
-                        tableHead += `<th>Added Date</th>`;
-                        // tableHead += `<th>Deleted By</th>`;
-                        // tableHead += `<th>Deleted Date</th>`;
-                        tableHead += `<th>Action</th>`;
+                    tableHead += `<th>S.no</th>`;
+                    tableHead += `<th>Form Title</th>`;
+                    tableHead += `<th>Form Subject</th>`;
+                    tableHead += `<th>Added By</th>`;
+                    tableHead += `<th>Added Date</th>`;
+                    tableHead += `<th>Deleted By</th>`;
+                    tableHead += `<th>Deleted Date</th>`;
+                    tableHead += `<th>Action</th>`;
                     $('#approved_head').html(tableHead);
 
                     $('#approved_body').html("");
@@ -528,18 +587,33 @@
                         for (let k = 0; k < submitedData.length; k++) {
                             var data_id = submitedData[k]['id'];
                             tableBody = `<tr class="`+data_id+` text-left" data-id="`+data_id+`">`;
-                            
+                            if(submitedData[k]['d_f_name'] == null ){
+                                $deleted_name = "N/A";
+                            }else{
+                                $deleted_name = submitedData[k]['d_f_name'] +` `+ submitedData[k]['d_l_name']
+                            }
+                            if(submitedData[k]['first_name'] == null ){
+                                $added_name = "N/A";
+                            }else{
+                                $added_name = submitedData[k]['first_name'] +` `+ submitedData[k]['last_name']
+                            }
                             tableBody += `<td>`+ count++ +`</td>`;
                             
                             tableBody += `<td>`+ submitedData[k]['title'] +`</td>`;
                             tableBody += `<td>`+ submitedData[k]['subject'] +`</td>`;
-                            tableBody += `<td>`+ submitedData[k]['first_name'] +` `+ submitedData[k]['last_name'] +`</td>`;
-                            tableBody += `<td>`+ submitedData[k]['datetime'] +`</td>`;
-                            tableBody += `<td><div> <a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-info btn-sm">View form</a> `;
-                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-secondary btn-sm">View data</a></div></td>`;
+                            tableBody += `<td>`+ $added_name +`</td>`;
+                            // tableBody += `<td>`+ submitedData[k]['datetime'] +`</td>`;
+                            tableBody += `<td>`;
+                            tableBody += submitedData[k]['datetime'] != null ? submitedData[k]['datetime']  : `N/A`;
+                            tableBody += `</td>`;
+                            tableBody += `<td>`+ $deleted_name +`</td>`;
+                            tableBody += `<td>`;
+                            tableBody += submitedData[k]['deleted_datetime'] != null ? submitedData[k]['deleted_datetime']  : `N/A`;
+                            tableBody += `</td>`;
+                            // tableBody += `<td><div> <a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-info btn-sm">View form</a> `;
+                            tableBody += `<td><a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form ">View data</a></div></td>`;
                             // tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-secondary btn-sm mr-2">Delete form</a></td>`;
                             tableBody += `</tr>`;
-
                             
                             $('#approved_body').append(tableBody);
                             $('#overlay').fadeOut();
@@ -616,9 +690,7 @@
         });
         function deleteData(elem){
             var ajaxData = {};
-            alert(elem.closest('tr').data('id'));
             var id = elem.closest('tr').data('id');
-            alert(id);
             ajaxData['id'] = id;
             $.ajax({
                 url: '<?php echo base_url(); ?>FormController/deleteData/',

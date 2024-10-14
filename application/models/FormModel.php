@@ -18,8 +18,42 @@ class FormModel extends CI_Model {
         $this->db->insert('forms', $data);
         return $this->db->insert_id();
     }
+    public function update_form($form_id, $form_data, $form_title, $form_subject) {
+        $data = [
+            'form_id' => $form_id,
+            'form_data' => $form_data,
+            'title' => $form_title,
+            'subject' => $form_subject
+        ];
+        $update_data = [
+            'form_data' => $data['form_data'],
+            'title' => $data['title'],
+            'subject' => $data['subject']
+        ];
+        //added by sagar for updating user related data while record inserting in to table
+        // $time = time();
+        // date_default_timezone_set('UTC');
+        // $currentDateTime = date('Y-m-d H:i:s');
+        // $data['added_by'] = $this->session->userdata('login_id');
+        // $data['datetime']=$currentDateTime;
+        // $data['ip_address'] = $this->input->ip_address();
+        $delete_data = $this->db->where('id', $form_id)->update('forms', $update_data);
+        if($delete_data){
+            return $form_id;
+        }else{
+            print_r($this->db->last_query());exit();
+            print_r("form not updated");
+        }
+        // $this->db->insert('forms', $data);
+        // return $this->db->insert_id();
+    }
 
     public function get_form($form_id) {
+        $query = $this->db->get_where('forms', ['id' => $form_id]);
+        return $query->row()->form_data;
+    }
+    public function get_form_fields_data($form_id) {
+        $this->db->select('form_data');
         $query = $this->db->get_where('forms', ['id' => $form_id]);
         return $query->row()->form_data;
     }
@@ -45,14 +79,34 @@ class FormModel extends CI_Model {
 
     public function get_all_forms_p($data) {
         $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
+        // if($data['status'] != null){
+        //     $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by where f.status = ".$data['status']." ";
+        // }else{
+        //     $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by ";
+        // }
+        
+        if($data['status'] != null){
+            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by where f.status = ".$data['status']." ";
+        }else{
+            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by ";
+        }
+        if($data['is_pagination']){
+            $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
+        }
+        // print_r($data['status']);exit();
+        // print_r($query);exit();
+        return $this->db->query($query)->result_array();
+    }
+    public function get_all_forms_count($data) {
+        $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
         if($data['status'] != null){
             $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by where f.status = ".$data['status']." ";
         }else{
             $query ="select f.*,tu.first_name,tu.last_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by ";
         }
-        if($data['is_pagination']){
-            $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
-        }
+        // if($data['is_pagination']){
+        //     $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
+        // }
         // print_r($data['status']);exit();
         // print_r($query);exit();
         return $this->db->query($query)->result_array();
