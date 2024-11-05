@@ -35,6 +35,26 @@ $(document).ready(function() {
             // If 'multiple' is disabled and '[]' is present, remove it
             $this.attr('name', fieldName.slice(0, -2));
         }
+
+        // //handling files 
+        // const fieldName = $(this).attr('name'); // Identify the field name
+        // const files = event.target.files;
+        
+        // // Prepare an array to store file data
+        // const fileData = [];
+
+        // // Loop through each file
+        // for (let i = 0; i < files.length; i++) {
+        //     // Collect file data for each file, including field name to distinguish it
+        //     fileData.push({
+        //         fieldName: fieldName,
+        //         fileName: files[i].name,
+        //         fileContent: files[i], // File object itself, or file data if pre-processed
+        //     });
+        // }
+        
+        // Send to backend (e.g., via AJAX) if needed immediately on change,
+        // or store it and send all data together on form submission.
     });
     $('#my-form').on('input', 'input, textarea, select', function() {
         $(this).removeClass('error');
@@ -86,7 +106,7 @@ $(document).ready(function() {
     // });
     
     // Hide the "Other" text field initially
-    $('.other-val').hide();
+    // $('.other-val').hide();
 
     // Listen for changes on the radio group
     $('#rendered-form').on('change', 'input[type="radio"]', function() {
@@ -101,7 +121,11 @@ $(document).ready(function() {
             $('.other-val').css('display', 'none');
         }
     });
+    
+    $('#rendered-form').on('click', 'button[type="reset"]', function() {
 
+        $('.other-val').hide();
+    });
 
 
     $('#submit-form').click(function(e) {
@@ -128,8 +152,48 @@ $(document).ready(function() {
                     }else{
                         // Check if the field is empty
                         if ($this.val().trim() === '') {
+                            othererrorMessage="Please fill out this other field.";
                             // Check if the input type is 'radio'
-                            if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
+                            if ($(this).attr('type') === 'radio' ) {
+                                // alert($(this).attr('type'));
+                                // if ($this.closest('.other-option').is(':checked')) {
+                                //     if ($this.next('.other-val').val().trim() === '') {
+                                //         isValid = false;
+                                //         // Add an inline error message
+                                //         $this.addClass('error'); // Add a class to highlight the field
+                                //         if ($this.next('.error-message').length === 0) {
+                                //             $this.closest('.radio-group').after('<span class="error-message">' + othererrorMessage + '</span>');
+                                //         }
+                                //     }else{
+                                //         $this.removeClass('error');
+                                //         $this.closest('.radio-group').next('.error-message').remove();
+                                //     }
+                                // }else{
+                                //     // alert("test");
+                                //         $this.removeClass('error');
+                                //         $this.closest('.radio-group').next('.error-message').remove();
+                                //     }
+                                if ($this.closest('.other-option').is(':checked')) {
+                                    alert($this.next('.other-val').val());
+                                    if ($this.next('.other-val').val().trim() === '') {
+                                        isValid = false;
+                                        // Add an inline error message
+                                        $this.addClass('error'); // Add a class to highlight the field
+                                        alert($this.next('.error-message').length);
+                                        if ($this.next('.error-message').length === 0) {
+                                            $this.closest('.radio-group').after('<span class="error-message">' + othererrorMessage + '</span>');
+                                        }
+                                    }else{
+                                        alert($this.next('.error-message').length);
+                                        $this.removeClass('error');
+                                        $this.closest('.radio-group').next('.error-message').remove();
+                                    }
+                                }else {
+                                    // alert("test");
+                                    $this.removeClass('error');
+                                    $this.closest('.radio-group').next('.error-message').remove();
+                                }
+                            }else if ( $(this).attr('type') === 'checkbox' ) {
                                 // alert($(this).attr('type'));
                                 if ($this.closest('.other-option').is(':checked')) {
                                     if ($this.next('.other-val').val().trim() === '') {
@@ -137,17 +201,15 @@ $(document).ready(function() {
                                         // Add an inline error message
                                         $this.addClass('error'); // Add a class to highlight the field
                                         if ($this.next('.error-message').length === 0) {
-                                            $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                            $this.closest('.checkbox-group').after('<span class="error-message">' + othererrorMessage + '</span>');
                                         }
                                     }else{
                                         $this.removeClass('error');
-                                        $this.closest('.radio-group').next('.error-message').remove();
                                         $this.closest('.checkbox-group').next('.error-message').remove();
                                     }
                                 }else{
                                     // alert("test");
                                         $this.removeClass('error');
-                                        $this.closest('.radio-group').next('.error-message').remove();
                                         $this.closest('.checkbox-group').next('.error-message').remove();
                                     }
                             }else{
@@ -162,7 +224,11 @@ $(document).ready(function() {
                                     if ($this.closest('.form-group').next('.error-message').length === 0) {
                                         // $this.after('<span class="error-message">' + errorMessage + '</span>');
                                         $this.closest('.form-group').after('<span class="error-message">' + errorMessage + '</span>');
-                                    }
+                                    }else{
+                                       
+                                    //    $this.closest('.form-group').removeClass('error');
+                                    //    $this.closest('.form-group').next('.error-message').remove();
+                                   }
 
                                 }else{
                                     if($(this).attr('type')=="text"){
@@ -193,6 +259,14 @@ $(document).ready(function() {
                                 
                             }
                         } else {
+                            switch ($(this).attr('type')) {
+                                case 'number':
+                                    
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
                             if ($(this).attr('type') === 'number'){   
                                 $this =$(this);
                                 if (typeof $this.prop('min') === 'undefined' || $this.prop('min') === '') {
@@ -209,8 +283,9 @@ $(document).ready(function() {
                                             // $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
                                             $this.closest('.form-group').after('<span class="error-message" style="color:red;">Minimum value allowed is  '+$this.prop('min')+' .</span>');
                                         }else{
-                                            $this.closest('.form-group').removeClass('error');
-                                            $this.closest('.form-group').next('.error-message').remove();
+                                       
+                                            // $this.closest('.form-group').removeClass('error');
+                                            // $this.closest('.form-group').next('.error-message').remove();
                                         }
                                     }else{
                                        
@@ -231,8 +306,9 @@ $(document).ready(function() {
                                                 // $this.after('<span class="error-message">Maximum value allowed is ( '+$this.prop('max')+' ).</span>');
                                                 $this.closest('.form-group').after('<span class="error-message">Maximum value allowed is  '+$this.prop('max')+' .</span>');
                                             }else{
-                                                $this.closest('.form-group').removeClass('error');
-                                                $this.closest('.form-group').next('.error-message').remove();
+                                       
+                                                // $this.closest('.form-group').removeClass('error');
+                                                // $this.closest('.form-group').next('.error-message').remove();
                                             }
                                         }else{
                                             $this.closest('.form-group').removeClass('error');
@@ -241,17 +317,129 @@ $(document).ready(function() {
                                     }
                                     
                                 }
+                            }else if ($(this).attr('type') === 'tel') {
+                                // Check if the input field is of type 'telephone'
+                                var phoneValue = $(this).val();
+                                
+                                // Regular expression to validate a 10-digit phone number (adjust if needed)
+                                // var phoneRegex = /^\d{10}$/;
+                                // var phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+                                var phoneRegex = /^[+]?[(]?[0-9]{1,1}[)]?[-\s\.]?[0-9]{1,1}[-\s\.]?[0-9]{1,9}$/;
+                                
+                                if (!phoneRegex.test(phoneValue)) {
+                                    // Show an alert if the validation fails
+                                    // alert('Please enter a valid 10-digit phone number.'); 
+                                    isValid = false;
+                                    $this.addClass('error');
+                                    if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                        $this.closest('.form-group').after('<span class="error-message">Please enter a valid phone number</span>');
+                                    }
+                                }else{
+                                        $this.closest('.form-group').removeClass('error');
+                                        $this.closest('.form-group').next('.error-message').remove();
+                                    }
+                            }else if ($(this).attr('type') === 'email') {
+                                var emailValue = $(this).val();
+                                
+                                // Regular expression for validating email
+                                var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                                
+                                if (!emailRegex.test(emailValue)) {
+                                    isValid = false;
+                                    $this.addClass('error');
+                                    if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                        $this.closest('.form-group').after('<span class="error-message">Please enter a valid Email</span>');
+                                    }
+                                }else{
+                                    $this.closest('.form-group').removeClass('error');
+                                    $this.closest('.form-group').next('.error-message').remove();
+                                }
                             }else{
                                 // Remove the error message if the field is not empty
                                 $this.removeClass('error');
                                 $this.next('.error-message').remove();
+                                                                       
+                                       $this.closest('.form-group').removeClass('error');
+                                       $this.closest('.form-group').next('.error-message').remove();
+                                   
                             }
                         }
                     }
                 }
             }else{
-                if ($(this).attr('type') === 'radio' || $(this).attr('type') === 'checkbox' ) {
+                if ($(this).attr('type') === 'number'){   
+                    $this =$(this);
+                    isValid1 =true; 
+                    if (typeof $this.prop('min') === 'undefined' || $this.prop('min') === '') {
+                        
+                        //skip
+                    }else{   
+                                                
+                        if (parseFloat($this.val()) < parseFloat($this.prop('min'))) {
+                            isValid = false;
+                            isValid1 = false;
+                            $this.addClass('error');
+                            
+                            if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                // $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
+                                $this.closest('.form-group').after('<span class="error-message" style="color:red;">Minimum value allowed is  '+$this.prop('min')+' .</span>');
+                            }else{                                
+                                // $this.closest('.form-group').removeClass('error');
+                                // $this.closest('.form-group').next('.error-message').remove();
+                            }
+                        }else{
+                            
+                            $this.closest('.form-group').removeClass('error');
+                            $this.closest('.form-group').next('.error-message').remove();
+                        }
+                    }
+                    if(typeof $this.prop('max') === 'undefined' || $this.prop('max') === '') { 
+                        // skip
+                    }else{
+                        if(isValid1 == false){
+                            //skip if alread min errorr
+                        }else{
+                            if (parseFloat($this.val()) > parseFloat($this.prop('max'))) {
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                    // $this.after('<span class="error-message">Maximum value allowed is ( '+$this.prop('max')+' ).</span>');
+                                    $this.closest('.form-group').after('<span class="error-message">Maximum value allowed is  '+$this.prop('max')+' .</span>');
+                                }else{                                       
+                                    //    $this.closest('.form-group').removeClass('error');
+                                    //    $this.closest('.form-group').next('.error-message').remove();
+                                   }
+                            }else{
+                                $this.closest('.form-group').removeClass('error');
+                                $this.closest('.form-group').next('.error-message').remove();
+                            }
+                        }
+                        
+                    }
+                }else if ($(this).attr('type') === 'tel') {
+                    // Check if the input field is of type 'telephone'
+                    var phoneValue = $(this).val();
+                    
+                    // Regular expression to validate a 10-digit phone number (adjust if needed)
+                    // var phoneRegex = /^\d{10}$/;
+                    // var phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+                    var phoneRegex = /^[+]?[(]?[0-9]{1,1}[)]?[-\s\.]?[0-9]{1,1}[-\s\.]?[0-9]{1,9}$/;
+                    
+                    if (phoneValue && !phoneRegex.test(phoneValue)) {
+                        // Show an alert if the validation fails
+                        // alert('Please enter a valid 10-digit phone number.'); 
+                        isValid = false;
+                        $this.addClass('error');
+                        if ($this.closest('.form-group').next('.error-message').length === 0) {
+                            $this.closest('.form-group').after('<span class="error-message">Please enter a valid phone number</span>');
+                        }
+                    }else{
+                            $this.closest('.form-group').removeClass('error');
+                            $this.closest('.form-group').next('.error-message').remove();
+                        }
+                }else if ($(this).attr('type') === 'checkbox' ) {
                     // alert($(this).attr('type'));
+                    othererrorMessage="Please fill out this other field.";
                     if ($this.closest('.other-option').is(':checked')) {
                         // alert($this.next('.other-val'))
                         if ($this.next('.other-val').val().trim() === '') {
@@ -259,20 +447,55 @@ $(document).ready(function() {
                             // Add an inline error message
                             $this.addClass('error'); // Add a class to highlight the field
                             if ($this.next('.error-message').length === 0) {
-                                $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                $this.closest('.checkbox-group').after('<span class="error-message">' + othererrorMessage + '</span>');
+                            }
+                        }else{
+                            $this.removeClass('error');
+                            $this.closest('.checkbox-group').next('.error-message').remove();
+                        }
+                    }else {
+                        // alert("test");
+                        $this.removeClass('error');
+                        $this.closest('.checkbox-group').next('.error-message').remove();
+                    }
+                }else if ($(this).attr('type') === 'radio') {
+                    // alert($(this).attr('type'));
+                    othererrorMessage="Please fill out this other field.";
+                    if ($this.closest('.other-option').is(':checked')) {
+                        // alert($this.next('.other-val'))
+                        if ($this.next('.other-val').val().trim() === '') {
+                            isValid = false;
+                            // Add an inline error message
+                            $this.addClass('error'); // Add a class to highlight the field
+                            if ($this.next('.error-message').length === 0) {
+                                $this.closest('.radio-group').after('<span class="error-message">' + othererrorMessage + '</span>');
                             }
                         }else{
                             $this.removeClass('error');
                             $this.closest('.radio-group').next('.error-message').remove();
-                            $this.closest('.checkbox-group').next('.error-message').remove();
                         }
-                    }else{
+                    }else {
                         // alert("test");
                         $this.removeClass('error');
                         $this.closest('.radio-group').next('.error-message').remove();
-                        $this.closest('.checkbox-group').next('.error-message').remove();
+                    }
+                }else if ($(this).attr('type') === 'email') {
+                        var emailValue = $(this).val();
+                        
+                        // Regular expression for validating email
+                        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        
+                        if (emailValue && !emailRegex.test(emailValue)) {
+                            isValid = false;
+                            $this.addClass('error');
+                            if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                $this.closest('.form-group').after('<span class="error-message">Please enter a valid Email</span>');
+                            }
+                        }else{
+                            $this.closest('.form-group').removeClass('error');
+                            $this.closest('.form-group').next('.error-message').remove();
                         }
-                }
+                    }
             }
             
             // if($(this).attr('type') === 'checkbox' ) {
@@ -324,18 +547,12 @@ $(document).ready(function() {
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
                                     $this.after('<span class="error-message">Invalid file type/s. Please upload valid file/s</span>');
-                                }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
                                 }
                             }else if (files[i].size > maxSize) {
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
                                     $this.after('<span class="error-message">One or more selected files exceed 2 MB. Please choose smaller files.</span>');
-                                }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
                                 }
                             }else{
                                 // alert("no");
@@ -353,18 +570,12 @@ $(document).ready(function() {
                             $this.addClass('error');
                             if ($this.next('.error-message').length === 0) {
                                 $this.after('<span class="error-message">Invalid file type/s. Please upload valid file/s</span>');
-                            }else{
-                                $this.removeClass('error');
-                                $this.closest('.radio-group').next('.error-message').remove();
                             }
                         }else if (files[0].size > maxSize) {
                                 isValid = false;
                                 $this.addClass('error');
                                 if ($this.next('.error-message').length === 0) {
                                     $this.after('<span class="error-message">The selected file exceeds 2 MB. Please choose a smaller file.</span>');
-                                }else{
-                                    $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
                                 }
                         }else{
                             $this.removeClass('error');
@@ -378,9 +589,6 @@ $(document).ready(function() {
                         $this.addClass('error');
                         if ($this.next('.error-message').length === 0) {
                             $this.after('<span class="error-message">' + errorMessage + '</span>');
-                        }else{
-                            $this.removeClass('error');
-                            $this.closest('.radio-group').next('.error-message').remove();
                         }
                     }else{
                             $this.removeClass('error');
@@ -443,20 +651,30 @@ $(document).ready(function() {
             if ($this.prop('required')) {
 
                 if ($this.is('select')) {
+                   
                     // Check if a value is selected in the dropdown
                     if ($this.val() === null || $this.val() === '') {
-                        if ($('#other-text').val().trim() === '') {
-                            //skip if other text box is not selected
-                        }else{
+                        if ($this.val() === null){
                             isValid = false;
                             $this.addClass('error');
                             if ($this.next('.error-message').length === 0) {
                                 $this.after('<span class="error-message">' + errorMessage + '</span>');
                             }
+                        }else{
+                            if ($('#other-text').val().trim() === '') {
+                                //skip if other text box is not selected
+                            }else{
+                                isValid = false;
+                                $this.addClass('error');
+                                if ($this.next('.error-message').length === 0) {
+                                    $this.after('<span class="error-message">' + errorMessage + '</span>');
+                                }
+                            }
                         }
+                        
                     } else {
-                    $this.removeClass('error');
-                    $this.next('.error-message').remove();
+                    // $this.removeClass('error');
+                    // $this.next('.error-message').remove();
                         
                     }
                 }
@@ -550,7 +768,18 @@ $(document).ready(function() {
             // Add custom fields to the FormData object
             formDataObj.append('form_id', <?php echo $form_id; ?>);
 
-            console.log('Form Data:', formDataObj); // Debugging line
+            // console.log('Form Data:', formDataObj); // Debugging line
+            //  // Collect files again or use pre-collected file data
+            // $('input[type="file"]').each(function() {
+            //     const fieldName = $(this).attr('name');
+            //     const files = this.files;
+
+            //     for (let i = 0; i < files.length; i++) {
+            //         // Append each file with a unique key in FormData
+            //         formDataObj.append(`${fieldName}[]`, files[i]); // Use field name as key
+            //     }
+            // });
+            
             $('#rendered-form').find('select, input[type="radio"], input[type="checkbox"]').each(function() {
                 // Capture the form data
                 var formData = $('#rendered-form').serializeArray(); // Serialize form data into an array of name-value pairs

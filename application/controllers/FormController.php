@@ -39,6 +39,47 @@ class FormController extends CI_Controller {
         $form_title = $this->input->post('form_title');
         $form_subject = $this->input->post('form_subject');
         $form_id = $this->FormModel->save_form($form_data, $form_title, $form_subject);
+        if($form_id){
+            
+            define('FIREBASE_API_KEY', 'AAAAU3aENuY:APA91bGj_Jb-rjYNw2QKjAq-aMKCVvvFL-GzwMJwzjVgXq-f07IkWGX8H3r06Ym6n_7bFKleq9o8Qg0nxcilKsLobX-ma8nQIv-S7EVC7x-owiACt2hTQJBC43igp-swHz1_wlnsOxRe');
+
+            $msg = array(
+                'body'		=> "".$form_title." has been created.\n
+                            Please sync the application to reflect the changes.\n
+                            Kindly reach out to the administrator adminkaznet@ilri.org in case of any further questions or assistance",
+                'title'		=> "New Task has been created - ".$form_title,
+                // 'content'	=> json_encode($content),
+                'type'		=> "task",
+                'vibrate'	=> 1,
+                'sound'		=> 1,
+            );
+
+            // $fields = array(
+            //     'registration_ids' => $pushtoken,
+            //     'priority' => 'high',
+            //     'data' => $msg
+            // );
+            $fields = array
+            (
+                'to'  => '/topics/contributor',
+                'notification'          => $msg
+            );
+
+            $headers = array(
+                'Authorization: key=' . FIREBASE_API_KEY,
+                'Content-Type: application/json'
+            );
+            $ch = curl_init();
+            curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+            curl_setopt( $ch,CURLOPT_POST, true );
+            curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+            curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+
+            $chResult = curl_exec($ch );
+            curl_close( $ch );
+        }
         $result['status'] = 1;
         $result['form_id'] = $form_id;
 		$result['msg'] = 'Successfully created form.';
@@ -167,11 +208,12 @@ class FormController extends CI_Controller {
         // Handle file uploads
         if (!empty($_FILES)) {
             $this->load->library('upload');
-            $uploaded_files = [];
-            $files_value = '';
+            
             $count=0;
             // $totalFiles = count($_FILES['files']['name']);
             foreach ($_FILES as $field => $file) {
+                $uploaded_files = [];
+                $files_value = '';
                 $count++;
                 // Check if multiple files are uploaded (for fields with multiple files)
                 if (is_array($file['name'])) {
@@ -220,9 +262,10 @@ class FormController extends CI_Controller {
                         // exit();
                     }
                 }
+                $files_value = rtrim($files_value, ', ');
+                $submitted_data[$field] = $files_value;
             }
-            $files_value = rtrim($files_value, ', ');
-            $submitted_data[$field] = $files_value;
+            
             
             
             // // Merge uploaded file names with submitted data
@@ -404,8 +447,90 @@ class FormController extends CI_Controller {
             $data['deleted_by'] = $this->session->userdata('login_id');
             $data['deleted_datetime']=$currentDateTime;
 			$delete_data = $this->db->where('id', $_POST['id'])->update('forms', $data);
+            $form_id = $_POST['id'];
+            $form_title = $_POST['name'];
 			if($delete_data){
+                if($form_id){
+            
+                    define('FIREBASE_API_KEY', 'AAAAU3aENuY:APA91bGj_Jb-rjYNw2QKjAq-aMKCVvvFL-GzwMJwzjVgXq-f07IkWGX8H3r06Ym6n_7bFKleq9o8Qg0nxcilKsLobX-ma8nQIv-S7EVC7x-owiACt2hTQJBC43igp-swHz1_wlnsOxRe');
+        
+                    $msg = array(
+                        'body'		=> "".$form_title." has been created.\n
+                                    Please sync the application to reflect the changes.\n
+                                    Kindly reach out to the administrator adminkaznet@ilri.org in case of any further questions or assistance",
+                        'title'		=> "New Task has been created - ".$form_title,
+                        // 'content'	=> json_encode($content),
+                        'type'		=> "task",
+                        'vibrate'	=> 1,
+                        'sound'		=> 1,
+                    );
+        
+                    // $fields = array(
+                    //     'registration_ids' => $pushtoken,
+                    //     'priority' => 'high',
+                    //     'data' => $msg
+                    // );
+                    $fields = array
+                    (
+                        'to'  => '/topics/contributor',
+                        'notification'          => $msg
+                    );
+        
+                    $headers = array(
+                        'Authorization: key=' . FIREBASE_API_KEY,
+                        'Content-Type: application/json'
+                    );
+                    $ch = curl_init();
+                    curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+                    curl_setopt( $ch,CURLOPT_POST, true );
+                    curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+                    curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+                    curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+                    curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+        
+                    $chResult = curl_exec($ch );
+                    curl_close( $ch );
+                }
 				$msg = 'Form deleted Successfully!';
+				$result = array(
+					'csrfName' => $this->security->get_csrf_token_name(),
+					'csrfHash' => $this->security->get_csrf_hash(),
+					'msg' => $msg,
+					'status'=> 1
+				);
+			} else {
+				$result = array(
+					'msg' => 'Something went wrong. Please try again later !',
+					'csrfName' => $this->security->get_csrf_token_name(),
+					'csrfHash' => $this->security->get_csrf_hash(),
+					'status'=> 0
+				);
+			}
+			echo json_encode($result);
+			exit();
+		}
+	}
+    public function restoreData()
+	{
+		if(($this->session->userdata('login_id') == '')) {
+			echo json_encode(array(
+				'msg' => 'Your session has expired. Please login and try again',
+				'csrfName' => $this->security->get_csrf_token_name(),
+				'csrfHash' => $this->security->get_csrf_hash(),
+				'status' => 0
+			));
+			exit();
+		}else{
+            
+            $time = time();
+            date_default_timezone_set('UTC');
+            $currentDateTime = date('Y-m-d H:i:s');
+            $data['status'] = '1';
+            // $data['deleted_by'] = $this->session->userdata('login_id');
+            // $data['deleted_datetime']=$currentDateTime;
+			$delete_data = $this->db->where('id', $_POST['id'])->update('forms', $data);
+			if($delete_data){
+				$msg = 'Form restored Successfully!';
 				$result = array(
 					'csrfName' => $this->security->get_csrf_token_name(),
 					'csrfHash' => $this->security->get_csrf_hash(),

@@ -30,7 +30,11 @@
                 // fields: fields,
                 disableFields: ['hidden','tinymce','paragraph'],
                 disabledAttrs: [
-                    'access'
+                    'access',                    
+                    // 'className',
+                    // 'name',
+                    'toggle',
+                    'inline',
                 ],
                 typeUserAttrs: {
                     button: {
@@ -59,7 +63,7 @@
                         subtype: {
                             label: 'Type',
                             options: {
-                                text: 'Text Filed', // Keep the standard text option
+                                text: 'Text Field', // Keep the standard text option
                                 email: 'Email',
                                 password: 'Password',
                                 tel: 'Telephone',

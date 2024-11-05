@@ -279,7 +279,12 @@
     });
     // Function to map values to labels
     function mapValuesToLabels(data, options) {
+		// return data.filter(value => options.some(opt => opt.value === value))
+		// 		.map(value => {
         return data.map(value => {
+			if (!value) {  // Check if the value is empty, null, or undefined
+				return 'N/A';
+			}
             let option = options.find(opt => opt.value === value);
             return option ? option.label : value;
         });
@@ -347,7 +352,7 @@
 				for (const key in fields) {
 					const label = fields[key]['label'];
 					const type = fields[key]['type'];
-					if(label != "Declaration" && type !="paragraph"){ //added by sagar to skip paragraph in display
+					if(label != "Declaration" && type !="paragraph" && type !="button"){ //added by sagar to skip paragraph in display
 						td_count++;
 						if (type == 'kml') {
 							if(survey_id == 5){
@@ -363,6 +368,8 @@
 				}
                 tableHead += `<th>Uploaded By</th>`;
                 tableHead += `<th>Uploaded Date</th>`;
+                tableHead += `<th>Latitude</th>`;
+                tableHead += `<th>Longitude</th>`;
 				$('#submited_head').html(tableHead);
 
 				$('#submited_body').html("");
@@ -400,19 +407,30 @@
                                         displayData = mapValuesToLabels(JSON.parse(submitedData[k][field]), fieldOPtions);
                                     }
                                 }else{
-                                    // Ensure data is an array
-                                    if (!Array.isArray(submitedData[k][field])) {
-                                        submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
-                                    }
+                                    
 									if(multiple){ // check if multiple
 										// if (isArrayEmpty(JSON.parse(submitedData[k][field])) ) {
-										if (isArrayEmptyOrNull(JSON.parse(submitedData[k][field])) ) {
+										// if (isArrayEmptyOrNull(JSON.parse(submitedData[k][field])) ) {
+										if (isArrayEmptyOrNull(submitedData[k][field]) ) {
 											displayData = "N/A";
-										}else{
-											// displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
+										}else if (Array.isArray(submitedData[k][field])) {
+											// Ensure data is an array
+											if (!Array.isArray(submitedData[k][field])) {
+												submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
+											}
 											displayData = mapValuesToLabels(JSON.parse(submitedData[k][field]), fieldOPtions);
+										}else{
+											// Ensure data is an array
+											if (!Array.isArray(submitedData[k][field])) {
+												submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
+											}
+											displayData = mapValuesToLabels(submitedData[k][field], fieldOPtions);
 										}
 									}else{ // check if single
+										// Ensure data is an array
+										if (!Array.isArray(submitedData[k][field])) {
+												submitedData[k][field] = [submitedData[k][field]]; // Wrap the single object in an array
+											}
 										// if (isArrayEmpty(submitedData[k][field]) ) {
 										if (isArrayEmptyOrNull(submitedData[k][field])) {
 											displayData = "N/A";
@@ -424,13 +442,13 @@
                                 }
 
                             }
-                            if(label != "Declaration" && type !="paragraph"){ //added by sagar to skip paragraph in display
+                            if(label != "Declaration" && type !="paragraph" && type !="button"){ //added by sagar to skip paragraph in display
                                 tableBody += `<td>`;
                                 if(type=="checkbox-group" || type=="radio-group" || type=="select" || type=='autocomplete'){
-                                    tableBody +=(displayData == null ? `N/A` :displayData);
+                                    tableBody +=(displayData == null  || displayData === "" ? `N/A` :displayData);
                                     // tableBody += (submitedData[k][field] == null ? `N/A` : submitedData[k][field] );
                                 }else{
-                                    tableBody += (submitedData[k][field] == null ? `N/A` : submitedData[k][field] );
+                                    tableBody += (submitedData[k][field] == null || submitedData[k][field] === "" ? `N/A` : submitedData[k][field] );
                                 }
                                 tableBody += `</td>`;
                             }
@@ -678,6 +696,8 @@
 						}
                         tableBody += `<td>`+ submitedData[k]['first_name'] +` `+ submitedData[k]['last_name'] +`</td>`;
                         tableBody += `<td>`+ submitedData[k]['datetime'] +`</td>`;
+                        tableBody += `<td>`+ (submitedData[k]['latitude'] == null ? `N/A` : submitedData[k]['latitude'] )+`</td>`;
+                        tableBody += `<td>`+ (submitedData[k]['longitude'] == null ? `N/A` : submitedData[k]['longitude'] ) +`</td>`;
 						tableBody += `</tr>`;
 
 						

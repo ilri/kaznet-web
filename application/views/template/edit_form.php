@@ -21,7 +21,7 @@
             </div>
 
             <div id="fb-editor"></div>
-            <button id="save-form" class="btn btn-primary mt-3">Save Form</button>
+            <button id="save-form" class="btn btn-primary mt-3">Update Form</button>
         </div>
 
         <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -53,9 +53,14 @@
                     // fields: fields,
                     disableFields: ['hidden','tinymce','paragraph'],
                     disabledAttrs: [
-                        'access'
+                        'access',
+                        // 'className',
+                        // 'name',
+                        'toggle',
+                        'inline',
                     ],
                     typeUserAttrs: {
+
                         button: {
                             
                             subtype: {
@@ -82,7 +87,7 @@
                             subtype: {
                                 label: 'Type',
                                 options: {
-                                    text: 'Text Filed', // Keep the standard text option
+                                    text: 'Text Field', // Keep the standard text option
                                     email: 'Email',
                                     password: 'Password',
                                     tel: 'Telephone',
@@ -90,7 +95,10 @@
                                     number: 'Number'
                                     // Note: Do not include 'color' here to hide it from the dropdown
                                 }
-                            }
+                            },
+                            // attrs: {
+                            //     disabled: true // Disables the className field but keeps it visible
+                            // }
                         },
                         textarea: {
                             subtype: {
@@ -128,6 +136,32 @@
                         }
 
                     },
+                    '*': { // '*' applies to all field types
+                        className: {
+                            label: 'Class Name',
+                            type: 'text',
+                            value: '', // Default value for className
+                            attrs: {
+                                disabled: true // Disables the className field but keeps it visible
+                            }
+                            },
+                            name: {
+                            label: 'Name',
+                            type: 'text',
+                            value: '', // Default value for name
+                            attrs: {
+                                disabled: true // Disables the name field but keeps it visible
+                            }
+                            }
+                    },
+                    onAddField: function(fieldId, fieldData) {
+                    // Callback for field addition if needed
+                    },
+                    onEditField: function($field) {
+                    // Any additional actions when a field is edited
+                    },
+
+
                     // Other options
                     // disabledActionButtons: ['data'],  // Disable the 'View Data' button
                     // showActionButtons: false,  // Hide default action buttons
@@ -141,10 +175,26 @@
 
                 
             
-
+                // Delete user
+                $('body').on('click', '#save-form', function(event) {
+                    var elem = $(this);
+                    swal({
+                        title: "Are you sure?",
+                        text: "you want to Update form",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-danger",
+                        confirmButtonText: "Yes, Update it!"
+                    }, function() {
+                        // elem.addClass('disabled');
+                        // elem.html('Please Wait.... Deleting form.');
+                        editData(elem);
+                    });
+                });
                 // Save updated form data
                 // $('#save-form').on('click', function() {
-                $('#save-form').click(function(e) {
+                // $('#save-form').click(function(e) {
+                function editData(elem){
                     // e.preventDefault(); // Prevent default form submission
                     // Force the builder to update its internal state
                     fb.actions.save();
@@ -323,7 +373,8 @@
                         //     }
                         // });
                     }
-                });
+                // });
+                }
 
             });
         </script>

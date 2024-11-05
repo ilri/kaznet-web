@@ -341,7 +341,7 @@
                                         <div class="table-responsive" style="height:65vh;">
                                             <div class="loaders" id="info_data">
                                                 <div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-                                                    <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
+                                                    <!-- <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p> -->
                                                 </div>
                                             </div>
                                             <table class="table table-striped" style="width:100%">
@@ -464,7 +464,7 @@
                             }else{
                                 $added_name = submitedData[k]['first_name'] +` `+ submitedData[k]['last_name']
                             }
-                            tableBody = `<tr class="`+data_id+` text-left" data-id="`+data_id+`">`;
+                            tableBody = `<tr class="`+data_id+` text-left" data-id="`+data_id+`" data-name="`+submitedData[k]['title']+`">`;
                             
                             tableBody += `<td>`+ count++ +`</td>`;
                             
@@ -474,11 +474,11 @@
                             tableBody += `<td>`;
                             tableBody += submitedData[k]['datetime'] != null ? submitedData[k]['datetime']  : `N/A`;
                             tableBody += `</td>`;
-                            tableBody += `<td><a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form  ">View form</a> `;
-                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-data  ">View data</a> </br>`;
+                            tableBody += `<td><div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form  ">View form</a> `;
+                            tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-data ml-2">View data</a></div>`;
                             if(role==1){
-                                tableBody += `<a href="#" class="delete_submited  btn btn-outline-delete mt-1" onClick="deleteData(event);" data-id="`+data_id+`">Delete form</a>`;
-                                tableBody += `<a href="<?php echo base_url(); ?>FormController/edit_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-edit mt-1 mx-1">Edit form</a></td>`;
+                                tableBody += `<div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/edit_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-edit mt-1 mx-1 ">Edit form</a>`;
+                                tableBody += `<a href="#" class="delete_submited  btn btn-outline-delete mt-1 ml-2" onClick="deleteData(event);" data-id="`+data_id+`">Inactivate</a></div></td>`;
                             }else{
                                 tableBody += `</td>`;
                             }
@@ -611,8 +611,9 @@
                             tableBody += submitedData[k]['deleted_datetime'] != null ? submitedData[k]['deleted_datetime']  : `N/A`;
                             tableBody += `</td>`;
                             // tableBody += `<td><div> <a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-info btn-sm">View form</a> `;
-                            tableBody += `<td><a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form ">View data</a></div></td>`;
-                            // tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-secondary btn-sm mr-2">Delete form</a></td>`;
+                            tableBody += `<td><div style="display: flex;align-items: center;white-space: nowrap;"> <a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form ">View data</a>`;
+                            // tableBody += `<a href="#" class="restore_data btn btn-outline-view-form"  onClick="restoreData(event);" data-id="`+data_id+`">Restore</a></td>`;
+                            tableBody += `<a href="#" class="restore_data btn btn-outline-view-data ml-2"  onClick="restoreData(event);" data-id="`+data_id+`">Activate </a></div></td>`;
                             tableBody += `</tr>`;
                             
                             $('#approved_body').append(tableBody);
@@ -677,21 +678,23 @@
             var elem = $(this);
             swal({
                 title: "Are you sure?",
-                text: "you want to delete delete form",
+                text: "you want to Inactivate form",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Yes, Inactivate it!"
             }, function() {
                 elem.addClass('disabled');
-                elem.html('Please Wait.... Deleting form.');
+                // elem.html('Please Wait.... Deleting form.');
                 deleteData(elem);
             });
         });
         function deleteData(elem){
             var ajaxData = {};
             var id = elem.closest('tr').data('id');
+            var name = elem.closest('tr').data('name');
             ajaxData['id'] = id;
+            ajaxData['name'] = name;
             $.ajax({
                 url: '<?php echo base_url(); ?>FormController/deleteData/',
                 data: ajaxData,
@@ -716,6 +719,69 @@
                 success: function(data) {
                     $(this).removeClass('disabled');
                     $(this).html('<i class="fa password" aria-hidden="true"></i> Delete');	      
+                    if(data.status == 0) {
+                        $.toast({
+                            heading: 'Error!',
+                            text: data.msg,
+                            icon: 'error'
+                        });
+                        return false;
+                    }
+                    $.toast({
+                        heading: 'Success!',
+                        text: data.msg,
+                        icon: 'success',
+                        afterHidden: function () {
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        }
+        // Delete user
+        $('body').on('click', '.restore_data', function(event) {
+            var elem = $(this);
+            swal({
+                title: "Are you sure?",
+                text: "you want to activate form",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes, activate it!"
+            }, function() {
+                elem.addClass('disabled');
+                // elem.html('Please Wait.... Deleting form.');
+                restoreData(elem);
+            });
+        });
+        function restoreData(elem){
+            var ajaxData = {};
+            var id = elem.closest('tr').data('id');
+            ajaxData['id'] = id;
+            $.ajax({
+                url: '<?php echo base_url(); ?>FormController/restoreData/',
+                data: ajaxData,
+                type: 'POST',
+                dataType: 'json',
+                complete: function(data) {
+                var csrfData = JSON.parse(data.responseText);
+                ajaxData[csrfData.csrfName] = csrfData.csrfHash;
+                if(csrfData.csrfName && $('input[name="' + csrfData.csrfName + '"]').length > 0) {
+                    $('input[name="' + csrfData.csrfName + '"]').val(csrfData.csrfHash);
+                }
+                },
+                error: function() {
+                $.toast({
+                    heading: 'Network Error!',
+                    text: 'Could not establish connection to server. Please refresh the page and try again.',
+                    icon: 'error'
+                });
+                elem.removeClass('disabled');
+                //   elem.html('<i class="fa deleted" aria-hidden="true"></i> Delete');
+                },
+                success: function(data) {
+                    $(this).removeClass('disabled');
+                    // $(this).html('<i class="fa password" aria-hidden="true"></i> Delete');	      
                     if(data.status == 0) {
                         $.toast({
                             heading: 'Error!',

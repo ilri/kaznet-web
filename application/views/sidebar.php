@@ -73,6 +73,33 @@
                     </li> -->
                 </ul>
             </li>
+            <!-- <li class="<?php echo(($this->uri->segment(1)) == 'FormAssignController' ? 'active' : '');?>">
+                <a href="#formSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <span class="logo-img-mt-4">
+                        <svg width="26" height="22" viewBox="0 0 26 22" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" class="bg <?php echo(($this->uri->segment(1)) == 'FormAssignController' ? 'active' : '');?>">
+                            <path
+                                d="M16.2501 5.04167C15.6521 5.04167 15.1667 4.55634 15.1667 3.95834V2.33334H10.8334V3.95834C10.8334 4.55634 10.3481 5.04167 9.75008 5.04167C9.15208 5.04167 8.66675 4.55634 8.66675 3.95834V2.33334C8.66675 1.13842 9.6385 0.166672 10.8334 0.166672H15.1667C16.3617 0.166672 17.3334 1.13842 17.3334 2.33334V3.95834C17.3334 4.55634 16.8481 5.04167 16.2501 5.04167Z" />
+                            <path
+                                d="M13.7692 14.6617C13.5742 14.7375 13.2925 14.7917 13 14.7917C12.7075 14.7917 12.4258 14.7375 12.1658 14.64L0 10.5883V18.8542C0 20.5008 1.3325 21.8333 2.97917 21.8333H23.0208C24.6675 21.8333 26 20.5008 26 18.8542V10.5883L13.7692 14.6617Z" />
+                            <path
+                                d="M26 6.39584V8.87667L13.26 13.1233C13.1733 13.1558 13.0867 13.1667 13 13.1667C12.9133 13.1667 12.8267 13.1558 12.74 13.1233L0 8.87667V6.39584C0 4.74917 1.3325 3.41667 2.97917 3.41667H23.0208C24.6675 3.41667 26 4.74917 26 6.39584Z" />
+                        </svg>
+                    </span>
+                    <span class="collapse-text-none-nav mb-0">Form Task Management</span>
+                </a>
+                <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'FormAssignController' ? 'show' : '');?>" id="formSubmenu">
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormAssignController/manage_task" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_task' ? 'active' : '');?>">Manage Tasks</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormAssignController/f_assign_task" class="sub-menu <?php echo(($this->uri->segment(2)) == 'assign_task' ? 'active' : '');?>">Assign Task</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormAssignController/f_task_contributer" class="sub-menu <?php echo(($this->uri->segment(2)) == 'task_contributor' ? 'active' : '');?>">Task Contributor</a>
+                    </li>
+                </ul>
+            </li> -->
             
             <li class="<?php echo(($this->uri->segment(1)) == 'users' ? 'active' : '');?>">
                 <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">

@@ -540,7 +540,7 @@
 			</div>`;
 		$('#submited_body').html(imageLoader);
 		$.ajax({
-			url: "<?php echo base_url(); ?>survey/get_task_contributers/<?php echo $task_id; ?>",
+			url: "<?php echo base_url(); ?>FormAssignController/get_task_contributers/<?php echo $task_id; ?>",
 			data: query_data,
 			type: "POST",
 			dataType: "JSON",
@@ -796,7 +796,7 @@ function unassignUser(elem){
   ajaxData['assignee_id'] = elem.closest('tr').data('id');
   
   $.ajax({
-    url: '<?php echo base_url(); ?>survey/unassign_task_user/',
+    url: '<?php echo base_url(); ?>FormAssignController/unassign_task_user/',
     data: ajaxData,
     type: 'POST',
     dataType: 'json',
@@ -902,7 +902,7 @@ function unassignUser(elem){
     function unassignMultipleUser(formData, status) {
         $('body').find('button.verify').prop('disabled', true);
         $.ajax({
-            url: '<?php echo base_url(); ?>survey/unassign_task_multiple_user/<?php echo $this->uri->segment(3); ?>',
+            url: '<?php echo base_url(); ?>FormAssignController/unassign_task_multiple_user/<?php echo $this->uri->segment(3); ?>',
             type: 'POST',
             data: formData,
             processData: false,

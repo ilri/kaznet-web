@@ -2371,12 +2371,13 @@ class Reports_model extends CI_Model {
         }
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.wet_pasture_name',$data['search_input']); // wet_pasture_name
-            $this->db->or_like('rp.dry_pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
             $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->result_array();
+		// $submited_data = $this->db->order_by('rp.id', 'DESC')->get();
         // print_r($this->db->last_query());exit();
         return $submited_data;
     }
@@ -2413,8 +2414,8 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.pa_verified_status', 1);
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.wet_pasture_name',$data['search_input']); // wet_pasture_name
-            $this->db->or_like('rp.dry_pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
             $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
@@ -2459,11 +2460,9 @@ class Reports_model extends CI_Model {
         }
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.first_name',$data['search_input']); // First name
-            $this->db->or_like('rp.last_name',$data['search_input']); // last Name
-            $this->db->or_like('rp.mobile_number',$data['search_input']); // Phonenumber
-            $this->db->or_like('rp.hhid',$data['search_input']); // hhid
-            $this->db->or_like('rp.username',$data['search_input']); // Farmer user name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->result_array();
@@ -2503,11 +2502,9 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.pa_verified_status', 2);
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.first_name',$data['search_input']); // First name
-            $this->db->or_like('rp.last_name',$data['search_input']); // last Name
-            $this->db->or_like('rp.mobile_number',$data['search_input']); // Phonenumber
-            $this->db->or_like('rp.hhid',$data['search_input']); // hhid
-            $this->db->or_like('rp.username',$data['search_input']); // Farmer user name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();
@@ -2551,11 +2548,9 @@ class Reports_model extends CI_Model {
         }
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.first_name',$data['search_input']); // First name
-            $this->db->or_like('rp.last_name',$data['search_input']); // last Name
-            $this->db->or_like('rp.mobile_number',$data['search_input']); // Phonenumber
-            $this->db->or_like('rp.hhid',$data['search_input']); // hhid
-            $this->db->or_like('rp.username',$data['search_input']); // Farmer user name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->result_array();
@@ -2595,11 +2590,9 @@ class Reports_model extends CI_Model {
 		$this->db->where('rp.pa_verified_status', 3);
         if($data['is_search']){
             $this->db->group_start();
-            $this->db->or_like('rp.first_name',$data['search_input']); // First name
-            $this->db->or_like('rp.last_name',$data['search_input']); // last Name
-            $this->db->or_like('rp.mobile_number',$data['search_input']); // Phonenumber
-            $this->db->or_like('rp.hhid',$data['search_input']); // hhid
-            $this->db->or_like('rp.username',$data['search_input']); // Farmer user name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // wet_pasture_name
+            $this->db->or_like('rp.pasture_name',$data['search_input']); // dry_pasture_name
+            $this->db->or_like('rp.contributor_name',$data['search_input']); // Contributor name
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->num_rows();

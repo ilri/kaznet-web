@@ -723,6 +723,7 @@
                 var tableHead = `<tr style="position: sticky;top: -1px;z-index: 999;background-color: #2A2C36;background:black;">`;                
                 tableHead += `<th>S.No.</th>`;
                 tableHead += `<th>Contributor UserName</th>`;
+                tableHead += `<th>Contributor Status</th>`;
                 tableHead += `<th>Contributor Name</th>`;
                 tableHead += `<th>Task Name </th>`;
                 tableHead += `<th>Submitted </th>`;
@@ -755,7 +756,11 @@
                             case '1':
                                 contributorStatus="Active";
                                 break;
-                        
+
+                            case '2':
+                                contributorStatus="Rejected";
+                                break;
+                                
                             case '0':
                                 contributorStatus="Inactive";
                                 break;
@@ -773,11 +778,13 @@
                                 tasktableBody += `<td>`+ count++ +`</td>`;
                                 tasktableBody += `<td>`;
                                 if(submitedData[k]['username']){
-                                    tasktableBody += submitedData[k]['username']+' ('+contributorStatus+')';
+                                    tasktableBody += submitedData[k]['username'];
                                 }else{
                                     tasktableBody +="N/A";
                                 }
                                 tasktableBody += `</td>`;
+                                
+                                tasktableBody += `<td>`+ contributorStatus +`</td>`;
                                 tasktableBody += `<td>`;
                                 if(submitedData[k]['contributor_name']){
                                     tasktableBody += submitedData[k]['contributor_name'];
@@ -845,11 +852,12 @@
                         tableBody += `<td>`+  count++ +`</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['username']){
-                            tableBody += submitedData[k]['username']+' ('+contributorStatus+')';
+                            tableBody += submitedData[k]['username'];
                         }else{
                             tableBody +="N/A";
                         }
                         tableBody += `</td>`;
+                        tableBody += `<td>`+  contributorStatus +`</td>`;
                         tableBody += `<td>`;
                         if(submitedData[k]['contributor_name']){
                             tableBody += submitedData[k]['contributor_name'];
@@ -1279,10 +1287,10 @@
 				xcelHeader.push("S.No.")
 				tableHeaderFields.push('sno')
 
-				xcelHeader.push(...['CONTRIBUTOR USER NAME','CONTRIBUTOR NAME','TASK NAME','SUBMITTED','APPROVED','REJECTED','TASK AMOUNT','TRANSPORT','INTERNET BUNDLES','PAYMENT AMOUNT','MPESA NUMBER','BANK NAME','ACCOUNT NUMBER']);
+				xcelHeader.push(...['CONTRIBUTOR USER NAME','CONTRIBUTOR STATUS','CONTRIBUTOR NAME','TASK NAME','SUBMITTED','APPROVED','REJECTED','TASK AMOUNT','TRANSPORT','INTERNET BUNDLES','PAYMENT AMOUNT','MPESA NUMBER','BANK NAME','ACCOUNT NUMBER']);
 
 
-				tableHeaderFields.push(...['username','contributor_name','added_by','submitted','approved','rejected','task_amount','transport','int_bundles','payment_amount','mpesa_id','bank_name','account_number']);
+				tableHeaderFields.push(...['username','status','contributor_name','added_by','submitted','approved','rejected','task_amount','transport','int_bundles','payment_amount','mpesa_id','bank_name','account_number']);
 				
 
                 let tamount = 0;
@@ -1295,14 +1303,34 @@
 						const elemnt = submitedData[i];
                         const row = [];
                         var userTasksData = submitedData[i]['usertasksData'];
+                        //getting contributor status
+                        switch (submitedData[i]['status']) {
+                            case '1':
+                                contributorStatus="Active";
+                                break;
                         
+                            case '0':
+                                contributorStatus="Inactive";
+                                break;
+                        
+                            case '2':
+                                contributorStatus="Rejected";
+                                break;
+                        
+                            default:
+                                contributorStatus="N/A";
+                                break;
+                        }
                         if(userTasksData.length > 0){                            
                             for (let j=0; j<userTasksData.length; j++){
                                 const taskElement = userTasksData[j];
                                 const taskRow = [];
                                 // recordcount++
+                                var userName = elemnt['username'] || elemnt['username'] || 'N/A';
+                                // userName = userName +' ('+contributorStatus+')';
                                 taskRow.push(recordcount++);
-                                taskRow.push(elemnt['username'] || elemnt['username'] || 'N/A');
+                                taskRow.push(userName);
+                                taskRow.push(contributorStatus);
                                 taskRow.push(elemnt['contributor_name'] || elemnt['contributor_name'] || 'N/A');
                                 taskRow.push(taskElement['title'] || taskElement['title'] || 'N/A');
                                 taskRow.push(taskElement['submitted'] || taskElement['submitted'] || '0');
@@ -1325,6 +1353,14 @@
 						for (let k = 0; k < tableHeaderFields.length; k++) {
 							const key = tableHeaderFields[k];
                             switch (key) {
+                                case 'username':
+                                    row.push(userName || userName || 'N/A');
+                                    break;
+
+                                case 'status':
+                                    row.push(contributorStatus || contributorStatus || 'N/A');
+                                    break;
+                            
                                 case 'added_by':
                                     row.push('N/A');
                                     break;

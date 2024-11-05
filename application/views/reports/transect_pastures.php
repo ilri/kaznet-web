@@ -326,7 +326,7 @@
 										<div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
 											<span class="p-2 input_place hidden" id="text_approved_search">
 												<div class="ml-auto">
-												<input type="text" id="user_approved_search" class="search form-control approved_search" placeholder=" (Search on Name, Phone Number) ">
+												<input type="text" id="user_approved_search" class="search form-control approved_search" placeholder="(Search on Contributor Name, Wet or Dry Pasture Name)">
 												<span class="search_icon" onClick="searchApprovedFilter();"><i class="fa fa-search text-white"></i></span>
 												</div>
 											</span>
@@ -346,7 +346,7 @@
 										<div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
 											<div class="input_place p-2 hidden" id="text_rejected_search">
 												<div class="ml-auto">
-												<input type="text" id="user_rejected_search" class="search form-control rejected_search" placeholder="(Search on Name, Phone Number)">
+												<input type="text" id="user_rejected_search" class="search form-control rejected_search" placeholder="(Search on Contributor Name, Wet or Dry Pasture Name)">
 												<span class="search_icon" onClick="searchRejectedFilter();"><i class="fa fa-search text-white"></i></span>
 												</div>
 											</div>

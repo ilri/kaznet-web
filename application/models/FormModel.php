@@ -86,9 +86,9 @@ class FormModel extends CI_Model {
         // }
         
         if($data['status'] != null){
-            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by where f.status = ".$data['status']." ";
+            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by where f.status = ".$data['status']." order by f.id DESC ";
         }else{
-            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by ";
+            $query ="select f.*,tu.first_name,tu.last_name,tu1.first_name d_f_name,tu1.last_name as d_l_name from forms f left outer join tbl_users as tu on tu.user_id= f.added_by  left outer join tbl_users as tu1 on tu1.user_id= f.deleted_by order by f.id DESC ";
         }
         if($data['is_pagination']){
             $query .= "LIMIT ".$recordcounttoprint.",".$data['record_per_page']."";
@@ -120,7 +120,7 @@ class FormModel extends CI_Model {
         $query = "";
         if(isset($columns) && count($columns) > 0) {
             // $query = "SELECT s.id, s.form_id,s.user_id,s.datetime";
-            $query = "SELECT s.id, s.form_id,s.user_id,s.datetime,u.first_name,u.last_name";
+            $query = "SELECT s.id, s.form_id,s.user_id,s.datetime,s.latitude,s.longitude,u.first_name,u.last_name";
             foreach ($columns as $key => $col) {
                 $col = (array)$col;
                 $columns[$key] = $col;
