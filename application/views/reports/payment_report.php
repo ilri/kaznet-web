@@ -585,6 +585,9 @@
                 
                 if(submitedData.length > 0){
                     var tableBody ="";
+                    var tempAmt = 0;
+                    var tempsubmt = 0;
+                    var tempreject = 0;
                     var count = (pageNo*recordperpage-recordperpage+1);
                     for (let k = 0; k < submitedData.length; k++) {
                         var id = submitedData[k]['id'];
@@ -601,6 +604,7 @@
                         tableBody += `<td>`;
                         if(submitedData[k]['payment_amount']){
                             tableBody += submitedData[k]['payment_amount'];
+                            tempAmt =  tempAmt + submitedData[k]['payment_amount'];
                         }else{
                             tableBody +="0";
                         }
@@ -615,6 +619,7 @@
                         tableBody += `<td>`;
                         if(submitedData[k]['submitted']){
                             tableBody += submitedData[k]['submitted'];
+                            tempsubmt = tempsubmt + submitedData[k]['submitted'];
                         }else{
                             tableBody +="0";
                         }
@@ -622,6 +627,7 @@
                         tableBody += `<td>`;
                         if(submitedData[k]['rejected']){
                             tableBody += submitedData[k]['rejected'];
+                            tempreject = tempreject + submitedData[k]['rejected'];
                         }else{
                             tableBody +="0";
                         }
@@ -630,11 +636,15 @@
                         $('#submited_body').append(tableBody);                        
                     }
                     $('#overlay').fadeOut();
-						$('#loader').fadeOut();
+					$('#loader').fadeOut();
+                    if(tempAmt == 0 && tempsubmt == 0 && tempreject == 0){
+                        $('#export_sub_task').addClass('hidden');
+                    }
                 }else{
+                    
                     $('#submited_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
                     $('#overlay').fadeOut();
-						$('#loader').fadeOut();
+					$('#loader').fadeOut();
                 }
 				const curentPage = pageNo;
 				const totalRecordsPerPage = recordperpage;
@@ -957,11 +967,12 @@
                         $('#approved_body').append(tableBody);                        
                     }
                     $('#overlay').fadeOut();
-						$('#loader').fadeOut();
+					$('#loader').fadeOut();
                 }else{
                     $('#approved_body').html('<tr><td class="nodata" colspan="55"><h5 class="text-danger">No Data Found</h5></td></tr>');
                     $('#overlay').fadeOut();
-						$('#loader').fadeOut();
+                    $('#loader').fadeOut();
+                    $('#export_sub').addClass('hidden');
                 }
 				const curentPage = pageNo;
 				const totalRecordsPerPage = recordperpage;

@@ -2986,7 +2986,7 @@ class Reports_model extends CI_Model {
         if(!empty($data['contributor_id'])) {
             $this->db->where('tu.user_id', $data['contributor_id']);
         }
-        $this->db->group_by('tul.user_id');
+        $this->db->group_by('tul.user_id, tul.country_id, tul.sub_loc_id, tul.cluster_id, tul.uai_id, tu.user_id');
         // $this->db->where('uai_id !=', NULL);
 		// $this->db->where('tu.status', 1);
         // $this->db->where('tul.status', 1);

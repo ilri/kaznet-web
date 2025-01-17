@@ -73,7 +73,7 @@
             <div class="col-sm-12 col-md-12 col-lg-12 mt-3">
                 <nav>
                     <ol class="breadcrumb mb-0 bg-transparent">
-                        <li class="breadcrumb-item"><a href="#">Task Management</a></li>
+                        <li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
                         <li class="breadcrumb-item active">Assign Task</li>
                     </ol>
                 </nav>
@@ -83,6 +83,7 @@
                     <div class="card-body">
                         <?php echo form_open('', array('id' => 'assignTaskForm', 'autocomplete' => 'off')); ?>
                         <div class="row">
+                            <input type="hidden" name="task_type" class="form-control" value="household task"/>
                             <!-- <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="form-group">
                                     <label class="label-text-1">Task Type <span class="text-danger">*</span></label>
@@ -446,7 +447,7 @@ function get_tasks(){
     $('#assignTaskForm').find('button[type="submit"]').html('Please Wait...');
     $('#assignTaskForm').find('button[type="submit"]').prop('disabled', true);
     $.ajax({
-        url: '<?php echo base_url(); ?>FormAssignController/get_tasks_by_type',
+        url: '<?php echo base_url(); ?>FormController/get_tasks_by_type',
         type: 'POST',
         dataType : 'json',
         data: ajaxData,
@@ -581,114 +582,125 @@ $('body').on('change', '[name="uai"]', function(event) {
     getLocation(uai, cluster, sub_loc);
 });
 function getLocation(uai, cluster, sub_loc) {
-    sub_loc.html('<option value="" selected="true">....Select....</option>');
-    sub_loc.val('');
+    
     
     //send ajax request to get location details
     ajaxData['loc_type'] = $('[name="loc_type"]:checked').val();
     ajaxData['country'] = $('[name="country"]').val();
-    if(uai.val() && uai.val().toString().length > 0) {
-      ajaxData['uai'] = uai.val();
-      sub_loc.html('<option value="" selected="true">Please Wait... Loading Data</option>');
-    } else {
-        delete ajaxData.uai;
-    }
-    
-    $('#assignTaskForm').find('button').prop('disabled', true);
-    $.ajax({
-        url: '<?php echo base_url(); ?>survey/get_location',
-        type: 'POST',
-        dataType : 'json',
-        data: ajaxData,
-        complete: function(data) {
-            var csrfData = JSON.parse(data.responseText);
-            ajaxData[csrfData.csrfName] = csrfData.csrfHash;
-            if(csrfData.csrfName && $('input[name="' + csrfData.csrfName + '"]').length > 0) {
-                $('input[name="' + csrfData.csrfName + '"]').val(csrfData.csrfHash);
-            }
-        },
-        error: function() {
-            $.toast({
-                heading: 'Network Error!',
-                text: 'Could not establish connection to server. Please refresh the page and try again.',
-                icon: 'error',
-                afterHidden: function () {
-                    $('#assignTaskForm').find('button').prop('disabled', false);
-
-                    let HTML = `<option value="" selected="true">....Select....</option>`;
-                    // Assign initial HTML
-                    if($('[name="loc_type"]:checked').val() == 'uai') {
-                        if(uai.val() && uai.val().toString().length > 0) {
-                            sub_loc.html(HTML);
-                            sub_loc.val('');
-                        } else {
-                            uai.html(HTML);
-                            uai.val('');
-                        }
-                    } else if($('[name="loc_type"]:checked').val() == 'cluster') {
-                        cluster.html(HTML);
-                        cluster.val('');
-                    }
-                }
-            });
-        },
-        success: function(response) {
-            $('#assignTaskForm').find('button').prop('disabled', false);
-
-            let HTML = `<option value="" selected="true">....Select....</option>`;
-            // Assign initial HTML
-            if($('[name="loc_type"]:checked').val() == 'uai') {
-                if(uai.val() && uai.val().toString().length > 0) {
-                    sub_loc.html(HTML);
-                    sub_loc.val('');
-                } else {
-                    uai.html(HTML);
-                    uai.val('');
-                }
-            } else if($('[name="loc_type"]:checked').val() == 'cluster') {
-                cluster.html(HTML);
-                cluster.val('');
-            }
-
-            // If session error exists
-            if(response.session_err == 1) {
-                $.toast({
-                    heading: 'Session Error!',
-                    text: response.msg,
-                    icon: 'error'
-                });
-                return false;
-            }
-
-            if(response.status == 0) {
-                $.toast({
-                    heading: 'Error!',
-                    text: response.msg,
-                    icon: 'error'
-                });
-                return false;
-            }
-
-            // Generate further HTML
-            for (var i = 0; i < response.locations.length; i++) {
-                let location = response.locations[i];
-                HTML += `<option value="${location.id}">${location.name}</option>`;
-            }
-            // Assign complete HTML
-            if($('[name="loc_type"]:checked').val() == 'uai') {
-                if(uai.val() && uai.val().toString().length > 0) {
-                    sub_loc.html(HTML);
-                    sub_loc.val('');
-                } else {
-                    uai.html(HTML);
-                    uai.val('');
-                }
-            } else if($('[name="loc_type"]:checked').val() == 'cluster') {
-                cluster.html(HTML);
-                cluster.val('');
-            }
+    if(ajaxData['country']){
+        sub_loc.html('<option value="" selected="true">....Select....</option>');
+        sub_loc.val('');
+        if(uai.val() && uai.val().toString().length > 0) {
+        ajaxData['uai'] = uai.val();
+        sub_loc.html('<option value="" selected="true">Please Wait... Loading Data</option>');
+        } else {
+            delete ajaxData.uai;
         }
-    });
+        
+        $('#assignTaskForm').find('button').prop('disabled', true);
+        $.ajax({
+            url: '<?php echo base_url(); ?>survey/get_location',
+            type: 'POST',
+            dataType : 'json',
+            data: ajaxData,
+            complete: function(data) {
+                var csrfData = JSON.parse(data.responseText);
+                ajaxData[csrfData.csrfName] = csrfData.csrfHash;
+                if(csrfData.csrfName && $('input[name="' + csrfData.csrfName + '"]').length > 0) {
+                    $('input[name="' + csrfData.csrfName + '"]').val(csrfData.csrfHash);
+                }
+            },
+            error: function() {
+                $.toast({
+                    heading: 'Network Error!',
+                    text: 'Could not establish connection to server. Please refresh the page and try again.',
+                    icon: 'error',
+                    afterHidden: function () {
+                        $('#assignTaskForm').find('button').prop('disabled', false);
+
+                        let HTML = `<option value="" selected="true">....Select....</option>`;
+                        // Assign initial HTML
+                        if($('[name="loc_type"]:checked').val() == 'uai') {
+                            if(uai.val() && uai.val().toString().length > 0) {
+                                sub_loc.html(HTML);
+                                sub_loc.val('');
+                            } else {
+                                uai.html(HTML);
+                                uai.val('');
+                            }
+                        } else if($('[name="loc_type"]:checked').val() == 'cluster') {
+                            cluster.html(HTML);
+                            cluster.val('');
+                        }
+                    }
+                });
+            },
+            success: function(response) {
+                $('#assignTaskForm').find('button').prop('disabled', false);
+
+                let HTML = `<option value="" selected="true">....Select....</option>`;
+                // Assign initial HTML
+                if($('[name="loc_type"]:checked').val() == 'uai') {
+                    if(uai.val() && uai.val().toString().length > 0) {
+                        sub_loc.html(HTML);
+                        sub_loc.val('');
+                    } else {
+                        uai.html(HTML);
+                        uai.val('');
+                    }
+                } else if($('[name="loc_type"]:checked').val() == 'cluster') {
+                    cluster.html(HTML);
+                    cluster.val('');
+                }
+
+                // If session error exists
+                if(response.session_err == 1) {
+                    $.toast({
+                        heading: 'Session Error!',
+                        text: response.msg,
+                        icon: 'error'
+                    });
+                    return false;
+                }
+
+                if(response.status == 0) {
+                    $.toast({
+                        heading: 'Error!',
+                        text: response.msg,
+                        icon: 'error'
+                    });
+                    return false;
+                }
+
+                // Generate further HTML
+                for (var i = 0; i < response.locations.length; i++) {
+                    let location = response.locations[i];
+                    HTML += `<option value="${location.id}">${location.name}</option>`;
+                }
+                // Assign complete HTML
+                if($('[name="loc_type"]:checked').val() == 'uai') {
+                    if(uai.val() && uai.val().toString().length > 0) {
+                        sub_loc.html(HTML);
+                        sub_loc.val('');
+                    } else {
+                        uai.html(HTML);
+                        uai.val('');
+                    }
+                } else if($('[name="loc_type"]:checked').val() == 'cluster') {
+                    cluster.html(HTML);
+                    cluster.val('');
+                }
+                
+                
+                
+            }
+        });
+    } 
+    let contributer1 = $('[name="contributer[]"]');
+    contributer1.html('<option value="" >....Select....</option>');
+    $('.selectpicker').selectpicker('refresh'); 
+    $('.respondents').empty();
+    $('.respondents').closest('.form-group').css('display', 'none'); 
 }
 
 // Handle cluster change
@@ -919,8 +931,8 @@ $('body').on('submit', '#assignTaskForm', function(event) {
     event.preventDefault();
     $('.error').empty();
 
-    // let task_type = $('[name="task_type"]'),
-    let task_type = "household task",
+    let task_type = $('[name="task_type"]'),
+    // let task_type = "household task",
     tasks = $('[name="tasks[]"]'),
     start_date = $('[name="start_date"]'),
     end_date = $('[name="end_date"]'),
@@ -932,13 +944,12 @@ $('body').on('submit', '#assignTaskForm', function(event) {
     contributer = $('[name="contributer[]"]'),
     markets = $('[name="markets[]"]');
     let fields = [task_type, tasks, start_date, end_date, country, contributer];
-    
     let fieldErr = 0;
     for(field of fields) {
-        // if(!field.val() || field.val().length === 0) {
-        //     fieldErr++;
-        //     field.closest('.form-group').find('.error').html('Field is mandatory.');
-        // }
+        if(!field.val() || field.val().length === 0) {
+            fieldErr++;
+            field.closest('.form-group').find('.error').html('Field is mandatory.');
+        }
     }
     if(!loc_type || !loc_type.length || !loc_type.val() || loc_type.val().length === 0) {
         fieldErr++;
@@ -983,7 +994,7 @@ $('body').on('submit', '#assignTaskForm', function(event) {
     }
     $('#assignTaskForm').find('button').prop('disabled', true);
     $.ajax({
-        url: '<?php echo base_url(); ?>FormAssignController/assign_task_respondent',
+        url: '<?php echo base_url(); ?>FormController/assign_task_respondent',
         type: 'POST',
         data: formData,
         processData: false,

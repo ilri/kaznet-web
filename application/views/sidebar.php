@@ -224,7 +224,7 @@
                     <span class="collapse-text-none-nav mb-0">Notification</span>
                 </a>
             </li>
-            <!-- <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
+            <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
                 <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <span class="logo-img-mt-4">
                         <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
@@ -239,17 +239,26 @@
                                 d="M24.1042 0H15.9792C14.9336 0 14.0833 0.850388 14.0833 1.89577V13.2708C14.0833 14.3163 14.9336 15.1667 15.9792 15.1667H24.1042C25.1496 15.1667 26 14.3163 26 13.2708V1.89577C26 0.850388 25.1496 0 24.1042 0V0Z" />
                         </svg>
                     </span>
-                    <span class="collapse-text-none-nav mb-0">Custom Templates</span>
+                    <span class="collapse-text-none-nav mb-0">Custom Tasks</span>
                 </a>
                 <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'FormController' ? 'show' : '');?>" id="templateSubmenu">
                     <li>
-                        <a href="<?php echo base_url(); ?>FormController/create_form" class="sub-menu <?php echo(($this->uri->segment(2)) == 'create_form' ? 'active' : '');?>">Create Template</a>
+                        <a href="<?php echo base_url(); ?>FormController/create_form" class="sub-menu <?php echo(($this->uri->segment(2)) == 'create_form' ? 'active' : '');?>">Create Task</a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url(); ?>FormController/list_forms" class="sub-menu <?php echo(($this->uri->segment(2)) == 'list_forms' ? 'active' : '');?>">Manage Templates</a>
+                        <a href="<?php echo base_url(); ?>FormController/list_forms" class="sub-menu <?php echo(($this->uri->segment(2)) == 'list_forms' ? 'active' : '');?>">Manage Tasks</a>
+                    </li>                    
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormController/f_assign_task" class="sub-menu <?php echo(($this->uri->segment(2)) == 'assign_task' ? 'active' : '');?>">Assign Task</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormController/f_task_contributer" class="sub-menu <?php echo(($this->uri->segment(2)) == 'task_contributor' ? 'active' : '');?>">Task Contributor</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url(); ?>FormController/f_manage_task" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_task' ? 'active' : '');?>">Manage Assigned Tasks</a>
                     </li>
                 </ul>
-            </li> -->
+            </li>
         </ul>
 
 

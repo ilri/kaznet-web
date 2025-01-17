@@ -304,85 +304,103 @@
             </tbody>
         </table> -->
     <!-- </div> -->
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="dataview" role="tabpanel" aria-labelledby="dataview-tab">
-                    <div class="row">
-                        <div class="col-sm-10 col-md-10 col-lg-10 mb-3">
-                            <ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
-                                role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="Submitted-tab" data-toggle="tab"
-                                        data-target="#Submitted" type="button" role="tab"
-                                        aria-controls="Submitted" aria-selected="false">Active</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link " id="Approved-tab" data-toggle="tab"
-                                        data-target="#Approved" type="button" role="tab"
-                                        aria-controls="Approved" aria-selected="true">Inactive</button>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-12 col-md-12 col-lg-12">
-                            <div class="tab-content" id="myTabContent">
-                                <div class="tab-pane fade show active" id="Submitted" role="tabpanel" aria-labelledby="Submitted-tab">
-                                    <?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
-                                        <!-- <div class="col-md-12 export_align">
-                                            <button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
-                                        </div> -->
-                                        <!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
-                                            <div class="mt-10">
-                                            <?php if ($this->session->userdata('role') == 6) {?>
-                                                <button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
-                                                <button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
-                                            <?php } ?>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 mt-3">
+                    <nav>
+                        <ol class="breadcrumb mb-0 bg-transparent">
+                            <li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
+                            <li class="breadcrumb-item active">Manage Tasks</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="card mt-3 border-0">
+                        <div class="card-body">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="dataview" role="tabpanel" aria-labelledby="dataview-tab">
+                                        <div class="row">
+                                            <div class="col-sm-10 col-md-10 col-lg-10 mb-3">
+                                                <ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
+                                                    role="tablist">
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active" id="Submitted-tab" data-toggle="tab"
+                                                            data-target="#Submitted" type="button" role="tab"
+                                                            aria-controls="Submitted" aria-selected="false">Active</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link " id="Approved-tab" data-toggle="tab"
+                                                            data-target="#Approved" type="button" role="tab"
+                                                            aria-controls="Approved" aria-selected="true">Inactive</button>
+                                                    </li>
+                                                </ul>
                                             </div>
-                                        </div> -->
-                                        <div class="table-responsive" style="height:65vh;">
-                                            <div class="loaders" id="info_data">
-                                                <div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-                                                    <!-- <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p> -->
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="tab-content" id="myTabContent">
+                                                    <div class="tab-pane fade show active" id="Submitted" role="tabpanel" aria-labelledby="Submitted-tab">
+                                                        <?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
+                                                            <!-- <div class="col-md-12 export_align">
+                                                                <button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
+                                                            </div> -->
+                                                            <!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
+                                                                <div class="mt-10">
+                                                                <?php if ($this->session->userdata('role') == 6) {?>
+                                                                    <button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
+                                                                    <button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
+                                                                <?php } ?>
+                                                                </div>
+                                                            </div> -->
+                                                            <div class="table-responsive" style="height:65vh;">
+                                                                <div class="loaders" id="info_data">
+                                                                    <div class="d-flex flex-column align-items-center justify-content-center loader-height" >
+                                                                        <!-- <p class="text-color"><strong> Please select the Location in Filters to view data</strong></p> -->
+                                                                    </div>
+                                                                </div>
+                                                                <table class="table table-striped" style="width:100%">
+                                                                    <thead class="bg-dataTable" id="submited_head">
+                                                                    </thead>
+                                                                    <tbody id="submited_body">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="submited_pagination" id="submited_pagination"></div>
+                                                        <?php echo form_close(); ?>
+                                                    </div>
+                                                    <div class="tab-pane fade " id="Approved" role="tabpanel" aria-labelledby="Approved-tab">
+                                                        <!-- <div class="col-md-12 export_align">
+                                                            <button type="button" class="btn btn-sm hidden"  id="export_ap" data-tabvalue=2 onclick="exportXcel(event)">Export data</button>
+                                                        </div> -->
+                                                        <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
+                                                            <!-- <span class="p-2 input_place hidden" id="text_approved_search">
+                                                                <div class="ml-auto">
+                                                                <input type="text" id="user_approved_search" class="search form-control approved_search" placeholder=" (Search on First Name, User Name) ">
+                                                                <span class="search_icon" onClick="searchApprovedFilter();"><i class="fa fa-search text-white"></i></span>
+                                                                </div>
+                                                            </span> 
+                                                            <button type="button" class="btn btn-sm btn-primary" id="export_ap" onclick="approvedeExportXcel()">Export data</button>-->
+                                                        </div> 
+                                                        <!-- <div class="table-responsive" style="height:290px;"> -->
+                                                        <div class="table-responsive" style="height:65vh;">
+                                                            <table class="table table-striped" style="width:100%">
+                                                                <thead class="bg-dataTable" id="approved_head">
+                                                                </thead>
+                                                                <tbody id="approved_body">
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div id="approved_pagination" class="submited_pagination"></div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <table class="table table-striped" style="width:100%">
-                                                <thead class="bg-dataTable" id="submited_head">
-                                                </thead>
-                                                <tbody id="submited_body">
-                                                </tbody>
-                                            </table>
                                         </div>
-                                        <div class="submited_pagination" id="submited_pagination"></div>
-                                    <?php echo form_close(); ?>
-                                </div>
-                                <div class="tab-pane fade " id="Approved" role="tabpanel" aria-labelledby="Approved-tab">
-                                    <!-- <div class="col-md-12 export_align">
-                                        <button type="button" class="btn btn-sm hidden"  id="export_ap" data-tabvalue=2 onclick="exportXcel(event)">Export data</button>
-                                    </div> -->
-                                    <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
-                                        <!-- <span class="p-2 input_place hidden" id="text_approved_search">
-                                            <div class="ml-auto">
-                                            <input type="text" id="user_approved_search" class="search form-control approved_search" placeholder=" (Search on First Name, User Name) ">
-                                            <span class="search_icon" onClick="searchApprovedFilter();"><i class="fa fa-search text-white"></i></span>
-                                            </div>
-                                        </span> 
-                                        <button type="button" class="btn btn-sm btn-primary" id="export_ap" onclick="approvedeExportXcel()">Export data</button>-->
-                                    </div> 
-                                    <!-- <div class="table-responsive" style="height:290px;"> -->
-                                    <div class="table-responsive" style="height:65vh;">
-                                        <table class="table table-striped" style="width:100%">
-                                            <thead class="bg-dataTable" id="approved_head">
-                                            </thead>
-                                            <tbody id="approved_body">
-                                            </tbody>
-                                        </table>
                                     </div>
-                                    <div id="approved_pagination" class="submited_pagination"></div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </body>
@@ -443,8 +461,8 @@
                     var tableHead = `<tr style="position: sticky;top: -1px;background: #000;background:black;">`;
                         tableHead += `<th>S.no</th>`;
                         // tableHead += `<th>Delete</th>`;
-                        tableHead += `<th>Form Title</th>`;
-                        tableHead += `<th>Form Subject</th>`;
+                        tableHead += `<th>Task Title</th>`;
+                        tableHead += `<th>Task Subject</th>`;
                         tableHead += `<th>Added By</th>`;
                         tableHead += `<th>Added Date</th>`;
                         tableHead += `<th>Action</th>`;
@@ -474,10 +492,10 @@
                             tableBody += `<td>`;
                             tableBody += submitedData[k]['datetime'] != null ? submitedData[k]['datetime']  : `N/A`;
                             tableBody += `</td>`;
-                            tableBody += `<td><div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form  ">View form</a> `;
+                            tableBody += `<td><div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/render_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-form  ">View Task</a> `;
                             tableBody += `<a href="<?php echo base_url(); ?>FormController/view_form_data/`+ submitedData[k]['id'] +`" class="btn btn-outline-view-data ml-2">View data</a></div>`;
                             if(role==1){
-                                tableBody += `<div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/edit_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-edit mt-1 mx-1 ">Edit form</a>`;
+                                tableBody += `<div style="display: flex;align-items: center;white-space: nowrap;"><a href="<?php echo base_url(); ?>FormController/edit_form/`+ submitedData[k]['id'] +`" class="btn btn-outline-edit mt-1 mx-1 ">Edit Task</a>`;
                                 tableBody += `<a href="#" class="delete_submited  btn btn-outline-delete mt-1 ml-2" onClick="deleteData(event);" data-id="`+data_id+`">Inactivate</a></div></td>`;
                             }else{
                                 tableBody += `</td>`;
@@ -568,8 +586,8 @@
                     // tableHead += `<th>S.No.</th>`;
                     
                     tableHead += `<th>S.no</th>`;
-                    tableHead += `<th>Form Title</th>`;
-                    tableHead += `<th>Form Subject</th>`;
+                    tableHead += `<th>Task Title</th>`;
+                    tableHead += `<th>Task Subject</th>`;
                     tableHead += `<th>Added By</th>`;
                     tableHead += `<th>Added Date</th>`;
                     tableHead += `<th>Deleted By</th>`;
@@ -678,7 +696,7 @@
             var elem = $(this);
             swal({
                 title: "Are you sure?",
-                text: "you want to Inactivate form",
+                text: "you want to Inactivate task",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
@@ -743,7 +761,7 @@
             var elem = $(this);
             swal({
                 title: "Are you sure?",
-                text: "you want to activate form",
+                text: "you want to activate task",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",

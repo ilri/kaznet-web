@@ -6,7 +6,7 @@
 }
 
     </style>
-<div class="container mt-2">
+<!-- <div class="container mt-2">
     <h2>Create Form</h2>
     <form id="form-meta" class="mb-3">
         <div class="mb-3">
@@ -20,8 +20,37 @@
     </form>
     <div id="form-builder"></div>
     <button id="save-form" class="btn btn-primary mt-3">Create Form</button>
-</div>
-
+</div> -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 mt-3">
+                <nav>
+                    <ol class="breadcrumb mb-0 bg-transparent">
+                        <li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
+                        <li class="breadcrumb-item active">Create Task</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="card mt-3 border-0">
+                    <div class="card-body">
+                        <form id="form-meta" class="mb-3">
+                            <div class="mb-3">
+                                <label for="form_title" class="form-label">Task Title <span class="text-danger">*</span></label>
+                                <input type="text" id="form_title" name="form_title" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="form_subject" class="form-label">Task Subject <span class="text-danger">*</span></label>
+                                <input type="text" id="form_subject" name="form_subject" class="form-control" required />
+                            </div>
+                        </form>
+                        <div id="form-builder"></div>
+                        <button id="save-form" class="btn btn-primary mt-3">Create Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
     $(document).ready(function() {
         // Extend the header, field to include a "name" attribute
@@ -281,7 +310,7 @@
                 }, function(response) {
                     var res = JSON.parse(response);
                     $.toast({
-                        heading: 'Successfully created form',
+                        heading: 'Successfully created task',
                         text: res.msg,
                         icon: 'success',
                         afterHidden: function() {

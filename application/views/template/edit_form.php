@@ -7,14 +7,12 @@
         <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-builder.min.css">
     </head>
     <body>
-        <div class="container mt-2">
+        <!-- <div class="container mt-2">
             <h2 class="">Edit Form : </h2>
-            <!-- Form Title Input -->
             <div class="mb-3">
                 <label for="form-title">Form Title <span class="required-asterisk" style="display:inline"> *</span> :</label>
                 <input type="text" class="form-control" id="form_title" placeholder="Enter form title" required="required" aria-required="true">
             </div>
-            <!-- Form Subject Input -->
             <div class="mb-3">
                 <label for="form-subject">Form Subject <span class="required-asterisk" style="display:inline"> *</span> :</label>
                 <input type="text" class="form-control" id="form_subject" placeholder="Enter form subject" required="required" aria-required="true">
@@ -22,6 +20,37 @@
 
             <div id="fb-editor"></div>
             <button id="save-form" class="btn btn-primary mt-3">Update Form</button>
+        </div> -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 mt-3">
+                    <nav>
+                        <ol class="breadcrumb mb-0 bg-transparent">
+                            <li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
+                            <li class="breadcrumb-item active">Edit Task</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="card mt-3 border-0">
+                        <div class="card-body">
+                            <!-- Form Title Input -->
+                            <div class="mb-3">
+                                <label for="form-title">Task Title <span class="required-asterisk" style="display:inline"> *</span> :</label>
+                                <input type="text" class="form-control" id="form_title" placeholder="Enter task title" required="required" aria-required="true">
+                            </div>
+                            <!-- Form Subject Input -->
+                            <div class="mb-3">
+                                <label for="form-subject">Task Subject <span class="required-asterisk" style="display:inline"> *</span> :</label>
+                                <input type="text" class="form-control" id="form_subject" placeholder="Enter task subject" required="required" aria-required="true">
+                            </div>
+
+                            <div id="fb-editor"></div>
+                            <button id="save-form" class="btn btn-primary mt-3">Update Task</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -180,7 +209,7 @@
                     var elem = $(this);
                     swal({
                         title: "Are you sure?",
-                        text: "you want to Update form",
+                        text: "you want to Update task",
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonClass: "btn-danger",
@@ -352,7 +381,7 @@
                         }, function(response) {
                             var res = JSON.parse(response);
                             $.toast({
-                                heading: 'Successfully Updated form',
+                                heading: 'Successfully Updated task',
                                 text: res.msg,
                                 icon: 'success',
                                 afterHidden: function() {

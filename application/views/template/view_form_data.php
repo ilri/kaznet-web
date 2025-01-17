@@ -212,57 +212,71 @@
 		<div class="spinner ml-4"></div>
 		<div style="color:white;"><b>Loading please wait...</b></div>
 	</div>
-	<div class="container mt-5">
-		<!-- <h3>View Form :</h3> <br/> -->
-		<h5><?php echo $form_title?></h5>
-		</div>
-		<div class="col-sm-12 col-md-12 col-lg-12">
-			<div class="tab-content" id="myTabContent">
-				<div class="tab-pane fade show active" id="dataview" role="tabpanel"
-								aria-labelledby="dataview-tab">
-					<div class="row">
-						<div class="col-sm-10 col-md-10 col-lg-10 mb-3">
-							<ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
-								role="tablist">
-								<li class="nav-item" role="presentation">
-									<button class="nav-link active disabledTab" id="Submitted-tab" data-toggle="tab"
-										data-target="#Submitted" type="button" role="tab"
-										aria-controls="Submitted" aria-selected="false">Details</button>
-								</li>
-								
-							</ul>
-						</div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12 col-md-12 col-lg-12 mt-3">
+				<nav>
+					<ol class="breadcrumb mb-0 bg-transparent">
+						<li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
+						<li class="breadcrumb-item active">View Data</li>
+						<li class="breadcrumb-item active"><?php echo $form_title?></li>
+					</ol>
+				</nav>
+			</div>
+			<div class="col-sm-12 col-md-12 col-lg-12">
+				<div class="card mt-3 border-0">
+					<div class="card-body">
 						<div class="col-sm-12 col-md-12 col-lg-12">
 							<div class="tab-content" id="myTabContent">
-								<div class="tab-pane fade show active" id="Submitted" role="tabpanel"
-								aria-labelledby="Submitted-tab">
-									<?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
-										<!-- <div class="col-md-12 export_align">
-											<button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
-										</div> -->
-										<!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
-											<div class="mt-10">
-											<?php if ($this->session->userdata('role') == 6) {?>
-												<button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
-												<button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
-											<?php } ?>
-											</div>
-										</div> -->
-										<div class="table-responsive" style="height:290px;">
-											<div class="loaders" id="info_data">
-												<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
-													<p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
+								<div class="tab-pane fade show active" id="dataview" role="tabpanel"
+												aria-labelledby="dataview-tab">
+									<div class="row">
+										<div class="col-sm-10 col-md-10 col-lg-10 mb-3">
+											<ul class="nav nav-tabs border-bottom-0 bg-transparent" id="dataTabId"
+												role="tablist">
+												<li class="nav-item" role="presentation">
+													<button class="nav-link active disabledTab" id="Submitted-tab" data-toggle="tab"
+														data-target="#Submitted" type="button" role="tab"
+														aria-controls="Submitted" aria-selected="false">Details</button>
+												</li>
+												
+											</ul>
+										</div>
+										<div class="col-sm-12 col-md-12 col-lg-12">
+											<div class="tab-content" id="myTabContent">
+												<div class="tab-pane fade show active" id="Submitted" role="tabpanel"
+												aria-labelledby="Submitted-tab">
+													<?php echo form_open('', array('id' => 'moderateVerifyDataForm')); ?>
+														<!-- <div class="col-md-12 export_align">
+															<button type="button" class="btn btn-sm hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
+														</div> -->
+														<!-- <div class="text-right mt-2 mb-2 pr-3 d-flex justify-content-between">
+															<div class="mt-10">
+															<?php if ($this->session->userdata('role') == 6) {?>
+																<button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
+																<button type="button" class="btn btn-sm btn-danger verify hidden" data-status="3">Reject</button>
+															<?php } ?>
+															</div>
+														</div> -->
+														<div class="table-responsive" style="height:290px;">
+															<div class="loaders" id="info_data">
+																<div class="d-flex flex-column align-items-center justify-content-center loader-height" >
+																	<p class="text-color"><strong> Please select the Location in Filters to view data</strong></p>
+																</div>
+															</div>
+															<table class="table table-striped" style="width:100%">
+																<thead class="bg-dataTable" id="submited_head">
+																</thead>
+																<tbody id="submited_body">
+																</tbody>
+															</table>
+														</div>
+														<div class="submited_pagination" id="submited_pagination"></div>
+													<?php echo form_close(); ?>
 												</div>
 											</div>
-											<table class="table table-striped" style="width:100%">
-												<thead class="bg-dataTable" id="submited_head">
-												</thead>
-												<tbody id="submited_body">
-												</tbody>
-											</table>
 										</div>
-										<div class="submited_pagination" id="submited_pagination"></div>
-									<?php echo form_close(); ?>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -270,6 +284,7 @@
 				</div>
 			</div>
 		</div>
+	</div>
 	
     <script src="<?php echo base_url(); ?>include/js/pagination.js"></script>
 <script src="<?php echo base_url(); ?>include/js/bootstrap.min.js" ></script>

@@ -84,7 +84,7 @@
                 <nav>
                     <ol class="breadcrumb mb-0 bg-transparent">
                         <li class="breadcrumb-item">
-                            <a href="#">Task Management</a>
+                            <a href="#">Custom Tasks</a>
                         </li>
                         <li class="breadcrumb-item active">Task Contributor</li>
                     </ol>
@@ -540,7 +540,7 @@
 			</div>`;
 		$('#submited_body').html(imageLoader);
 		$.ajax({
-			url: "<?php echo base_url(); ?>FormAssignController/get_task_contributers/<?php echo $task_id; ?>",
+			url: "<?php echo base_url(); ?>FormController/get_task_contributers/<?php echo $task_id; ?>",
 			data: query_data,
 			type: "POST",
 			dataType: "JSON",
@@ -571,7 +571,7 @@
 				// var lkp_sub_location = response.lkp_sub_location;
 				// var lkp_location_type = response.lkp_location_type;
 				// var lkp_animal_type_lactating = response.lkp_animal_type_lactating;
-				// var respondent_name = response.respondent_name;
+				var respondent_name = response.respondent_name;
 
 				var td_count = 0;
 				var tableHead = `<tr style="position: sticky;top: -1px;background:black;">`;
@@ -583,13 +583,14 @@
 				tableHead += `<th>UAI</th>`;
 				tableHead += `<th>Sub Location</th>`;
 				tableHead += `<th>Contributor</th>`;
-                if(task_type == "Household Task"){
-                    tableHead += `<th>Respondent</th>`;
-                }else  if(task_type == "Rangeland Task"){
-                    //empty
-                }else if(task_type == "Market Task" ){
-                    tableHead += `<th>Market</th>`;
-                }
+                tableHead += `<th>Respondent</th>`;
+                // if(task_type == "Household Task"){
+                //     tableHead += `<th>Respondent</th>`;
+                // }else  if(task_type == "Rangeland Task"){
+                //     //empty
+                // }else if(task_type == "Market Task" ){
+                //     tableHead += `<th>Market</th>`;
+                // }
                 
                 
                 tableHead += `<th>Status</th>`;
@@ -679,28 +680,35 @@
 							tableBody +="N/A";
 						}
 						tableBody += `</td>`;
-                        if(task_type == "Household Task"){
+                        // if(task_type == "Household Task"){
                 
-                            tableBody += `<td>`;
-                            if(submitedData[k]['respondent_name']){
-                                tableBody += submitedData[k]['respondent_name'];
-                            }else{
-                                tableBody +="N/A";
-                            }
-                            tableBody += `</td>`;
-                        }else  if(task_type == "Rangeland Task"){
-                        //empty
-                        }else if(task_type == "Market Task" ){
+                        //     tableBody += `<td>`;
+                        //     if(submitedData[k]['respondent_name']){
+                        //         tableBody += submitedData[k]['respondent_name'];
+                        //     }else{
+                        //         tableBody +="N/A";
+                        //     }
+                        //     tableBody += `</td>`;
+                        // }else  if(task_type == "Rangeland Task"){
+                        // //empty
+                        // }else if(task_type == "Market Task" ){
                     
-                            tableBody += `<td>`;
-                            if(submitedData[k]['market_name']){
-                                tableBody += submitedData[k]['market_name'];
-                            }else{
-                                tableBody +="N/A";
-                            }
-                            tableBody += `</td>`;
-                            tableHead += `<th>Market</th>`;
+                        //     tableBody += `<td>`;
+                        //     if(submitedData[k]['market_name']){
+                        //         tableBody += submitedData[k]['market_name'];
+                        //     }else{
+                        //         tableBody +="N/A";
+                        //     }
+                        //     tableBody += `</td>`;
+                        //     tableHead += `<th>Market</th>`;
+                        // }
+                        tableBody += `<td>`;
+                        if(submitedData[k]['respondent_name']){
+                            tableBody += submitedData[k]['respondent_name'];
+                        }else{
+                            tableBody +="N/A";
                         }
+                        tableBody += `</td>`;
 						tableBody += `<td>`;
 						if(submitedData[k]['status']){
 							tableBody += submitedData[k]['status'];
@@ -796,7 +804,7 @@ function unassignUser(elem){
   ajaxData['assignee_id'] = elem.closest('tr').data('id');
   
   $.ajax({
-    url: '<?php echo base_url(); ?>FormAssignController/unassign_task_user/',
+    url: '<?php echo base_url(); ?>FormController/unassign_task_user/',
     data: ajaxData,
     type: 'POST',
     dataType: 'json',
@@ -902,7 +910,7 @@ function unassignUser(elem){
     function unassignMultipleUser(formData, status) {
         $('body').find('button.verify').prop('disabled', true);
         $.ajax({
-            url: '<?php echo base_url(); ?>FormAssignController/unassign_task_multiple_user/<?php echo $this->uri->segment(3); ?>',
+            url: '<?php echo base_url(); ?>FormController/unassign_task_multiple_user/<?php echo $this->uri->segment(3); ?>',
             type: 'POST',
             data: formData,
             processData: false,

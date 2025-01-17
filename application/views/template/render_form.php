@@ -9,15 +9,30 @@
   margin-left: 5px;
 }
     </style>
-<div class="container mt-5">
-    <!-- <h3>View Form :</h3> <br/> -->
-    <h5><?php echo $form_title?></h5>
-    <div id="success-message" class="alert alert-success d-none" role="alert">
-        Form submitted successfully!
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 mt-3">
+                <nav>
+                    <ol class="breadcrumb mb-0 bg-transparent">
+                        <li class="breadcrumb-item"><a href="#">Custom Tasks</a></li>
+                        <li class="breadcrumb-item active">View Task</li>
+                        <li class="breadcrumb-item active"><?php echo $form_title?></li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="card mt-3 border-0">
+                    <div class="card-body">
+                        <div id="success-message" class="alert alert-success d-none" role="alert">
+                            Task submitted successfully!
+                        </div>
+                        <form id="rendered-form" class="needs-validation" novalidate></form>
+                        <button id="submit-form" class="btn btn-primary mt-3">Submit task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <form id="rendered-form" class="needs-validation" novalidate></form>
-    <button id="submit-form" class="btn btn-primary mt-3">Submit Form</button>
-</div>
 <script>
 $(document).ready(function() {
     // $(document).on('change', '.formbuilder-file-field', function () {
@@ -174,17 +189,17 @@ $(document).ready(function() {
                                 //         $this.closest('.radio-group').next('.error-message').remove();
                                 //     }
                                 if ($this.closest('.other-option').is(':checked')) {
-                                    alert($this.next('.other-val').val());
+                                    // alert($this.next('.other-val').val());
                                     if ($this.next('.other-val').val().trim() === '') {
                                         isValid = false;
                                         // Add an inline error message
                                         $this.addClass('error'); // Add a class to highlight the field
-                                        alert($this.next('.error-message').length);
+                                        // alert($this.next('.error-message').length);
                                         if ($this.next('.error-message').length === 0) {
                                             $this.closest('.radio-group').after('<span class="error-message">' + othererrorMessage + '</span>');
                                         }
                                     }else{
-                                        alert($this.next('.error-message').length);
+                                        // alert($this.next('.error-message').length);
                                         $this.removeClass('error');
                                         $this.closest('.radio-group').next('.error-message').remove();
                                     }
