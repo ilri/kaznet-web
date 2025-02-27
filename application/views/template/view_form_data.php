@@ -1,37 +1,3 @@
-<!-- <div class="container mt-5"> -->
-        <!-- <h1>Details</h1> -->
-        <!-- <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th class="text-primary" style="border-bottom: 1px solid;">Sl No</th>
-                    <?php foreach ($submitted_data['columns'] as $key => $col) { ?>
-                    <th class="text-primary" style="border-bottom: 1px solid;"><?php echo $col['label']; ?></th>
-                    <?php } ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                if(count($submitted_data['data']) >1){
-                    foreach ($submitted_data['data'] as $dkey => $d) { ?>
-                    <tr>
-                        <td><?php echo ($dkey + 1); ?></td>
-                        <?php foreach ($submitted_data['columns'] as $key => $col) { ?>
-                        <td><?php echo $d[$col['name']]; ?></td>
-                        <?php } ?>
-                    </tr>
-                    <?php 
-                    } 
-                }else{
-                    ?>
-                    <tr>
-                        <td colspan="<?php echo count($submitted_data['columns'])+1;?>" class="text-center"><p style="color:red">No data entered to display</p></td>
-                    </tr>
-                    <?php 
-                }
-                ?>
-            </tbody>
-        </table> -->
-    <!-- </div> -->
     <style>
 	#img_element img{
 		max-width: 100%;
