@@ -19,6 +19,9 @@
                 case 'reports':
                     $page_name = "Data Management";
                     break;
+                case 'FormController':
+                    $page_name = "Custom Tasks";
+                    break;
                 
                 default:
                     # code...

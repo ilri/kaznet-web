@@ -778,7 +778,12 @@ function getContributer(location) {
            
             $('.selectpicker').selectpicker('refresh');
         }
-    });
+    }); 
+    let contributer1 = $('[name="contributer[]"]');
+    contributer1.html('<option value="" >....Select....</option>');
+    $('.selectpicker').selectpicker('refresh'); 
+    $('.respondents').empty();
+    $('.respondents').closest('.form-group').css('display', 'none'); 
 }
 
 $('body').on('change', '[name="contributer[]"]', function(event) {

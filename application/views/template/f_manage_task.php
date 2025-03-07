@@ -42,7 +42,7 @@
                                     <?php foreach ($surveys_ht as $key => $survey) { ?>
                                     <tr>
                                         <td>
-                                            <a href="<?php echo base_url(); ?>survey/task_contributer/<?php echo $survey['id']; ?>" class="td-color pl-0"><?php echo $survey['title']; ?></a>
+                                            <a href="<?php echo base_url(); ?>FormController/f_task_contributer/<?php echo $survey['id']; ?>" class="td-color pl-0"><?php echo $survey['title']; ?></a>
                                             <!-- <a href="#" class="td-color pl-0"><?php echo $survey['title']; ?></a> -->
                                         </td>
                                         <td><?php echo $survey['assigned']; ?></td>

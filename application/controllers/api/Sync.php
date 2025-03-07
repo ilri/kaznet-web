@@ -114,6 +114,7 @@ class Sync extends CI_Controller {
 			'lkp_uai' => 'uai_id',
 			'lkp_sub_location' => 'sub_loc_id',
 			'tbl_survey_assignee' => 'assignee_id',
+			'tbl_f_survey_assignee' => 'assignee_id',
 			'lkp_payment' => 'survey_id',
 			'tbl_user_profile' => 'id',
 			'tbl_transect_pastures' => 'id',
@@ -177,6 +178,11 @@ class Sync extends CI_Controller {
 					$this->db->where('table.user_id', $data['user_id']);
 				} else if($table == 'survey1_groupdata' || $table == 'tbl_survey_assignee') {
 					$this->db->where('table.user_id', $data['user_id']);
+				} else if($table == 'forms') {
+					$this->db->where('table.status', 1);
+				} else if($table == 'tbl_f_survey_assignee') {
+					$this->db->where('table.user_id', $data['user_id']);
+					$this->db->where('table.status', 1);
 				} else if($table == 'tbl_respondent_users' || $table == 'tbl_respondent_child_detail' || $table == 'tbl_respondent_hh_detail' || $table == 'tbl_transect_pastures') {
 					$this->db->where('table.added_by', $data['user_id']);
 
