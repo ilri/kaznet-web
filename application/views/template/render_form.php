@@ -189,26 +189,36 @@ $(document).ready(function() {
                                 //         $this.closest('.radio-group').next('.error-message').remove();
                                 //     }
                                 if ($this.closest('.other-option').is(':checked')) {
-                                    // alert($this.next('.other-val').val());
+                                    // Check if the input field next to the "Other" option is empty
                                     if ($this.next('.other-val').val().trim() === '') {
                                         isValid = false;
                                         // Add an inline error message
                                         $this.addClass('error'); // Add a class to highlight the field
-                                        // alert($this.next('.error-message').length);
-                                        if ($this.next('.error-message').length === 0) {
+                                        // Check if the error message is already present in the radio group
+                                        var $errorMessage = $this.closest('.radio-group').next('.error-message');
+                                        if ($errorMessage.length === 0) {
+                                            // Add the error message if it does not exist
                                             $this.closest('.radio-group').after('<span class="error-message">' + othererrorMessage + '</span>');
                                         }
-                                    }else{
-                                        // alert($this.next('.error-message').length);
+                                    } else {
+                                        // If the field is not empty, remove the error class and message
                                         $this.removeClass('error');
-                                        $this.closest('.radio-group').next('.error-message').remove();
+                                        var $errorMessage = $this.closest('.radio-group').next('.error-message');
+                                        if ($errorMessage.length > 0) {
+                                            // Remove the error message if it exists
+                                            $errorMessage.remove();
+                                        }
                                     }
-                                }else {
-                                    // alert("test");
+                                } else {
+                                    // If the "Other" radio button is not checked, remove the error class and message
                                     $this.removeClass('error');
-                                    $this.closest('.radio-group').next('.error-message').remove();
+                                    var $errorMessage = $this.closest('.radio-group').next('.error-message');
+                                    if ($errorMessage.length > 0) {
+                                        // Remove the error message if it exists
+                                        $errorMessage.remove();
+                                    }
                                 }
-                            }else if ( $(this).attr('type') === 'checkbox' ) {
+                             } else if ( $(this).attr('type') === 'checkbox' ) {
                                 // alert($(this).attr('type'));
                                 if ($this.closest('.other-option').is(':checked')) {
                                     if ($this.next('.other-val').val().trim() === '') {
@@ -285,25 +295,47 @@ $(document).ready(function() {
                             if ($(this).attr('type') === 'number'){   
                                 $this =$(this);
                                 if (typeof $this.prop('min') === 'undefined' || $this.prop('min') === '') {
-                                    
-                                    //skip
-                                }else{   
-                                    isValid1 =true;                         
-                                    if (parseFloat($this.val()) < parseFloat($this.prop('min'))) {
+                                    let inputValue = $this.val();  // Get the current input value as a string
+                                    let maxValue = parseInt($this.prop('maxlength'));  // Get maxlength, default to Infinity if not set
+                                    $this.closest('.form-group').removeClass('error');
+                                    $this.closest('.form-group').next('.error-message').remove();
+                                    if (maxValue !== -1  && inputValue.length > maxValue) {
                                         isValid = false;
                                         isValid1 = false;
                                         $this.addClass('error');
                                         
                                         if ($this.closest('.form-group').next('.error-message').length === 0) {
-                                            // $this.after('<span class="error-message">Minimum value allowed is ( '+$this.prop('min')+' ).</span>');
-                                            $this.closest('.form-group').after('<span class="error-message" style="color:red;">Minimum value allowed is  '+$this.prop('min')+' .</span>');
-                                        }else{
-                                       
-                                            // $this.closest('.form-group').removeClass('error');
-                                            // $this.closest('.form-group').next('.error-message').remove();
+                                            $this.closest('.form-group').after('<span class="error-message" style="color:red;">Maximum length allowed is ' + maxValue + ' characters.</span>');
                                         }
-                                    }else{
-                                       
+                                    } else {
+                                        $this.closest('.form-group').removeClass('error');
+                                        $this.closest('.form-group').next('.error-message').remove();
+                                    }
+                                    //skip
+                                }else{   
+                                    isValid1 =true;
+                                    let minValue = parseFloat($this.prop('min'));  // Get the min value
+                                    let maxValue = parseFloat($this.prop('max'));  // Get the max value
+                                    let inputValue = parseFloat($this.val());  // Get the current input value
+                                    
+                                    $this.closest('.form-group').removeClass('error');
+                                    $this.closest('.form-group').next('.error-message').remove();
+                                    if (inputValue < minValue) {
+                                        isValid = false;
+                                        isValid1 = false;
+                                        $this.addClass('error');
+                                        
+                                        if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                            $this.closest('.form-group').after('<span class="error-message" style="color:red;">Minimum value allowed is ' + minValue + '.</span>');
+                                        }
+                                    } else if (inputValue > maxValue) {
+                                        isValid = false;
+                                        isValid1 = false;
+                                        $this.addClass('error');
+                                        if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                            $this.closest('.form-group').after('<span class="error-message" style="color:red;">Maximum value allowed is ' + maxValue + '.</span>');
+                                        }
+                                    } else {
                                         $this.closest('.form-group').removeClass('error');
                                         $this.closest('.form-group').next('.error-message').remove();
                                     }
@@ -332,7 +364,26 @@ $(document).ready(function() {
                                     }
                                     
                                 }
-                            }else if ($(this).attr('type') === 'tel') {
+                            } else if ($(this).attr('type') === 'textarea' || $(this).attr('type') === 'text'){   
+                                $this =$(this);
+                                let inputValue = $this.val();  // Get the current input value as a string
+                                let maxValue = parseInt($this.prop('maxlength'));  // Get maxlength, default to Infinity if not set
+                                $this.closest('.form-group').removeClass('error');
+                                $this.closest('.form-group').next('.error-message').remove();
+                                if (maxValue !== -1 && inputValue.length > maxValue) {
+                                    isValid = false;
+                                    isValid1 = false;
+                                    $this.addClass('error');
+                                    
+                                    if ($this.closest('.form-group').next('.error-message').length === 0) {
+                                        $this.closest('.form-group').after('<span class="error-message" style="color:red;">Maximum length allowed is ' + maxValue + ' characters.</span>');
+                                    }
+                                } else {
+                                    $this.closest('.form-group').removeClass('error');
+                                    $this.closest('.form-group').next('.error-message').remove();
+                                }
+                                //skip
+                            } else if ($(this).attr('type') === 'tel') {
                                 // Check if the input field is of type 'telephone'
                                 var phoneValue = $(this).val();
                                 

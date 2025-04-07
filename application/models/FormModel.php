@@ -112,7 +112,7 @@ class FormModel extends CI_Model {
         return $this->db->query($query)->result_array();
     }
 
-    public function get_submitted_data($data) {
+    public function get_submitted_data_old($data) {
         $form_details = $this->db->where('id', $data['survey_id'])->get('forms')->row_array();
         $columns = (array)json_decode($form_details['form_data']);
         $recordcounttoprint = ($data['record_per_page']*$data['page_no'])-($data['record_per_page']);
@@ -120,7 +120,7 @@ class FormModel extends CI_Model {
         $query = "";
         if(isset($columns) && count($columns) > 0) {
             // $query = "SELECT s.id, s.form_id,s.user_id,s.datetime";
-            $query = "SELECT s.id, s.form_id,s.user_id,s.datetime,s.latitude,s.longitude,u.first_name,u.last_name";
+            $query = "SELECT s.*, u.first_name, u.last_name";
             foreach ($columns as $key => $col) {
                 $col = (array)$col;
                 $columns[$key] = $col;
@@ -139,7 +139,100 @@ class FormModel extends CI_Model {
         // print_r($this->db->last_query());exit();
         return array('data' => $data, 'columns' => $columns);
     }
-    public function get_submitted_data_r_count($form_id) {
+
+    public function get_submitted_data($data) {
+        $form_details = $this->db->where('id', $data['survey_id'])->get('forms')->row_array();
+        $columns = (array)json_decode($form_details['form_data']);
+        $offset = ($data['page_no'] - 1) * $data['record_per_page'];
+        $limit = (int)$data['record_per_page'];
+        
+        $query = 'SELECT s.*, 
+                        CONCAT(tu.first_name, " ", tu.last_name, " (", tu.username, ")") AS first_name, 
+                        CONCAT(rp.first_name, " ", rp.last_name) AS respondent, 
+                        rp.hhid, 
+                        lm.name AS market_name';
+        
+        if (!empty($columns)) {
+            foreach ($columns as $col) {
+                $col = (array)$col;
+                $query .= ", JSON_UNQUOTE(JSON_EXTRACT(s.data, '$.\"{$col['name']}\"')) AS `{$col['name']}`";
+            }
+        }
+        
+        $query .= " FROM submitted_data s
+                    JOIN tbl_users tu ON tu.user_id = s.user_id
+                    LEFT JOIN tbl_respondent_users rp ON rp.data_id = s.respondent_data_id
+                    LEFT JOIN lkp_market lm ON lm.market_id = s.market_id
+                    LEFT JOIN ic_data_location idl ON idl.data_id = s.data_id";
+        
+        $query .= " WHERE s.form_id = ?";
+        $params = [$data['survey_id']];
+        
+        if (!empty($data['country_id'])) {
+            $query .= " AND s.country_id = ?";
+            $params[] = $data['country_id'];
+        }
+        if (!empty($data['cluster_id'])) {
+            $query .= " AND s.cluster_id = ?";
+            $params[] = $data['cluster_id'];
+        }
+        if (!empty($data['uai_id'])) {
+            $query .= " AND s.uai_id = ?";
+            $params[] = $data['uai_id'];
+        }
+        if (!empty($data['sub_location_id'])) {
+            $query .= " AND s.sub_location_id = ?";
+            $params[] = $data['sub_location_id'];
+        }
+        if (!empty($data['contributor_id'])) {
+            $query .= " AND s.user_id = ?";
+            $params[] = $data['contributor_id'];
+        }
+        if (!empty($data['respondent_id'])) {
+            if ($data['survey_type'] == "Market Task") {
+                $query .= " AND s.market_id = ?";
+            } elseif ($data['survey_type'] == "Rangeland Task") {
+                $query .= " AND tp.pasture_type = ?";
+            } else {
+                $query .= " AND s.respondent_data_id = ?";
+            }
+            $params[] = $data['respondent_id'];
+        }
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $query .= " AND DATE(s.datetime) BETWEEN ? AND ?";
+            $params[] = $data['start_date'];
+            $params[] = $data['end_date'];
+        }
+        
+        $query .= " AND s.status = 1";
+        
+        // if (!empty($data['is_pa_verified_status'])) {
+        //     $query .= " AND s.pa_verified_status = ?";
+        //     $params[] = $data['pa_verified_status'];
+        // }
+        
+        $query .= " ORDER BY s.id DESC";
+        
+        if ($data['is_pagination']) {
+            $query .= " LIMIT $offset, $limit";
+        }
+        
+        $submitted_data = $this->db->query($query, $params)->result_array();
+        
+        foreach ($submitted_data as $key => $value) {
+            $this->db->select('field_id, file_name');
+            $this->db->where('data_id', $value['data_id']);
+            $images = $this->db->where('status', 1)->get('ic_data_file')->result_array();
+            
+            foreach ($images as $ikey => $ivalue) {
+                $submitted_data[$key]['field_' . $ivalue['field_id']] = $ivalue['file_name'];
+            }
+        }
+        
+        return ['data' => $submitted_data, 'columns' => $columns];
+    }
+
+    public function get_submitted_data_r_count_old($form_id) {
         //added this function  by sagar for pagenation
         $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
         $columns = (array)json_decode($form_details['form_data']);
@@ -160,5 +253,65 @@ class FormModel extends CI_Model {
         $count = $this->db->query($query)->num_rows();
         return $count;
     }
+
+    public function get_submitted_data_r_count($data) {
+        $form_details = $this->db->where('id', $data['survey_id'])->get('forms')->row_array();
+        $columns = (array)json_decode($form_details['form_data']);
+        
+        $query = "SELECT COUNT(*) AS total FROM submitted_data s ";
+        
+        // Joins
+        $query .= " JOIN tbl_users tu ON tu.user_id = s.user_id";
+        $query .= " LEFT JOIN tbl_respondent_users rp ON rp.data_id = s.respondent_data_id";
+        $query .= " LEFT JOIN lkp_market lm ON lm.market_id = s.market_id";
+        $query .= " LEFT JOIN ic_data_location idl ON idl.data_id = s.data_id";
+        
+        // Base condition
+        $query .= " WHERE s.form_id = ?";
+        $params = [$data['survey_id']];
+        
+        // Apply filters
+        if (!empty($data['country_id'])) {
+            $query .= " AND s.country_id = ?";
+            $params[] = $data['country_id'];
+        }
+        if (!empty($data['cluster_id'])) {
+            $query .= " AND s.cluster_id = ?";
+            $params[] = $data['cluster_id'];
+        }
+        if (!empty($data['uai_id'])) {
+            $query .= " AND s.uai_id = ?";
+            $params[] = $data['uai_id'];
+        }
+        if (!empty($data['sub_location_id'])) {
+            $query .= " AND s.sub_location_id = ?";
+            $params[] = $data['sub_location_id'];
+        }
+        if (!empty($data['contributor_id'])) {
+            $query .= " AND s.user_id = ?";
+            $params[] = $data['contributor_id'];
+        }
+        if (!empty($data['respondent_id'])) {
+            if ($data['survey_type'] == "Market Task") {
+                $query .= " AND s.market_id = ?";
+            } elseif ($data['survey_type'] == "Rangeland Task") {
+                $query .= " AND tp.pasture_type = ?";
+            } else {
+                $query .= " AND s.respondent_data_id = ?";
+            }
+            $params[] = $data['respondent_id'];
+        }
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $query .= " AND DATE(s.datetime) BETWEEN ? AND ?";
+            $params[] = $data['start_date'];
+            $params[] = $data['end_date'];
+        }
+        
+        $query .= " AND s.status = 1";
+        
+        $count_result = $this->db->query($query, $params)->row_array();
+        return $count_result['total'] ?? 0;
+    }
+    
 }
 ?>

@@ -224,7 +224,7 @@
                     <span class="collapse-text-none-nav mb-0">Notification</span>
                 </a>
             </li>
-            <li class="<?php echo(($this->uri->segment(1)) == 'FormController' ? 'active' : '');?>">
+            <li class="<?php echo(($this->uri->segment(1)) == 'FormController' && $this->uri->segment(3) == '' ? 'active' : '');?>">
                 <a href="#templateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <span class="logo-img-mt-4">
                         <svg width="26" height="26" viewBox="0 0 26 26" fill="none"
@@ -241,7 +241,7 @@
                     </span>
                     <span class="collapse-text-none-nav mb-0">Custom Tasks</span>
                 </a>
-                <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'FormController' ? 'show' : '');?>" id="templateSubmenu">
+                <ul class="collapse list-unstyled <?php echo(($this->uri->segment(1)) == 'FormController' && $this->uri->segment(3) == '' ? 'show' : '');?>" id="templateSubmenu">
                     <li>
                         <a href="<?php echo base_url(); ?>FormController/create_form" class="sub-menu <?php echo(($this->uri->segment(2)) == 'create_form' ? 'active' : '');?>">Create Task</a>
                     </li>
@@ -257,6 +257,31 @@
                     <li>
                         <a href="<?php echo base_url(); ?>FormController/f_manage_task" class="sub-menu <?php echo(($this->uri->segment(2)) == 'manage_task' ? 'active' : '');?>">Manage Assigned Tasks</a>
                     </li>
+                </ul>
+            </li>
+            
+            <li class="<?php echo(($this->uri->segment(2)) == 'view_form_data' ? 'active' : '');?>">
+                <a href="#customTasksDataMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <span class="logo-img-mt-4">
+                        <svg width="20" height="26" viewBox="0 0 20 26" fill="none"
+                            xmlns="http://www.w3.org/2000/svg" class="bg ">
+                            <path
+                                d="M13.2708 6.5H6.22909C5.18367 6.5 4.33325 5.64958 4.33325 4.60417V2.97917C4.33325 2.53067 4.69725 2.16667 5.14575 2.16667H6.88342C7.23875 0.917583 8.38817 0 9.74992 0C11.1117 0 12.2611 0.917583 12.6164 2.16667H14.3541C14.8026 2.16667 15.1666 2.53067 15.1666 2.97917V4.60417C15.1666 5.64958 14.3162 6.5 13.2708 6.5Z" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M16.5208 3.25H16.25V4.60417C16.25 6.24758 14.9142 7.58333 13.2708 7.58333H6.22917C4.58575 7.58333 3.25 6.24758 3.25 4.60417V3.25H2.97917C1.33575 3.25 0 4.58575 0 6.22917V23.0208C0 24.6643 1.33575 26 2.97917 26H16.5208C18.1643 26 19.5 24.6643 19.5 23.0208V6.22917C19.5 4.58575 18.1643 3.25 16.5208 3.25ZM15.4375 22.75H4.0625C3.614 22.75 3.25 22.386 3.25 21.9375C3.25 21.489 3.614 21.125 4.0625 21.125H15.4375C15.886 21.125 16.25 21.489 16.25 21.9375C16.25 22.386 15.886 22.75 15.4375 22.75ZM4.0625 19.5H15.4375C15.886 19.5 16.25 19.136 16.25 18.6875C16.25 18.239 15.886 17.875 15.4375 17.875H4.0625C3.614 17.875 3.25 18.239 3.25 18.6875C3.25 19.136 3.614 19.5 4.0625 19.5ZM15.4375 16.25H4.0625C3.614 16.25 3.25 15.886 3.25 15.4375C3.25 14.989 3.614 14.625 4.0625 14.625H15.4375C15.886 14.625 16.25 14.989 16.25 15.4375C16.25 15.886 15.886 16.25 15.4375 16.25ZM5.74768 13H13.7523C14.0679 13 14.3241 12.636 14.3241 12.1875C14.3241 11.739 14.0679 11.375 13.7523 11.375H5.74768C5.43207 11.375 5.17593 11.739 5.17593 12.1875C5.17593 12.636 5.43207 13 5.74768 13Z" />
+                        </svg>
+                    </span>
+                    <span class="collapse-text-none-nav mb-0">Custom Tasks Data</span>
+                </a>
+                <ul class="collapse list-unstyled <?php echo ($this->uri->segment(2) == 'view_form_data' ? 'show' : ''); ?>" id="customTasksDataMenu">
+                    <?php foreach ($customData as $custom): ?>
+                        <li>
+                            <a href="<?php echo base_url(); ?>FormController/view_form_data/<?php echo $custom['id']; ?>" 
+                            class="sub-menu <?php echo ($this->uri->segment(3) == $custom['id'] ? 'active' : ''); ?>">
+                            <?php echo htmlspecialchars($custom['title']); ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
                 </ul>
             </li>
         </ul>

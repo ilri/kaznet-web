@@ -11,6 +11,8 @@ class Survey extends CI_Controller {
 		$this->load->model('Auth_model');
 		$this->load->model('User_model');
 		$this->load->model('Helper_model');
+		
+        $this->load->model('FormModel');
 	}
 
 	public function index(){
@@ -32,9 +34,16 @@ class Survey extends CI_Controller {
 		$this->load->model('Dynamicmenu_model');
 		$profile_details = $this->Dynamicmenu_model->user_data();
 		$menu_result = array('profile_details' => $profile_details);
-
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/create', $result);
 		$this->load->view('footer');
@@ -296,8 +305,16 @@ class Survey extends CI_Controller {
 		}
 		$result['surveys_rt'] = $surveys_rt;
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('survey/manage_task', $result);
 		$this->load->view('footer');
@@ -332,8 +349,16 @@ class Survey extends CI_Controller {
 
 		// var_dump($result); die();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('survey/assign_task', $result);
 		$this->load->view('footer');
@@ -1519,8 +1544,15 @@ class Survey extends CI_Controller {
 		// print_r($this->db->last_query());exit();
 		$result['status'] =1;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('survey/task_contributer', $result);
 		$this->load->view('footer');
@@ -1772,8 +1804,16 @@ class Survey extends CI_Controller {
 		$all_units = $this->Helper_model->all_units();
 		$result['units'] = $this->security->xss_clean($all_units);
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('user/map', $result);
 		$this->load->view('footer');
 	}
@@ -2632,8 +2672,15 @@ class Survey extends CI_Controller {
 		
 		$result['all_users'] = $this->User_model->all_users();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('user/track', $result);
 		$this->load->view('footer');
 	}

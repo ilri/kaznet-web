@@ -11,6 +11,8 @@ class Dashboard extends CI_Controller {
 		$this->load->model('Auth_model');
 		// $session_allowed = $this->Auth_model->match_account_activity();
 		// if(!$session_allowed) redirect($baseurl.'auth/logout');
+		
+        $this->load->model('FormModel');
 	}
 	
 	public function index(){
@@ -52,9 +54,16 @@ class Dashboard extends CI_Controller {
 
 		$result['task_list'] = $this->db->select('id,title')->where('status', 1)->order_by('type')->get('form')->result_array();
 		$result['market_list'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
-
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/dashboard', $result);
 		$this->load->view('footer');
@@ -813,8 +822,15 @@ class Dashboard extends CI_Controller {
 		$result['user_list'] = $this->db->get('tbl_users')->result_array();
 		$result['market_list'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/dashboard_feedback', $result);
 		$this->load->view('footer');

@@ -13,6 +13,8 @@ class Notification extends CI_Controller {
 		$this->load->model('Helper_model');
 		// $session_allowed = $this->Auth_model->match_account_activity();
 		// if(!$session_allowed) redirect($baseurl.'auth/logout');
+		
+        $this->load->model('FormModel');
 	}
 
 	public function index(){
@@ -36,8 +38,15 @@ class Notification extends CI_Controller {
 		$all_users = $this->User_model->all_users_without_status(array(), array(8));
 		$result['contributers'] = $all_users;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('notification/send_alert', $result);
 		$this->load->view('footer');

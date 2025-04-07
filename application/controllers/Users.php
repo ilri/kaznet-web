@@ -13,6 +13,8 @@ class Users extends CI_Controller {
 		$this->load->model('Helper_model');
 		// $session_allowed = $this->Auth_model->match_account_activity();
 		// if(!$session_allowed) redirect($baseurl.'auth/logout');
+		
+        $this->load->model('FormModel');
 	}
 
 	public function index(){
@@ -35,8 +37,15 @@ class Users extends CI_Controller {
 		$profile_details = $this->Dynamicmenu_model->user_data();
 		$menu_result = array('profile_details' => $profile_details);
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/create', $result);
 		$this->load->view('footer');
@@ -226,8 +235,16 @@ class Users extends CI_Controller {
 		$disseminations = $this->User_model->all_users_without_status(array(), array(9));
 		$result['disseminations'] = $disseminations;
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/manage', $result);
 		$this->load->view('footer');
@@ -281,8 +298,15 @@ class Users extends CI_Controller {
 		$tasks = $this->db->where('status', 1)->get('form')->result_array();
 		$result['tasks'] = $tasks;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/manage_respondent', $result);
 		$this->load->view('footer');
@@ -579,8 +603,15 @@ class Users extends CI_Controller {
 			// echo"<pre>";print_r($locations);echo"</pre>";exit;
 		}
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/manage_location', $result);
 		$this->load->view('footer');
@@ -630,8 +661,16 @@ class Users extends CI_Controller {
 			$locations = array();
 		}
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/manage_contributer_location', $result);
 		$this->load->view('footer');
@@ -687,8 +726,15 @@ class Users extends CI_Controller {
 			}		
 		}
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('user/manage_cluster_location', $result);
 		$this->load->view('footer');
@@ -1330,8 +1376,16 @@ class Users extends CI_Controller {
 		$all_units = $this->Helper_model->all_units();
 		$result['units'] = $all_units;
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('user/map', $result);
 		$this->load->view('footer');
 	}
@@ -2231,8 +2285,15 @@ class Users extends CI_Controller {
 		
 		$result['all_users'] = $this->User_model->all_users();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('user/track', $result);
 		$this->load->view('footer');
 	}

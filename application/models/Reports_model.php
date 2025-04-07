@@ -1084,15 +1084,16 @@ class Reports_model extends CI_Model {
         }else  if($data['survey_type'] == "Rangeland Task"){
             $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
         }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-		if($data['survey_type'] != "Market Task" ){
+		// if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1187,11 +1188,12 @@ class Reports_model extends CI_Model {
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1259,16 +1261,17 @@ class Reports_model extends CI_Model {
         }else  if($data['survey_type'] == "Rangeland Task"){
             $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
         }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
             
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1346,11 +1349,12 @@ class Reports_model extends CI_Model {
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1412,15 +1416,16 @@ class Reports_model extends CI_Model {
         }else  if($data['survey_type'] == "Rangeland Task"){
             $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
         }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1504,11 +1509,12 @@ class Reports_model extends CI_Model {
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1580,15 +1586,16 @@ class Reports_model extends CI_Model {
         }else  if($data['survey_type'] == "Rangeland Task"){
             $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
         }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -1683,15 +1690,16 @@ class Reports_model extends CI_Model {
         }else  if($data['survey_type'] == "Rangeland Task"){
             $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
         }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name');
+            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
         }
 		$this->db->from('survey'.$survey_id.' AS survey');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        if($data['survey_type'] != "Market Task" ){
+        // if($data['survey_type'] != "Market Task" ){
 		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        }
+        // }
         if($data['survey_type'] == "Household Task"){
             $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
+            $this->db->where('rp.status', 1);
         }
         if($data['survey_type'] == "Rangeland Task"){
             $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
@@ -2336,10 +2344,10 @@ class Reports_model extends CI_Model {
         $user_id = $data['user_id'];
 
         // Get Survey submited Data
-		$this->db->select('rp.*, idl.lat, idl.lng, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by');
+		$this->db->select('rp.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by');
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }
@@ -2388,7 +2396,7 @@ class Reports_model extends CI_Model {
 		$this->db->select('rp.*, concat(tu.first_name," ", tu.last_name) as added_by');
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }
@@ -2427,11 +2435,11 @@ class Reports_model extends CI_Model {
         $user_id = $data['user_id'];
 
         // Get Survey submited Data
-		$this->db->select('rp.*, idl.lat, idl.lng, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by, concat(tu1.first_name," ", tu1.last_name) as approved_by');
+		$this->db->select('rp.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by, concat(tu1.first_name," ", tu1.last_name) as approved_by');
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
 		$this->db->join('tbl_users AS tu1', 'tu1.user_id = rp.pa_verified_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }
@@ -2476,7 +2484,7 @@ class Reports_model extends CI_Model {
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
 		$this->db->join('tbl_users AS tu1', 'tu1.user_id = rp.pa_verified_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }
@@ -2515,11 +2523,11 @@ class Reports_model extends CI_Model {
         $user_id = $data['user_id'];
 
         // Get Survey Rejected Data
-		$this->db->select('rp.*, idl.lat, idl.lng, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by, concat(tu1.first_name," ", tu1.last_name) as rejected_by');
+		$this->db->select('rp.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as added_by, concat(tu1.first_name," ", tu1.last_name) as rejected_by');
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
 		$this->db->join('tbl_users AS tu1', 'tu1.user_id = rp.pa_verified_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }
@@ -2564,7 +2572,7 @@ class Reports_model extends CI_Model {
         $this->db->from('tbl_transect_pastures as rp');
 		$this->db->join('tbl_users AS tu', 'tu.user_id = rp.added_by');
 		$this->db->join('tbl_users AS tu1', 'tu1.user_id = rp.pa_verified_by');
-        $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
+        // $this->db->join('ic_data_location AS idl', 'idl.data_id = rp.data_id', 'left');
         if(!empty($data['country_id'])) {
             $this->db->where('rp.country_id', $data['country_id']);
         }

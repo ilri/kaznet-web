@@ -141,6 +141,20 @@
             };
         // var fb = $('#form-builder').formBuilder();
         var fb = $('#form-builder').formBuilder(options);
+
+        // Function to disable 'className' and 'name' inputs after adding a new field
+        function disableNameAndClass() {
+            setTimeout(function () {
+                $('#form-builder input[name="className"]').prop('disabled', true);
+                $('#form-builder input[name="name"]').prop('disabled', true);
+            }, 500); // Delay ensures that fields are fully rendered before disabling
+        }
+        $(document).on('click', '.frmb-control', function () {
+            disableNameAndClass();
+        });
+        fb.promise.then(function () {
+            disableNameAndClass();
+        });
         
         // After rendering the form, modify the file upload field
         var fileInput = $('#file-upload-container').find('input[type="file"]');

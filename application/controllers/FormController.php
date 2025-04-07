@@ -26,8 +26,16 @@ class FormController extends CI_Controller {
         $this->load->model('Dynamicmenu_model');
         $profile_details = $this->Dynamicmenu_model->user_data();
         $menu_result = array('profile_details' => $profile_details);
-        $this->load->view('header');
-        $this->load->view('sidebar');
+        
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
+		$this->load->view('header');
+		$this->load->view('sidebar', ['customData' => $customData]);
         $this->load->view('menu', $menu_result);
         $this->load->view('template/create_form');
         $this->load->view('footer');
@@ -123,8 +131,16 @@ class FormController extends CI_Controller {
         $data['form_data'] = $form_data;
         $data['form_id'] = $form_id;
         $data['form_title'] = $form_details['title'];
-        $this->load->view('header');
-        $this->load->view('sidebar');
+        
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
+		$this->load->view('header');
+		$this->load->view('sidebar', ['customData' => $customData]);
         $this->load->view('menu', $menu_result);
         $this->load->view('template/render_form', $data);
         $this->load->view('footer');
@@ -152,8 +168,16 @@ class FormController extends CI_Controller {
         $data['form_id'] = $form_id;
         $data['form_title'] = $form_details['title'];
         $data['form_subject'] = $form_details['subject'];
-        $this->load->view('header');
-        $this->load->view('sidebar');
+       
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
+		$this->load->view('header');
+		$this->load->view('sidebar', ['customData' => $customData]);
         $this->load->view('menu', $menu_result);
         $this->load->view('template/edit_form', $data);
         $this->load->view('footer');
@@ -327,9 +351,16 @@ class FormController extends CI_Controller {
         $menu_result = array('profile_details' => $profile_details);
         $forms = $this->FormModel->get_all_forms();
         $data['forms'] = $forms;
-        
-        $this->load->view('header');
-        $this->load->view('sidebar');
+                
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
+		$this->load->view('header');
+		$this->load->view('sidebar', ['customData' => $customData]);
         $this->load->view('menu', $menu_result);
         $this->load->view('template/list_forms', $data);
         $this->load->view('footer');
@@ -388,45 +419,217 @@ class FormController extends CI_Controller {
         $data = array();
         $form_details = $this->db->where('id', $form_id)->get('forms')->row_array();
         $data['form_title'] = $form_details['title'];
+
+		$this->db->select('lc.*, tul.country_id')->from('lkp_country as lc')->join('tbl_user_unit_location AS tul', 'tul.country_id = lc.country_id');
+		if($this->session->userdata('role') != 1){
+			$this->db->where('tul.user_id', $user_id);
+		}
+		$data['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
         /*echo '<pre>';
             print_r($submitted_data);
         echo '</pre>';
         die();*/
-        $this->load->view('header');
-        $this->load->view('sidebar');
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
+		$this->load->view('header');
+		$this->load->view('sidebar', ['customData' => $customData]);
         $this->load->view('menu', $menu_result);
         $this->load->view('template/view_form_data', $data);
         $this->load->view('footer');
     }
     public function get_form_data() {
-        if(($this->session->userdata('login_id') == '')) {
-            $baseurl = base_url();
-            redirect($baseurl);
-        }
-        $survey_id = $this->input->post('survey_id');
-        // $survey_id = $this->input->post('survey_id');
-        // $survey_id = $this->input->post('survey_id');
-        $page_no =  1;
-        $record_per_page = 100;
-        if($this->input->post('pagination')){
-            $pagination = $this->input->post('pagination');
-            $page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
-            $record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
-        }
-        $data = array(
-            'survey_id' => $survey_id,
-            "page_no" => $page_no,
-            "record_per_page" => $record_per_page,
-            "is_pagination" => $this->input->post('pagination') != null
-        );
-        // print_r($data);exit();
-        $submitted_data = $this->FormModel->get_submitted_data($data);
-        $submitted_data['total_records'] = $this->FormModel->get_submitted_data_r_count($survey_id); //added by sagar for pagenation
-        $submitted_data['formdetails'] = $this->FormModel->get_all_forms($survey_id);
-        // $result['submitted_data'] = $submitted_data;
-        echo json_encode($submitted_data);
-		exit();
+		$baseurl = base_url();
+		if(($this->session->userdata('login_id') == '')) {
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				echo json_encode(array(
+					'status' => 0,
+					'msg' => 'Session Expired! Please login again to continue.'
+				));
+				exit();
+			} else {
+				redirect($baseurl);
+			}
+		}else{
+			$country_id = $this->input->post('country_id');
+			$uai_id = $this->input->post('uai_id');
+			$sub_location_id = $this->input->post('sub_location_id');
+			$cluster_id = $this->input->post('cluster_id');
+			$contributor_id = $this->input->post('contributor_id');
+			$respondent_id = $this->input->post('respondent_id');
+			$start_date = $this->input->post('start_date');
+			$end_date = $this->input->post('end_date');
+			$user_id = $this->session->userdata('login_id');
+			$survey_id = $this->input->post('survey_id');
+			$survey_type = $this->input->post('survey_type');
+
+			$page_no =  1;
+			$record_per_page = 100;
+			 if($this->input->post('pagination')){
+				$pagination = $this->input->post('pagination');
+				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
+				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
+			 }
+
+			 $search_input = "";
+			if ($this->input->post('search')) {
+				$search = $this->input->post('search');
+				$search_input = $search['search_input'] != null ? $search['search_input'] : "";
+			}
+
+			$pa_verified_status = "";
+			if ($this->input->post('pa_verified_status')) {
+				$verified_status = $this->input->post('pa_verified_status');
+				$pa_verified_status = $verified_status != null ? $verified_status : "";
+			}
+
+			$data = array(
+				'country_id' => $country_id,
+				'uai_id' => $uai_id,
+				'sub_location_id' => $sub_location_id,
+				'cluster_id' => $cluster_id,
+				'contributor_id' => $contributor_id,
+				'respondent_id' => $respondent_id,
+				'start_date' => $start_date,
+				'end_date' => $end_date,
+				'user_id' => $user_id,
+				'survey_id' => $survey_id,
+				'survey_type' => $survey_type,
+				"search_input" => $search_input,
+				"is_search" => $search_input != null,
+				"pa_verified_status" => $pa_verified_status,
+				"is_pa_verified_status" => $pa_verified_status != null,
+				"page_no" => $page_no,
+				"record_per_page" => $record_per_page,
+				"is_pagination" => $this->input->post('pagination') != null
+			);
+		
+			// print_r($data);exit();
+			$submitted_data = $this->FormModel->get_submitted_data($data);
+			$submitted_data['total_records'] = $this->FormModel->get_submitted_data_r_count($data); //added by sagar for pagenation
+			$submitted_data['formdetails'] = $this->FormModel->get_all_forms($survey_id);
+			$submitted_data['user_role'] = $this->session->userdata('role');
+			$submitted_data['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
+			$submitted_data['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
+			$submitted_data['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
+			$submitted_data['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
+			$submitted_data['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
+			$submitted_data['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
+			$submitted_data['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
+			$submitted_data['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
+			$submitted_data['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
+			$submitted_data['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
+			$submitted_data['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
+			$submitted_data['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
+			$submitted_data['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
+			$submitted_data['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
+			$submitted_data['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
+			$submitted_data['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
+
+			// $result['submitted_data'] = $submitted_data;
+			echo json_encode($submitted_data);
+			exit();
+		}
     }
+
+	public function get_form_data_export(){
+		$baseurl = base_url();
+		if(($this->session->userdata('login_id') == '')) {
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				echo json_encode(array(
+					'status' => 0,
+					'msg' => 'Session Expired! Please login again to continue.'
+				));
+				exit();
+			} else {
+				redirect($baseurl);
+			}
+		}else{
+			$country_id = $this->input->post('country_id');
+			$uai_id = $this->input->post('uai_id');
+			$sub_location_id = $this->input->post('sub_location_id');
+			$cluster_id = $this->input->post('cluster_id');
+			$contributor_id = $this->input->post('contributor_id');
+			$respondent_id = $this->input->post('respondent_id');
+			$start_date = $this->input->post('start_date');
+			$end_date = $this->input->post('end_date');
+			$user_id = $this->session->userdata('login_id');
+			$survey_id = $this->input->post('survey_id');
+			$survey_type = $this->input->post('survey_type');
+
+			$page_no =  1;
+			$record_per_page = 100;
+			 if($this->input->post('pagination')){
+				$pagination = $this->input->post('pagination');
+				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
+				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
+			 }
+
+			 $search_input = "";
+			if ($this->input->post('search')) {
+				$search = $this->input->post('search');
+				$search_input = $search['search_input'] != null ? $search['search_input'] : "";
+			}
+
+			$pa_verified_status = "";
+			if ($this->input->post('pa_verified_status')) {
+				$verified_status = $this->input->post('pa_verified_status');
+				$pa_verified_status = $verified_status != null ? $verified_status : "";
+			}
+
+			$data = array(
+				'country_id' => $country_id,
+				'uai_id' => $uai_id,
+				'sub_location_id' => $sub_location_id,
+				'cluster_id' => $cluster_id,
+				'contributor_id' => $contributor_id,
+				'respondent_id' => $respondent_id,
+				'start_date' => $start_date,
+				'end_date' => $end_date,
+				'user_id' => $user_id,
+				'survey_id' => $survey_id,
+				'survey_type' => $survey_type,
+				"search_input" => $search_input,
+				"is_search" => $search_input != null,
+				"pa_verified_status" => $pa_verified_status,
+				"is_pa_verified_status" => $pa_verified_status != null,
+				"page_no" => $page_no,
+				"record_per_page" => $record_per_page,
+				"is_pagination" => $this->input->post('pagination') != null
+			);
+
+			$submitted_data = $this->FormModel->get_submitted_data($data);
+			// $submitted_data['total_records'] = $this->FormModel->get_submitted_data_r_count($survey_id); //added by sagar for pagenation
+			$submitted_data['formdetails'] = $this->FormModel->get_all_forms($survey_id);
+			$submitted_data['user_role'] = $this->session->userdata('role');
+			$submitted_data['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
+			$submitted_data['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
+			$submitted_data['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
+			$submitted_data['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
+			$submitted_data['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
+			$submitted_data['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
+			$submitted_data['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
+			$submitted_data['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
+			$submitted_data['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
+			$submitted_data['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
+			$submitted_data['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
+			$submitted_data['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
+			$submitted_data['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
+			$submitted_data['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
+			$submitted_data['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
+			$submitted_data['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
+
+			// $result['submitted_data'] = $submitted_data;
+			echo json_encode($submitted_data);
+			exit();
+
+		}
+
+	}
     
 	public function deleteData()
 	{
@@ -685,8 +888,15 @@ class FormController extends CI_Controller {
 		// }
 		// $result['surveys_rt'] = $surveys_rt;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('template/f_manage_task', $result);
 		$this->load->view('footer');
@@ -721,8 +931,15 @@ class FormController extends CI_Controller {
 
 		// var_dump($result); die();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('template/f_assign_task', $result);
 		$this->load->view('footer');
@@ -1028,8 +1245,15 @@ class FormController extends CI_Controller {
 		// print_r($this->db->last_query());exit();
 		$result['status'] =1;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('template/f_task_contributer', $result);
 		$this->load->view('footer');

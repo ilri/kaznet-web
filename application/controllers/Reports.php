@@ -11,6 +11,8 @@ class Reports extends CI_Controller {
 		$this->load->model('Auth_model');
 		// $session_allowed = $this->Auth_model->match_account_activity();
 		// if(!$session_allowed) redirect($baseurl.'auth/logout');
+		
+        $this->load->model('FormModel');
 	}
 	
 	public function index(){
@@ -49,8 +51,15 @@ class Reports extends CI_Controller {
 		}
 		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/dashboard1', $result);
 		$this->load->view('footer');
@@ -191,8 +200,15 @@ class Reports extends CI_Controller {
 		$result['contributor_list'] = $users_list;
 		$result['status'] =1;
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/payment_report', $result);
 		$this->load->view('footer');
@@ -632,8 +648,15 @@ class Reports extends CI_Controller {
 		$result['survey_type'] = $this->db->select('type')->where('id', $survey_id)->where('status', 1)->get('form')->row_array();
 		// $result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/view_survey_data', $result);
 		$this->load->view('footer');
@@ -669,8 +692,16 @@ class Reports extends CI_Controller {
 		$result['survey_type'] = $this->db->select('type')->where('id', $survey_id)->where('status', 1)->get('form')->row_array();
 		// $result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/task_data_export', $result);
 		$this->load->view('footer');
@@ -1768,8 +1799,15 @@ class Reports extends CI_Controller {
 		}
 		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/household_profile', $result);
 		$this->load->view('footer');
@@ -1802,8 +1840,16 @@ class Reports extends CI_Controller {
 		$result['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
 		$result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/household_details', $result);
 		$this->load->view('footer');
@@ -1836,8 +1882,16 @@ class Reports extends CI_Controller {
 		}
 		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/transect_pastures', $result);
 		$this->load->view('footer');
@@ -1870,8 +1924,16 @@ class Reports extends CI_Controller {
 		}
 		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/contributor_profile', $result);
 		$this->load->view('footer');
@@ -4372,8 +4434,16 @@ class Reports extends CI_Controller {
 			}
 			$result['rejected_data'] = $rejected_data;
 
-		$this->load->view('header');
-		$this->load->view('sidebar');
+		
+			$postData_ = array(
+				"page_no" => 1,
+				"status" => 1,
+				"record_per_page" => 100,
+				"is_pagination" => false
+			);
+			$customData = $this->FormModel->get_all_forms_p($postData_);
+			$this->load->view('header');
+			$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/view_farm_surveydata', $result);
 		$this->load->view('footer');
 	}
@@ -4403,8 +4473,16 @@ class Reports extends CI_Controller {
 		}
 		$result['state_list'] = $this->db->where('st.status', 1)->group_by('tul.state_id')->get()->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/view_farm_surveydata', $result);
 		$this->load->view('footer');
 	}
@@ -4790,8 +4868,16 @@ class Reports extends CI_Controller {
 		
 		$result['group_data'] = $this->db->where('data_id', $data_id)->where('groupfield_id', $groupfield_id)->where('status', 1)->get($table_name)->result_array();
 
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('reports/view_surveygroupdata', $result);
 		$this->load->view('footer');
@@ -5950,8 +6036,16 @@ class Reports extends CI_Controller {
 		// 	exit();
 		// }
 		// echo '<pre>';print_r($result['survey_data']);exit;
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/view_registration', $result);
 		$this->load->view('footer');
 	}
@@ -5985,8 +6079,16 @@ class Reports extends CI_Controller {
 		$result['survey_data'] = $this->Reports_model->registration_data2($survey_id);
 		
 		// echo '<pre>';print_r($result['survey_data']);exit;
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/view_registration2', $result);
 		$this->load->view('footer');
 	}
@@ -6020,8 +6122,16 @@ class Reports extends CI_Controller {
 		$result['survey_data'] = $this->Reports_model->registration_data3($survey_id);
 		
 		// echo '<pre>';print_r($result['survey_data']);exit;
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/view_registration3', $result);
 		$this->load->view('footer');
 	}
@@ -7168,8 +7278,15 @@ class Reports extends CI_Controller {
 		$result['baseline_data'] = $this->Reports_model->baseline_data();
 		$result['state_list'] = $this->db->where('status', 1)->order_by('state_name', 'ASC')->get('lkp_state')->result_array();
 		
+		$postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('reports/baselineDataSummary', $result);
 		$this->load->view('footer');
 	} 
@@ -8842,5 +8959,147 @@ class Reports extends CI_Controller {
 		$writer->save('php://output');
 	}
 	
+	public function generate_forage_percentage() {
+		$baseurl = base_url();
+		if (strpos($baseurl, 'localhost') !== false) {
+			$baseurl = "https://kaznet.ilri.org/";
+		}
+	
+		// Define the field mappings
+		$field_mappings = array(
+			772 => ['type' => 1022, 'area' => 1023],  // North
+			773 => ['type' => 1024, 'area' => 1025],  // East
+			774 => ['type' => 1026, 'area' => 1027],  // South
+			775 => ['type' => 1028, 'area' => 1029],  // West
+			790 => ['type' => 1010, 'area' => 1011],  // Point0
+			794 => ['type' => 1012, 'area' => 1013],  // Point1
+			798 => ['type' => 1014, 'area' => 1015],  // Point2
+			802 => ['type' => 1016, 'area' => 1017],  // Point3
+			806 => ['type' => 1018, 'area' => 1019],  // Point4
+			810 => ['type' => 1020, 'area' => 1021],  // Point5
+			815 => ['type' => 1030, 'area' => 1031],  // Point6
+			819 => ['type' => 1032, 'area' => 1033],  // Point7
+			823 => ['type' => 1034, 'area' => 1035],  // Point8
+			827 => ['type' => 1036, 'area' => 1037],  // Point9
+			831 => ['type' => 1038, 'area' => 1039]   // Point10
+		);
+	
+		$this->db->select('field_id, label');
+		$this->db->from('form_field'); // form_field_1203_backup
+		$this->db->group_start();
+		$this->db->like('label', 'forage');
+		$this->db->or_like('label', 'vegetation');
+		$this->db->group_end();
+		$this->db->where('form_id', 9);
+		$this->db->where('status', 1);
+		$this->db->where('type', 'file');
+		$query = $this->db->get();
+	
+		if ($query->num_rows() > 0) {
+			$result = $query->result();
+			$field_ids = array();
+			foreach ($result as $row) {
+				$field_ids[] = $row->field_id;
+			}
+	
+			if (!empty($field_ids)) {
+				$this->db->select('data_id');
+				$this->db->from('survey9'); // survey9_1203_backup
+				$this->db->limit(1);
+				$survey_query = $this->db->get();
+	
+				if ($survey_query->num_rows() > 0) {
+					$survey_9_result = $survey_query->result();
+	
+					foreach ($survey_9_result as $survey9) {
+						$this->db->select('*');
+						$this->db->from('ic_data_file');
+						$this->db->where('form_id', 9);
+						$this->db->where('data_id', $survey9->data_id);
+						$this->db->where('status', 1);
+						$this->db->where_in('field_id', $field_ids);
+						$survey_query = $this->db->get();
+	
+						if ($survey_query->num_rows() > 0) {
+							$survey_result = $survey_query->result();
+							foreach ($survey_result as $survey_image) {
+								$imageUrl = $baseurl . "uploads/survey/" . $survey_image->file_name;
+	
+								if ($imageUrl) {
+									$url = 'http://13.60.244.223/process_image';
+									$data = json_encode(['url' => $imageUrl]);
+									$ch = curl_init($url);
+									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+									curl_setopt($ch, CURLOPT_POST, true);
+									curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+									curl_setopt($ch, CURLOPT_HTTPHEADER, [
+										'Content-Type: application/json',
+										'Content-Length: ' . strlen($data)
+									]);
+									$response = curl_exec($ch);
+	
+									if ($response === false) {
+										$error = curl_error($ch);
+										echo "cURL Error: " . $error;
+									} else {
+										$response_data = json_decode($response, true);
+										
+										if ($response_data && isset($response_data['predictions'])) {
+											$predictions = $response_data['predictions'];
+											$field_id = $survey_image->field_id;
+	
+											// Check if this field_id has a mapping
+											if (array_key_exists($field_id, $field_mappings)) {
+												$mapping = $field_mappings[$field_id];
+	
+												// Fetch existing row
+												$this->db->select("field_{$mapping['type']}, field_{$mapping['area']}");
+												$this->db->from('survey9');
+												$this->db->where('data_id', $survey9->data_id);
+												$existing_data_query = $this->db->get();
+	
+												if ($existing_data_query->num_rows() > 0) {
+													$existing_data = $existing_data_query->row_array();
+	
+													// Prepare update data
+													$update_data = [
+														"field_{$mapping['type']}" => $predictions['forage_label'],
+														"field_{$mapping['area']}" => $predictions['forage_area']
+													];
+	
+													// Merge only updated fields with existing data
+													$merged_data = array_merge($existing_data, $update_data);
+	
+													$this->db->where('data_id', $survey9->data_id);
+													// $this->db->update('survey9', $merged_data); // survey9_1203_backup
+	
+													print_r($this->db->last_query());
+													echo '<br/>';
+													echo '<br/>';
+	
+													echo "Updated survey9 for field_id: $field_id with forage type: " . 
+														$predictions['forage_label'] . 
+														" and area: " . $predictions['forage_area'] . 
+														" for data_id: " . $survey9->data_id . "<br/>";
+												}
+											}
+										}
+									}
+									curl_close($ch);
+								}
+							}
+						} else {
+							echo "No survey data found for the given field_ids.";
+						}
+					}
+				}
+			} else {
+				echo "No field_ids found.";
+			}
+		} else {
+			echo "No matching rows found in form_field_1203_backup.";
+		}
+		exit();
+	}
 	
 }

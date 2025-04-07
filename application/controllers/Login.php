@@ -8,6 +8,8 @@ class Login extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->library('session');
 		$this->load->library('user_agent');
+		
+        $this->load->model('FormModel');
 	}
 
 	public function index(){
@@ -44,9 +46,16 @@ class Login extends CI_Controller {
 		// $header_result = array('main_menu' => $main_menu);
 
 		$result = array('profile_details' => $profile_details);
-
+		
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$result);
 		$this->load->view('profile',$result);
 		$this->load->view('footer');

@@ -14,6 +14,8 @@ class Template extends CI_Controller {
 		$this->load->library('uniqueid_lib');
 		// $session_allowed = $this->Auth_model->match_account_activity();
 		// if(!$session_allowed) redirect($baseurl.'auth/logout');
+		
+        $this->load->model('FormModel');
 	}
 
 	public function index(){
@@ -36,8 +38,15 @@ class Template extends CI_Controller {
 		$profile_details = $this->Dynamicmenu_model->user_data();
 		$menu_result = array('profile_details' => $profile_details);
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('template/create', $result);
 		$this->load->view('footer');
@@ -248,8 +257,15 @@ class Template extends CI_Controller {
 		
 		$result = array('forms' => $forms);
 
+        $postData_ = array(
+            "page_no" => 1,
+            "status" => 1,
+            "record_per_page" => 100,
+            "is_pagination" => false
+        );
+        $customData = $this->FormModel->get_all_forms_p($postData_);
 		$this->load->view('header');
-		$this->load->view('sidebar');
+		$this->load->view('sidebar', ['customData' => $customData]);
 		$this->load->view('menu',$menu_result);
 		$this->load->view('template/manage_template', $result);
 	}
@@ -305,9 +321,16 @@ class Template extends CI_Controller {
             
             $result = array('fields' => $fields, 'formname' => $formname);
             
-            // Load views
-            $this->load->view('header');
-            $this->load->view('sidebar');
+            // Load views            
+			$postData_ = array(
+				"page_no" => 1,
+				"status" => 1,
+				"record_per_page" => 100,
+				"is_pagination" => false
+			);
+			$customData = $this->FormModel->get_all_forms_p($postData_);
+			$this->load->view('header');
+			$this->load->view('sidebar', ['customData' => $customData]);
             $this->load->view('menu', $menu_result);
             $this->load->view('template/view_template', $result);
         }

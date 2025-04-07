@@ -202,8 +202,20 @@
                 // Initialize form builder with form data and additional options
                 var fb = $('#fb-editor').formBuilder(options);
 
-                
-            
+                // Function to disable 'className' and 'name' inputs after adding a new field
+                function disableNameAndClass() {
+                    setTimeout(function () {
+                        $('#fb-editor input[name="className"]').prop('disabled', true);
+                        $('#fb-editor input[name="name"]').prop('disabled', true);
+                    }, 500); // Delay ensures that fields are fully rendered before disabling
+                }
+                $(document).on('click', '.frmb-control', function () {
+                    disableNameAndClass();
+                });
+                fb.promise.then(function () {
+                    disableNameAndClass();
+                });
+
                 // Delete user
                 $('body').on('click', '#save-form', function(event) {
                     var elem = $(this);
