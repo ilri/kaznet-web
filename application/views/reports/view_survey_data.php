@@ -859,7 +859,7 @@
 								if (type == 'file') {
 									tableBody += `<td>`;
 										if(submitedData[k][field] != null){
-											if (submitedData[k][field].includes('api.ona.io')) {
+											if (submitedData[k][field].includes('api.ona.io') || submitedData[k][field].includes('classic.ona.io')) {
 												tableBody += `<a class="img_link text-primary" data-img-url="${submitedData[k][field]}" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
 											} else {
 												tableBody += `<a class="img_link text-primary" data-img-url="<?php echo base_url(); ?>uploads/survey/`+ submitedData[k][field] +`" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
@@ -1429,7 +1429,7 @@
 								if (type == 'file') {
 									tableBody += `<td>`;
 										if(submitedData[k][field] != null){
-											if (submitedData[k][field].includes('api.ona.io')) {
+											if (submitedData[k][field].includes('api.ona.io') || submitedData[k][field].includes('classic.ona.io')) {
 												tableBody += `<a class="img_link text-primary" data-img-url="${submitedData[k][field]}" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
 											} else {
 												tableBody += `<a class="img_link text-primary" data-img-url="<?php echo base_url(); ?>uploads/survey/`+ submitedData[k][field] +`" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
@@ -2014,7 +2014,7 @@
 								if (type == 'file') {
 									tableBody += `<td>`;
 										if(submitedData[k][field] != null){
-											if (submitedData[k][field].includes('api.ona.io')) {
+											if (submitedData[k][field].includes('api.ona.io') || submitedData[k][field].includes('classic.ona.io')) {
 												tableBody += `<a class="img_link text-primary" data-img-url="${submitedData[k][field]}" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
 											} else {
 												tableBody += `<a class="img_link text-primary" data-img-url="<?php echo base_url(); ?>uploads/survey/`+ submitedData[k][field] +`" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
@@ -3249,11 +3249,16 @@
 									row.push(Multiple_options|| lkpData[key][elemnt[key]] || elemnt[key] || "N/A");
 								}
 							}else{
-								if(imageData[key]){
-									const imgvalue=''+imageData[key]+''+elemnt[key];
-									row.push(imgvalue || elemnt[key] || 'N/A');
-								}else{
-									row.push(elemnt[key] || elemnt[key] || 'N/A');
+								if (imageData[key]) {
+									const val = elemnt[key];
+									if (typeof val === 'string' && (val.includes('api.ona.io') || val.includes('classic.ona.io'))) {
+										row.push(val || 'N/A');
+									} else {
+										const imgvalue = `${imageData[key] || ''}${val || ''}`;
+										row.push(imgvalue || val || 'N/A');
+									}
+								} else {
+									row.push(elemnt[key] || "N/A");
 								}
 							}
 						}
