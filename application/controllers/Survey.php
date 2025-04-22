@@ -1604,7 +1604,7 @@ class Survey extends CI_Controller {
 		$task_list1 = $this->db->get('form')->row_array();
 		$task_type = $task_list1['type'];
 		$this->db->select('survey.*');
-		if($survey_id !== NULL && $survey_id!=0){
+		if($survey_id !== NULL && $survey_id!=0 && !empty($survey_id)){
 			$this->db->where('survey_id', $survey_id);
 		}
 		if(!empty($data['country_id'])) {

@@ -1305,7 +1305,7 @@ class FormController extends CI_Controller {
             $task_type ="N/A";
         // }
 		$this->db->select('survey.*');
-		if($survey_id !== NULL && $survey_id!=0){
+		if($survey_id !== NULL && $survey_id!=0 && !empty($survey_id)){
 			$this->db->where('survey_id', $survey_id);
 		}
 		if(!empty($data['country_id'])) {
