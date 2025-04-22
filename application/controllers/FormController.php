@@ -1347,7 +1347,7 @@ class FormController extends CI_Controller {
             $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
         }
 		$contributor_list = $this->db->where('status', 1)->get('tbl_f_survey_assignee as survey')->result_array();
-		print_r($this->db->last_query());
+		// print_r($this->db->last_query());
 		// print_r($this->db->last_query());exit();
 		foreach ($contributor_list as $ckey => $contributor) {
 			$task_list =$this->db->select('title')->where('id', $contributor['survey_id'])->where('status', 1)->get('forms')->row_array();
@@ -1428,14 +1428,14 @@ class FormController extends CI_Controller {
 			$this->db->where('tul.user_id', $user_id);
 		}
 		$result['lkp_country'] = $this->db->where('lc.status', 1)->group_by('tul.country_id')->get()->result_array();
-		print_r($this->db->last_query());
+		// print_r($this->db->last_query());
 
 		$result['submited_data'] = $contributor_list;
 		$result['task_type'] = $task_type;
 		
 		
         $this->db->select('survey.*');
-		if($survey_id !== NULL && $survey_id!=0){
+		if($survey_id !== NULL && $survey_id!=0 && !empty($survey_id)){
 			$this->db->where('survey_id', $survey_id);
 		}
 		if(!empty($data['country_id'])) {
@@ -1474,7 +1474,7 @@ class FormController extends CI_Controller {
 				break;
 		}
 		$submited_data = $this->db->where('survey.status', 1)->get('tbl_f_survey_assignee as survey')->num_rows();
-		print_r($this->db->last_query());
+		// print_r($this->db->last_query());
         
 		// $submited_data = $this->db->order_by('survey.id', 'DESC')->get()->num_rows();
 
