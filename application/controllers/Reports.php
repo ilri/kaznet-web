@@ -8961,9 +8961,14 @@ class Reports extends CI_Controller {
 	
 	public function generate_forage_percentage() {
 		$baseurl = base_url();
-		if (strpos($baseurl, 'localhost') !== false) {
-			$baseurl = "https://kaznet.ilri.org/";
+		if(($this->session->userdata('login_id') == '')) {
+			$baseurl = base_url();
+			redirect($baseurl);
+			exit;
 		}
+		// if (strpos($baseurl, 'localhost') !== false) {
+			$baseurl = "https://kaznet.ilri.org/";
+		// }
 	
 		// Define the field mappings
 		$field_mappings = array(
@@ -8994,6 +8999,8 @@ class Reports extends CI_Controller {
 		$this->db->where('status', 1);
 		$this->db->where('type', 'file');
 		$query = $this->db->get();
+		print_r($this->db->last_query());
+		echo '<br/>';
 	
 		if ($query->num_rows() > 0) {
 			$result = $query->result();
@@ -9004,12 +9011,30 @@ class Reports extends CI_Controller {
 	
 			if (!empty($field_ids)) {
 				$this->db->select('data_id');
+				$this->db->where('uai_id', $this->input->get('uai_id'));
 				$this->db->from('survey9'); // survey9_1203_backup
-				$this->db->limit(1);
+				$this->db->limit(1000);
+				
+				$this->db->group_start(); // Start outer group for ORs
+
+				foreach ($field_mappings as $map) {
+					// $this->db->or_group_start(); // Start OR group for each pair
+					$this->db->group_start(); // Each pair wrapped in AND
+					$this->db->where("field_{$map['type']}", null);
+					$this->db->where("field_{$map['area']}", null);
+					$this->db->group_end(); // End OR group
+				}
+		
+				$this->db->group_end(); // End outer group
+				
 				$survey_query = $this->db->get();
+				print_r($this->db->last_query());
+				echo '<br/>';
 	
 				if ($survey_query->num_rows() > 0) {
 					$survey_9_result = $survey_query->result();
+					print_r($survey_9_result);
+					echo '<br/>';
 	
 					foreach ($survey_9_result as $survey9) {
 						$this->db->select('*');
@@ -9022,8 +9047,11 @@ class Reports extends CI_Controller {
 	
 						if ($survey_query->num_rows() > 0) {
 							$survey_result = $survey_query->result();
+							// print_r($survey_result);
+							echo '<br/>';
 							foreach ($survey_result as $survey_image) {
 								$imageUrl = $baseurl . "uploads/survey/" . $survey_image->file_name;
+								print_r($imageUrl);
 	
 								if ($imageUrl) {
 									$url = 'http://13.60.244.223/process_image';
@@ -9037,6 +9065,7 @@ class Reports extends CI_Controller {
 										'Content-Length: ' . strlen($data)
 									]);
 									$response = curl_exec($ch);
+									print_r($response);
 	
 									if ($response === false) {
 										$error = curl_error($ch);
@@ -9069,9 +9098,11 @@ class Reports extends CI_Controller {
 	
 													// Merge only updated fields with existing data
 													$merged_data = array_merge($existing_data, $update_data);
+													print_r($merged_data);
+													echo '<br/><br/>';
 	
 													$this->db->where('data_id', $survey9->data_id);
-													// $this->db->update('survey9', $merged_data); // survey9_1203_backup
+													$this->db->update('survey9', $merged_data); // survey9_1203_backup
 	
 													print_r($this->db->last_query());
 													echo '<br/>';
@@ -9101,5 +9132,183 @@ class Reports extends CI_Controller {
 		}
 		exit();
 	}
+
+	public function generate_forage_percentage_for_null() {
+		// Check if user is logged in
+		if (empty($this->session->userdata('login_id'))) {
+			$baseurl = base_url();
+			redirect($baseurl);
+			exit;
+		}
 	
+		$baseurl = "https://kaznet.ilri.org/";
+	
+		// Define the field mappings
+		$field_mappings = [
+			772 => ['type' => 1022, 'area' => 1023], // North
+			773 => ['type' => 1024, 'area' => 1025], // East
+			774 => ['type' => 1026, 'area' => 1027], // South
+			775 => ['type' => 1028, 'area' => 1029], // West
+			790 => ['type' => 1010, 'area' => 1011], // Point0
+			794 => ['type' => 1012, 'area' => 1013], // Point1
+			798 => ['type' => 1014, 'area' => 1015], // Point2
+			802 => ['type' => 1016, 'area' => 1017], // Point3
+			806 => ['type' => 1018, 'area' => 1019], // Point4
+			810 => ['type' => 1020, 'area' => 1021], // Point5
+			815 => ['type' => 1030, 'area' => 1031], // Point6
+			819 => ['type' => 1032, 'area' => 1033], // Point7
+			823 => ['type' => 1034, 'area' => 1035], // Point8
+			827 => ['type' => 1036, 'area' => 1037], // Point9
+			831 => ['type' => 1038, 'area' => 1039]  // Point10
+		];
+	
+		// Step 1: Fetch field_ids from form_field where label contains 'forage' or 'vegetation'
+		$this->db->select('field_id, label');
+		$this->db->from('form_field');
+		$this->db->group_start();
+		$this->db->like('label', 'forage');
+		$this->db->or_like('label', 'vegetation');
+		$this->db->group_end();
+		$this->db->where('form_id', 9);
+		$this->db->where('status', 1);
+		$this->db->where('type', 'file');
+		$query = $this->db->get();
+		echo $this->db->last_query() . '<br/>';
+	
+		if ($query->num_rows() > 0) {
+			$result = $query->result();
+			$field_ids = array_column((array)$result, 'field_id');
+	
+			if (!empty($field_ids)) {
+				// Step 2: Fetch data_ids from survey9 and check for NULL fields
+				$type_columns = array_map(function($map) { return "field_{$map['type']}"; }, $field_mappings);
+				$this->db->select(array_merge(['data_id'], $type_columns));
+				$this->db->from('survey9');
+				$this->db->where('uai_id', $this->input->get('uai_id'));
+				$this->db->limit(1000);
+				$this->db->group_start();
+				foreach ($field_mappings as $map) {
+					$this->db->or_where("field_{$map['type']}", NULL);
+				}
+				$this->db->group_end();
+				$survey_query = $this->db->get();
+				echo $this->db->last_query() . '<br/>';
+	
+				if ($survey_query->num_rows() > 0) {
+					$survey_9_result = $survey_query->result();
+	
+					foreach ($survey_9_result as $survey9) {
+						// Step 3: Identify which field_{type} is NULL
+						$null_field_ids = [];
+						foreach ($field_mappings as $field_id => $map) {
+							$type_column = "field_{$map['type']}";
+							if (is_null($survey9->$type_column)) {
+								$null_field_ids[] = $field_id;
+							}
+						}
+	
+						if (!empty($null_field_ids)) {
+							// Step 4: Fetch file_name, field_id, and data_id from ic_data_file for NULL field_ids
+							$this->db->select('file_name, field_id, data_id');
+							$this->db->from('ic_data_file');
+							$this->db->where('form_id', 9);
+							$this->db->where('data_id', $survey9->data_id);
+							$this->db->where('status', 1);
+							$this->db->where_in('field_id', $null_field_ids);
+							$file_query = $this->db->get();
+	
+							if ($file_query->num_rows() > 0) {
+								$survey_result = $file_query->result();
+								foreach ($survey_result as $survey_image) {
+									// Output file_name, field_id, data_id, and URL
+									echo "---------------------------<br/>";
+									echo "File Name: " . $survey_image->file_name . "<br/>";
+									echo "Field ID: " . $survey_image->field_id . "<br/>";
+									echo "Data ID: " . $survey_image->data_id . "<br/>";
+									$imageUrl = $baseurl . "uploads/survey/" . $survey_image->file_name;
+									echo "File URL: " . $imageUrl . '<br/>';
+	
+									// Step 5: Process image via cURL
+									$url = 'http://13.60.244.223/process_image';
+									$data = json_encode(['url' => $imageUrl]);
+									$ch = curl_init($url);
+									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+									curl_setopt($ch, CURLOPT_POST, true);
+									curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+									curl_setopt($ch, CURLOPT_HTTPHEADER, [
+										'Content-Type: application/json',
+										'Content-Length: ' . strlen($data)
+									]);
+									$response = curl_exec($ch);
+									echo "cURL Response: " . $response . '<br/>';
+									echo "---------------------------<br/>";
+	
+									if ($response === false) {
+										$error = curl_error($ch);
+										echo "cURL Error: " . $error . '<br/>';
+									} else {
+										$response_data = json_decode($response, true);
+	
+										if ($response_data && isset($response_data['predictions'])) {
+											$predictions = $response_data['predictions'];
+											$field_id = $survey_image->field_id;
+	
+											// Check if this field_id has a mapping
+											if (array_key_exists($field_id, $field_mappings)) {
+												$mapping = $field_mappings[$field_id];
+	
+												// Fetch existing row
+												$this->db->select("field_{$mapping['type']}, field_{$mapping['area']}");
+												$this->db->from('survey9');
+												$this->db->where('data_id', $survey9->data_id);
+												$existing_data_query = $this->db->get();
+	
+												if ($existing_data_query->num_rows() > 0) {
+													$existing_data = $existing_data_query->row_array();
+	
+													// Prepare update data
+													$update_data = [
+														"field_{$mapping['type']}" => $predictions['forage_label'],
+														"field_{$mapping['area']}" => $predictions['forage_area']
+													];
+	
+													// Merge only updated fields with existing data
+													$merged_data = array_merge($existing_data, $update_data);
+													echo "Merged Data: ";
+													print_r($merged_data);
+													echo '<br/><br/>';
+	
+													$this->db->where('data_id', $survey9->data_id);
+													$this->db->update('survey9', $merged_data);
+													echo $this->db->last_query() . '<br/><br/>';
+	
+													echo "Updated survey9 for field_id: $field_id with forage type: " .
+														$predictions['forage_label'] .
+														" and area: " . $predictions['forage_area'] .
+														" for data_id: " . $survey9->data_id . "<br/>";
+												}
+											}
+										}
+									}
+									curl_close($ch);
+								}
+							} else {
+								echo "No survey data found for data_id: " . $survey9->data_id . " with NULL field_ids: " . implode(', ', $null_field_ids) . "<br/>";
+							}
+						} else {
+							echo "No NULL type fields found for data_id: " . $survey9->data_id . "<br/>";
+						}
+					}
+				} else {
+					echo "No survey9 records found with NULL type fields.";
+				}
+			} else {
+				echo "No field_ids found.";
+			}
+		} else {
+			echo "No matching rows found in form_field.";
+		}
+		exit();
+	}
+
 }

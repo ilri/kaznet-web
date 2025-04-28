@@ -1047,7 +1047,7 @@ class Reports_model extends CI_Model {
         }
 
         $this->db->select('*');
-        $this->db->where("form_id", $survey_id)->where('status', 1);
+        $this->db->where("form_id", $survey_id)->where_in('status', [1, 2]);
         $this->db->where_not_in('field_id', $form_group_id_array_list);
         $this->db->where('type !=', 'header');
         // $this->db->where('type !=', 'group')->where('type !=', 'header');
@@ -1167,6 +1167,67 @@ class Reports_model extends CI_Model {
         // print_r($this->db->last_query());exit;
         return $submited_data;
     }
+
+    public function survey_submited_data_test($data){
+        $survey_id = $data['survey_id'];
+    
+        // Basic select from survey table only, with empty placeholders
+        $this->db->select('survey.*, "" as first_name, "" as contributor_name, "" as respondent, "" as hhid, "" as lat, "" as lng');
+    
+        $this->db->from('survey' . $survey_id . ' AS survey');
+    
+        // Apply filters
+        if (!empty($data['country_id'])) {
+            $this->db->where('survey.country_id', $data['country_id']);
+        }
+        if (!empty($data['cluster_id'])) {
+            $this->db->where('survey.cluster_id', $data['cluster_id']);
+        }
+        if (!empty($data['uai_id'])) {
+            $this->db->where('survey.uai_id', $data['uai_id']);
+        }
+        if (!empty($data['sub_location_id'])) {
+            $this->db->where('survey.sub_location_id', $data['sub_location_id']);
+        }
+        if (!empty($data['contributor_id'])) {
+            $this->db->where('survey.user_id', $data['contributor_id']);
+        }
+        if (!empty($data['respondent_id'])) {
+            $this->db->where('survey.respondent_data_id', $data['respondent_id']);
+        }
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $this->db->where('DATE(survey.datetime) >=', $data['start_date']);
+            $this->db->where('DATE(survey.datetime) <=', $data['end_date']);
+        }
+    
+        $this->db->where('survey.status', 1);
+        
+        if (!empty($data['is_pa_verified_status'])) {
+            $this->db->where('survey.pa_verified_status', $data['pa_verified_status']);
+        }
+    
+        if (!empty($data['is_pagination'])) {
+            $this->db->limit($data['record_per_page'], ($data['record_per_page'] * $data['page_no']) - ($data['record_per_page']));
+        }
+    
+        $submited_data = $this->db->order_by('survey.id', 'DESC')->get()->result_array();
+        // Debug: print the last executed query
+        // print_r($this->db->last_query()); exit;
+    
+        // Attach uploaded images to each entry
+        // foreach ($submited_data as $key => $value) {
+        //     $this->db->select('field_id, file_name');
+        //     $this->db->where('data_id', $value['data_id']);
+        //     $images = $this->db->where('status', 1)->get('ic_data_file')->result_array();
+    
+        //     foreach ($images as $ivalue) {
+        //         $submited_data[$key]['field_' . $ivalue['field_id']] = $ivalue['file_name'];
+        //     }
+        // }
+    
+        return $submited_data;
+    }
+    
     public function survey_records($data){
         $survey_id = $data['survey_id'];
         $user_id = $data['user_id'];
