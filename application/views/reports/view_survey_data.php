@@ -2016,7 +2016,7 @@
 										if(submitedData[k][field] != null){
 											if (submitedData[k][field].includes('api.ona.io') || submitedData[k][field].includes('classic.ona.io')) {
 												tableBody += `<a class="img_link text-primary" data-img-url="${submitedData[k][field]}" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
-											} else {													tableBody += `<a class="img_link text-primary" data-img-url="<?php echo base_url(); ?>uploads/survey/`+ submitedData[k][field] +`" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
+											} else {													
 												tableBody += `<a class="img_link text-primary" data-img-url="<?php echo base_url(); ?>uploads/survey/`+ submitedData[k][field] +`" onClick="openImgPopup(event);" href="javascript:void(0);">View Image</a>`;
 											}
 										}else{

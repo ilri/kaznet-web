@@ -223,164 +223,268 @@ class Sync extends CI_Controller {
 	public function upload($data)
 	{
 		date_default_timezone_set("UTC");
+
+		// Validate input data
+		if (!isset($data['queries']) || !is_array($data['queries'])) {
+			$this->jsonify_new(array(
+				'msg' => 'Invalid or missing queries data.',
+				'status' => 0,
+				'error_type' => 'invalid_input',
+				'details' => 'The "queries" field is missing or not an array.',
+				'http_status' => 400
+			));
+		}
+
 		$queries = $data['queries'];
-		foreach ($queries as $key => $query) {
-			$data = (array)json_decode($query->data);
-			switch ($query->type) {
-				case 'query':
-					switch ($query->action) {
-						case 'insert':
-							//Insert into survey table
-							$this->db->insert($data['tablename'], $data['data']);
-						break;
 
-						case 'update':
+		try {
+			foreach ($queries as $key => $query) {
+				// Validate query structure
+				if (!isset($query->data) || !isset($query->type) || !isset($query->action)) {
+					throw new Exception('Invalid query structure: missing data, type, or action.', 400);
+				}
 
-							/*$condition = (array)$data['data'][0]->where;
-							$updateValue = (array)$data['data'][0]->set;*/
+				// Decode JSON and ensure nested objects are converted to arrays
+				$data = json_decode($query->data, true);
+				if ($data === null) {
+					throw new Exception('Failed to decode JSON data: ' . json_last_error_msg(), 400);
+				}
 
-							if(isset($data['data_id'])) {
-								$condition_array = array(
-									'data_id' => $data['data_id']
-								);
-							} else if(isset($data['file_id'])) {
-								$condition_array = array(
-									'file_id' => $data['file_id']
-								);
-							}
-							$updateValue = $data['data'];							
+				switch ($query->type) {
+					case 'query':
+						// Validate required fields
+						if (!isset($data['tablename']) || !isset($data['data'])) {
+							throw new Exception('Missing tablename or data in query payload.', 400);
+						}
 
-							// foreach ($updateValue as $key => $value) {
-							// 	$get_current_field_val = $this->db->select($key)->where($condition_array)->get($data['tablename'])->row_array();
-
-							// 	$old_value = $get_current_field_val[$key];
-							// 	$new_value = $value;
-
-							// 	$insert_log_array = array(
-							// 		'editedby' => $query->creator,
-							// 		'editedfor' => $query->creator,
-							// 		'table_name' => $data['tablename'],
-							// 		'table_field_name' => $key,
-							// 		'old_value' => $old_value,
-							// 		'new_value' => $new_value,
-							// 		'edited_reason' => "Mobile edited",
-							// 		'updated_date' => date('Y-m-d H:i:s'),
-							// 		'ip_address' => $this->input->ip_address(),
-							// 		'log_status' => 1
-							// 	);
-							// 	if(isset($data['data_id'])) {
-							// 		$insert_log_array['table_row_id'] = $data['data_id'];
-							// 	} else if(isset($data['file_id'])) {
-							// 		$insert_log_array['table_row_id'] = $data['file_id'];
-							// 	}
-
-							// 	$insert_log = $this->db->insert('ic_log', $insert_log_array);
-							// }
-
-							//Update required table
-							$this->db->where($condition_array)->update($data['tablename'], $updateValue);
-						break;
-
-						case 'delete':
-							$condition = (array)$data['data'][0]->where;
-							
-							//Delete data from required table
-							$this->db->where($condition)->delete($data['tablename']);
-						break;
-
-						default:
-							$this->db->query($query->data);
-							break;
-					}
-
-					//Insert into query table
-					$this->db->insert('query', array(
-						'type' => $query->type,
-						'action' => $query->action,
-						'time' => $query->time,
-						'creator' => $query->creator,
-						'platform' => 'mobile',
-						'data' => $query->data
-					));
-				break;
-
-				case 'image':
-					if(!defined('UPLOAD_DIR')) define('UPLOAD_DIR', 'uploads/survey/');
-					$images = $data['image'];
-
-					foreach ($images as $key => $image) {
-						$mimeType = explode(';', $image);
-						switch ($mimeType[0]) {
-							case 'data:image/*':
-								$crop = str_replace('data:image/*;charset=utf-8;base64,', '', $image);
+						switch ($query->action) {
+							case 'insert':
+								// Check for duplicate data_id
+								if (isset($data['data']['data_id'])) {
+									$existing = $this->db->where('data_id', $data['data']['data_id'])
+														->get($data['tablename'])
+														->row_array();
+									if ($existing) {
+										throw new Exception('Duplicate data_id: ' . $data['data']['data_id'], 400);
+									}
+								}
+								$this->db->insert($data['tablename'], $data['data']);
 								break;
 
-							case 'data:image/jpeg':
-								$crop = str_replace('data:image/jpeg;base64,', '', $image);
+							case 'update':
+								if (isset($data['data_id'])) {
+									$condition_array = array('data_id' => $data['data_id']);
+								} else if (isset($data['file_id'])) {
+									$condition_array = array('file_id' => $data['file_id']);
+								} else {
+									throw new Exception('Missing data_id or file_id for update operation.', 400);
+								}
+								$updateValue = $data['data'];
+								$this->db->where($condition_array)->update($data['tablename'], $updateValue);
 								break;
 
-							case 'data:image/png':
-								$crop = str_replace('data:image/png;base64,', '', $image);
+							case 'delete':
+								if (!isset($data['data'][0]['where'])) {
+									throw new Exception('Missing where condition for delete operation.', 400);
+								}
+								$condition = (array)$data['data'][0]['where'];
+								$this->db->where($condition)->delete($data['tablename']);
 								break;
 
 							default:
-								$crop = $image;
+								$this->db->query($query->data);
 								break;
 						}
-						$crop = str_replace(' ', '+', $crop);
-						$cropdata = base64_decode($crop);
-						$file = uniqid() . $key . $data['userid'] . '.jpg';
-						$url = UPLOAD_DIR . $file;
 
-						file_put_contents(UPLOAD_DIR . $file, $cropdata);
-						
-						$insert = $this->db->insert('rpt_formdata_image', array(
-							'form_id' => $data['formid'],
-							'survey_id' => $data['surveyId'],
-							'image' => $file
+						// Insert into query table
+						$this->db->insert('query', array(
+							'type' => $query->type,
+							'action' => $query->action,
+							'time' => $query->time,
+							'creator' => $query->creator,
+							'platform' => 'mobile',
+							'data' => $query->data
 						));
-					}
-				break;
-
-				case 'surveyimage':
-					switch ($query->action) {
-						case 'insert':
-							//Insert into survey table
-							$this->db->insert($data['table_name'], $data['data']);
 						break;
-					}
-					//Call uploadfile function to save file in server
-					// $this->uploadfile($query);
-				break;
+
+					case 'image':
+						if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', 'Uploads/survey/');
+						if (!isset($data['image']) || !is_array($data['image'])) {
+							throw new Exception('Invalid or missing image data.', 400);
+						}
+
+						foreach ($data['image'] as $key => $image) {
+							$mimeType = explode(';', $image);
+							switch ($mimeType[0]) {
+								case 'data:image/*':
+									$crop = str_replace('data:image/*;charset=utf-8;base64,', '', $image);
+									break;
+								case 'data:image/jpeg':
+									$crop = str_replace('data:image/jpeg;base64,', '', $image);
+									break;
+								case 'data:image/png':
+									$crop = str_replace('data:image/png;base64,', '', $image);
+									break;
+								default:
+									$crop = $image;
+									break;
+							}
+							$crop = str_replace(' ', '+', $crop);
+							$cropdata = base64_decode($crop);
+							if ($cropdata === false) {
+								throw new Exception('Failed to decode base64 image data.', 400);
+							}
+
+							$file = uniqid('img_', true) . $key . (isset($data['userid']) ? $data['userid'] : '') . '.jpg';
+							$upload_path = UPLOAD_DIR . $file;
+
+							if (!is_dir(UPLOAD_DIR)) {
+								mkdir(UPLOAD_DIR, 0777, true);
+							}
+
+							if (file_put_contents($upload_path, $cropdata) === false) {
+								throw new Exception('Failed to write image to ' . $upload_path, 500);
+							}
+
+							$this->db->insert('rpt_formdata_image', array(
+								'form_id' => $data['formid'],
+								'survey_id' => $data['surveyId'],
+								'image' => $file
+							));
+						}
+						break;
+
+					case 'surveyimage':
+						if ($query->action == 'insert') {
+							if (!isset($data['table_name']) || !isset($data['data']['file_id'])) {
+								throw new Exception('Missing table_name or file_id in surveyimage data.', 400);
+							}
+
+							// Check for duplicate file_id
+							$existing = $this->db->where('file_id', $data['data']['file_id'])
+												->get($data['table_name'])
+												->row_array();
+							if ($existing) {
+								throw new Exception('Duplicate file_id: ' . $data['data']['file_id'], 400);
+							}
+
+							// Insert the record directly (no file upload)
+							$this->db->insert($data['table_name'], $data['data']);
+						}
+						break;
+
+					default:
+						throw new Exception('Unknown query type: ' . $query->type, 400);
+				}
+			}
+
+			$this->jsonify_new(array(
+				'msg' => 'Successfully synced LocalDB with remoteDB.',
+				'status' => 1
+			));
+		} catch (Exception $e) {
+			$errorMessage = $e->getMessage();
+			$errorCode = $e->getCode();
+
+			// Log the error for debugging
+			log_message('error', 'Upload error: ' . $errorMessage . ' | Code: ' . $errorCode);
+
+			// Check for duplicate entry errors (from MySQL or custom exception)
+			if (strpos($errorMessage, 'Duplicate entry') !== false || strpos($errorMessage, 'Duplicate data_id') !== false || strpos($errorMessage, 'Duplicate file_id') !== false || $errorCode == 400) {
+				$this->jsonify_new(array(
+					'msg' => 'Duplicate entry detected: ' . (isset($data['data']['data_id']) ? 'data_id: ' . $data['data']['data_id'] : (isset($data['data']['file_id']) ? 'file_id: ' . $data['data']['file_id'] : 'unknown')),
+					'status' => 0,
+					'error_type' => 'duplicate_entry',
+					'details' => $errorMessage,
+					'http_status' => 200
+				));
+			} else {
+				$this->jsonify_new(array(
+					'msg' => 'An unexpected error occurred: ' . $errorMessage,
+					'status' => 0,
+					'error_type' => 'general_error',
+					'details' => $errorMessage,
+					'http_status' => 500
+				));
 			}
 		}
-
-		$this->jsonify(array(
-			'msg' => 'Successfully synced LocalDB with remoteDB.',
-			'status' => 1
-		));
 	}
 
-	// Upload Local File to Server
 	private function uploadfile($query)
 	{
 		date_default_timezone_set("UTC");
-		if(!defined('UPLOAD_DIR')) define('UPLOAD_DIR', 'uploads/survey/');
-		
-		//Convert object data to array
-		$data = (array)json_decode($query->data);
-		$tablename = $data['table_name'];
-		$syncdata = (array)$data['data'];
-		$extension = substr($syncdata['file_name'], strrpos($syncdata['file_name'], '.') + 1);
+		if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', 'Uploads/survey/');
 
-		$base64 = $data['base64'];
-		$base64 = str_replace(' ', '+', $base64);
+		// Decode JSON and ensure nested objects are converted to arrays
+		$data = json_decode($query->data, true);
+		if ($data === null) {
+			throw new Exception('Failed to decode JSON data in uploadfile: ' . json_last_error_msg());
+		}
+
+		$tablename = $data['table_name'];
+		$syncdata = $data['data'];
+
+		// Check if base64 data is provided
+		if (!isset($data['base64']) || empty($data['base64'])) {
+			throw new Exception('Base64 data is missing for file upload.');
+		}
+
+		// Generate a unique file name to avoid overwrites
+		$extension = pathinfo($syncdata['file_name'], PATHINFO_EXTENSION);
+		$unique_filename = uniqid('kaznet_', true) . '.' . $extension;
+		$upload_path = UPLOAD_DIR . $unique_filename;
+
+		// Decode and save the file
+		$base64 = str_replace(' ', '+', $data['base64']);
 		$cropdata = base64_decode($base64);
-		file_put_contents(UPLOAD_DIR . $syncdata['file_name'], $cropdata);
-		
+		if ($cropdata === false) {
+			throw new Exception('Failed to decode base64 data.');
+		}
+
+		// Ensure the upload directory exists
+		if (!is_dir(UPLOAD_DIR)) {
+			mkdir(UPLOAD_DIR, 0777, true);
+		}
+
+		// Save the file
+		if (file_put_contents($upload_path, $cropdata) === false) {
+			throw new Exception('Failed to write file to ' . $upload_path);
+		}
+
+		// Update the file_name in the database record
+		$syncdata['file_name'] = $unique_filename;
+
+		// Insert or update the database record
+		$existing = $this->db->where('file_id', $syncdata['file_id'])
+							->get($tablename)
+							->row_array();
+
+		if ($existing) {
+			throw new Exception('Duplicate file_id in uploadfile: ' . $syncdata['file_id'], 400);
+		}
+
+		// Insert new record
 		$insert = $this->db->insert($tablename, $syncdata);
-		if($insert) return true;
-		else return false;
+		if (!$insert) {
+			throw new Exception('Failed to insert record into ' . $tablename);
+		}
+
+		return true;
+	}
+
+	// Return JSON data with HTTP status code
+	public function jsonify_new($data)
+	{
+		// Set HTTP status code if provided
+		if (isset($data['http_status'])) {
+			http_response_code($data['http_status']);
+			unset($data['http_status']);
+		} else {
+			http_response_code(200);
+		}
+		header('Content-Type: application/json');
+		echo json_encode($data);
+		exit();
 	}
 	public function upload_file()
 	{

@@ -1305,95 +1305,206 @@ class Reports_model extends CI_Model {
 		$submited_data = $this->db->order_by('survey.id', 'DESC')->get()->num_rows();
         return $submited_data;
     }
-    public function survey_approved_data($data){
+    public function survey_approved_data($data) {
         $survey_id = $data['survey_id'];
-        $user_id = $data['user_id'];
+        $is_household = $data['survey_type'] == 'Household Task';
+        $is_rangeland = $data['survey_type'] == 'Rangeland Task';
+        $is_market = $data['survey_type'] == 'Market Task';
 
-        $this->db->select('type');
-        $this->db->where('id', $survey_id)->where('status', 1);
-        $form_type = $this->db->get('form')->row_array();
+        // Determine form type
+        $form_type = $this->db->select('type')->where('id', $survey_id)->where('status', 1)->get('form')->row_array();
+        $type = $form_type['type'] ?? '';
 
-        $type = $form_type['type'];
-        
-        
-        // Get Survey submited Data
-        if($data['survey_type'] == "Household Task"){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, concat(rp.first_name," ", rp.last_name) as respondent,rp.hhid, idl.lat, idl.lng');
-        }else  if($data['survey_type'] == "Rangeland Task"){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, tp.contributor_name as contributor_name, idl.lat, idl.lng');
-        }else if($data['survey_type'] == "Market Task" ){
-            $this->db->select('survey.*, concat(tu.first_name," ", tu.last_name," (", tu.username,")") as first_name, lm.name as market_name, idl.lat, idl.lng');
-            
+        // Step 1: Fetch survey data with dynamic fields based on survey type
+        $select_fields = 'survey.*, survey.user_id, survey.data_id';
+        if ($is_household) {
+            $select_fields .= ', survey.respondent_data_id';
+        } elseif ($is_rangeland) {
+            $select_fields .= ', survey.transect_pasture_data_id'; // Use correct column name
+        } elseif ($is_market) {
+            $select_fields .= ', survey.market_id';
         }
-		$this->db->from('survey'.$survey_id.' AS survey');
-		$this->db->join('tbl_users AS tu', 'tu.user_id = survey.user_id');
-        // if($data['survey_type'] != "Market Task" ){
-		    $this->db->join('ic_data_location AS idl', 'idl.data_id = survey.data_id', 'left');
-        // }
-        if($data['survey_type'] == "Household Task"){
-            $this->db->join('tbl_respondent_users AS rp', 'rp.data_id = survey.respondent_data_id');
-            $this->db->where('rp.status', 1);
-        }
-        if($data['survey_type'] == "Rangeland Task"){
-            $this->db->join('tbl_transect_pastures AS tp', 'tp.data_id = survey.transect_pasture_data_id');
-        }
-        if($data['survey_type'] == "Market Task"){
-            $this->db->join('lkp_market AS lm', 'lm.market_id = survey.market_id');
-        }
-        if(!empty($data['country_id'])) {
-            $this->db->where('survey.country_id', $data['country_id']);
-        }
-        if(!empty($data['cluster_id'])) {
-            $this->db->where('survey.cluster_id', $data['cluster_id']);
-        }
-        if(!empty($data['uai_id'])) {
-            $this->db->where('survey.uai_id', $data['uai_id']);
-        }
-        if(!empty($data['sub_location_id'])) {
-            $this->db->where('survey.sub_location_id', $data['sub_location_id']);
-        }
-        if(!empty($data['contributor_id'])) {
-            $this->db->where('survey.user_id', $data['contributor_id']);
-        }
-        if(!empty($data['respondent_id'])) {
-            if($data['survey_type'] == "Market Task"){
+
+        $this->db->select($select_fields)
+                ->from("survey{$survey_id} AS survey")
+                ->where('survey.status', 1)
+                ->where('survey.pa_verified_status', 2);
+
+        // Apply filters
+        if (!empty($data['country_id'])) $this->db->where('survey.country_id', $data['country_id']);
+        if (!empty($data['cluster_id'])) $this->db->where('survey.cluster_id', $data['cluster_id']);
+        if (!empty($data['uai_id'])) $this->db->where('survey.uai_id', $data['uai_id']);
+        if (!empty($data['sub_location_id'])) $this->db->where('survey.sub_location_id', $data['sub_location_id']);
+        if (!empty($data['contributor_id'])) $this->db->where('survey.user_id', $data['contributor_id']);
+        if (!empty($data['respondent_id'])) {
+            if ($is_market) {
                 $this->db->where('survey.market_id', $data['respondent_id']);
-            }else if($data['survey_type'] == "Rangeland Task" ){
-                $this->db->where('tp.pasture_type', $data['respondent_id']);
-            }else{
+            } elseif ($is_rangeland) {
+                $this->db->where('survey.transect_pasture_data_id', $data['respondent_id']);
+            } else {
                 $this->db->where('survey.respondent_data_id', $data['respondent_id']);
             }
         }
-        if(!empty($data['start_date']) && !empty($data['end_date'])){
-            $this->db->where('DATE(survey.datetime) >=', $data['start_date']);
-            $this->db->where('DATE(survey.datetime) <=', $data['end_date']);
+        if (!empty($data['start_date']) && !empty($data['end_date'])) {
+            $this->db->where('survey.datetime >=', $data['start_date'] . ' 00:00:00')
+                    ->where('survey.datetime <=', $data['end_date'] . ' 23:59:59');
         }
-		$this->db->where('survey.status', 1);
-		$this->db->where('survey.pa_verified_status', 2);
-        if($data['is_pagination']){
-            $this->db->limit($data['record_per_page'],($data['record_per_page']*$data['page_no'])-($data['record_per_page']));
-        }
-        if($data['is_search']){
-            $this->db->group_start();
-            $this->db->or_like('tu.first_name',$data['search_input']); // contributor First name
-            $this->db->or_like('tu.last_name',$data['search_input']); // contributor last Name
-            $this->db->or_like('rp.first_name',$data['search_input']); // respondent First name
-            $this->db->or_like('rp.last_name',$data['search_input']); // respondent last Name
-            $this->db->or_like('rp.username',$data['search_input']); // respondent user name
-            $this->db->or_like('tu.username',$data['search_input']); // contributor user name
-            $this->db->group_end();
-        }
-		$submited_data = $this->db->order_by('survey.id', 'DESC')->get()->result_array();
-        // print_r( $this->db->last_query());exit;
-        foreach($submited_data as $key => $value){
-            $this->db->select('field_id,file_name');
-            $this->db->where('data_id',$value['data_id']);
-            $images = $this->db->where('status',1)->get('ic_data_file')->result_array();
-            foreach($images as $ikey => $ivalue){
-                $submited_data[$key]['field_'.$ivalue['field_id']] = $ivalue['file_name'];
+
+        // Handle search
+        $user_ids = [];
+        $respondent_ids = [];
+        if ($data['is_search']) {
+            // Fetch user IDs matching search
+            $this->db->select('user_id')
+                    ->from('tbl_users')
+                    ->like('CONCAT(COALESCE(first_name, ""), " ", COALESCE(last_name, ""), " ", COALESCE(username, ""))', $data['search_input']);
+            $user_ids = array_column($this->db->get()->result_array(), 'user_id');
+
+            if ($is_household) {
+                // Fetch respondent IDs matching search
+                $this->db->select('data_id')
+                        ->from('tbl_respondent_users')
+                        ->where('status', 1)
+                        ->like('CONCAT(COALESCE(first_name, ""), " ", COALESCE(last_name, ""), " ", COALESCE(username, ""))', $data['search_input']);
+                $respondent_ids = array_column($this->db->get()->result_array(), 'data_id');
+            }
+
+            // Apply search filters
+            if (!empty($user_ids) || !empty($respondent_ids)) {
+                $this->db->group_start();
+                if (!empty($user_ids)) {
+                    $this->db->where_in('survey.user_id', $user_ids);
+                }
+                if (!empty($respondent_ids) && $is_household) {
+                    $this->db->where_in('survey.respondent_data_id', $respondent_ids);
+                }
+                $this->db->group_end();
+            } else {
+                // No matching users or respondents
+                return ['data' => [], 'total_records' => 0];
             }
         }
-        return $submited_data;
+
+        // Get total records
+        $total_records = $this->db->count_all_results('', false);
+
+        // Apply pagination
+        if ($data['is_pagination']) {
+            $this->db->limit($data['record_per_page'], ($data['record_per_page'] * ($data['page_no'] - 1)));
+        }
+
+        // Fetch survey data
+        $submited_data = $this->db->order_by('survey.id', 'DESC')->get()->result_array();
+
+        // Step 2: Fetch related data individually
+        if (!empty($submited_data)) {
+            $user_ids = array_unique(array_filter(array_column($submited_data, 'user_id')));
+            $respondent_data_ids = $is_household ? array_unique(array_filter(array_column($submited_data, 'respondent_data_id'))) : [];
+            $transect_data_ids = $is_rangeland ? array_unique(array_filter(array_column($submited_data, 'transect_pasture_data_id'))) : [];
+            $market_ids = $is_market ? array_unique(array_filter(array_column($submited_data, 'market_id'))) : [];
+            $data_ids = array_unique(array_filter(array_column($submited_data, 'data_id')));
+
+            // Fetch user data
+            $users = [];
+            if (!empty($user_ids)) {
+                $this->db->select('user_id, CONCAT(COALESCE(first_name, "Unknown"), " ", COALESCE(last_name, ""), " (", COALESCE(username, "unknown"), ")") as first_name')
+                        ->from('tbl_users')
+                        ->where_in('user_id', $user_ids);
+                $users_result = $this->db->get()->result_array();
+                $users = array_column($users_result, 'first_name', 'user_id');
+            }
+
+            // Fetch respondent data
+            $respondents = [];
+            if ($is_household && !empty($respondent_data_ids)) {
+                $this->db->select('data_id, CONCAT(COALESCE(first_name, "Unknown"), " ", COALESCE(last_name, "")) as respondent, COALESCE(hhid, "") as hhid')
+                        ->from('tbl_respondent_users')
+                        ->where_in('data_id', $respondent_data_ids)
+                        ->where('status', 1);
+                $respondents_result = $this->db->get()->result_array();
+                foreach ($respondents_result as $row) {
+                    $respondents[$row['data_id']] = ['respondent' => $row['respondent'], 'hhid' => $row['hhid']];
+                }
+            }
+
+            // Fetch transect data
+            $transects = [];
+            if ($is_rangeland && !empty($transect_data_ids)) {
+                $this->db->select('data_id, COALESCE(contributor_name, "") as contributor_name')
+                        ->from('tbl_transect_pastures')
+                        ->where_in('data_id', $transect_data_ids);
+                $transects_result = $this->db->get()->result_array();
+                $transects = array_column($transects_result, 'contributor_name', 'data_id');
+            }
+
+            // Fetch market data
+            $markets = [];
+            if ($is_market && !empty($market_ids)) {
+                $this->db->select('market_id, COALESCE(name, "") as market_name')
+                        ->from('lkp_market')
+                        ->where_in('market_id', $market_ids);
+                $markets_result = $this->db->get()->result_array();
+                $markets = array_column($markets_result, 'market_name', 'market_id');
+            }
+
+            // Fetch location data
+            $locations = [];
+            if (!empty($data_ids)) {
+                $this->db->select('data_id, COALESCE(lat, NULL) as lat, COALESCE(lng, NULL) as lng')
+                        ->from('ic_data_location')
+                        ->where_in('data_id', $data_ids);
+                $locations_result = $this->db->get()->result_array();
+                foreach ($locations_result as $row) {
+                    $locations[$row['data_id']] = ['lat' => $row['lat'], 'lng' => $row['lng']];
+                }
+            }
+
+            // Fetch images
+            $images = [];
+            if (!empty($data_ids)) {
+                $this->db->select('data_id, field_id, file_name')
+                        ->from('ic_data_file')
+                        ->where_in('data_id', $data_ids)
+                        ->where('status', 1);
+                $images_result = $this->db->get()->result_array();
+                foreach ($images_result as $row) {
+                    $images[$row['data_id']][] = ['field_id' => $row['field_id'], 'file_name' => $row['file_name']];
+                }
+            }
+
+            // Merge data
+            foreach ($submited_data as &$row) {
+                // Add user data with fallback
+                $row['first_name'] = isset($row['user_id']) && isset($users[$row['user_id']]) ? $users[$row['user_id']] : 'Unknown';
+
+                // Add survey-type-specific data
+                if ($is_household && isset($row['respondent_data_id']) && isset($respondents[$row['respondent_data_id']])) {
+                    $row['respondent'] = $respondents[$row['respondent_data_id']]['respondent'];
+                    $row['hhid'] = $respondents[$row['respondent_data_id']]['hhid'];
+                } elseif ($is_rangeland && isset($row['transect_pasture_data_id']) && isset($transects[$row['transect_pasture_data_id']])) {
+                    $row['contributor_name'] = $transects[$row['transect_pasture_data_id']];
+                } elseif ($is_market && isset($row['market_id']) && isset($markets[$row['market_id']])) {
+                    $row['market_name'] = $markets[$row['market_id']];
+                }
+
+                // Add location data
+                $row['lat'] = $locations[$row['data_id']]['lat'] ?? null;
+                $row['lng'] = $locations[$row['data_id']]['lng'] ?? null;
+
+                // Add images
+                if (isset($images[$row['data_id']])) {
+                    foreach ($images[$row['data_id']] as $img) {
+                        $row['field_' . $img['field_id']] = $img['file_name'];
+                    }
+                }
+            }
+            unset($row); // Unset reference
+        }
+
+        return [
+            'data' => $submited_data,
+            'total_records' => $total_records
+        ];
     }
     public function survey_approved_records($data){
         $survey_id = $data['survey_id'];
