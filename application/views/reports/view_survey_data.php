@@ -3217,9 +3217,13 @@
 					}
 				}
 				// tableHead += `<th>Uploaded By</th><th>Uploaded Datetime</th>`;
-				xcelHeader.push(...['Latitude','Longitude','Uploaded By','Uploaded Datetime','Verification status']);
-				tableHeaderFields.push(...['lat','lng','first_name','datetime','pa_verified_status']);
-
+				if (dataValue == "3") {
+					xcelHeader.push(...['Latitude','Longitude', 'Select Reasons','Uploaded By','Uploaded Datetime','Verification status']);
+					tableHeaderFields.push(...['lat','lng', 'rejected_remarks','first_name','datetime','pa_verified_status']);
+				} else {
+					xcelHeader.push(...['Latitude','Longitude','Uploaded By','Uploaded Datetime','Verification status']);
+					tableHeaderFields.push(...['lat','lng','first_name','datetime','pa_verified_status']);
+				}
 
 				if(submitedData.length > 0){
 					const xcelBody = [];

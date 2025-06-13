@@ -706,104 +706,115 @@ class Reports extends CI_Controller {
 		$this->load->view('reports/task_data_export', $result);
 		$this->load->view('footer');
 	}
-
-	public function get_submited_data(){
+	
+	public function get_submited_data() {
 		$baseurl = base_url();
-		if(($this->session->userdata('login_id') == '')) {
+		if (empty($this->session->userdata('login_id'))) {
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-				echo json_encode(array(
+				echo json_encode([
 					'status' => 0,
 					'msg' => 'Session Expired! Please login again to continue.'
-				));
-				exit();
-			} else {
-				redirect($baseurl);
+				]);
+				exit;
 			}
-		}else{
-			$country_id = $this->input->post('country_id');
-			$uai_id = $this->input->post('uai_id');
-			$sub_location_id = $this->input->post('sub_location_id');
-			$cluster_id = $this->input->post('cluster_id');
-			$contributor_id = $this->input->post('contributor_id');
-			$respondent_id = $this->input->post('respondent_id');
-			$start_date = $this->input->post('start_date');
-			$end_date = $this->input->post('end_date');
-			$user_id = $this->session->userdata('login_id');
-			$survey_id = $this->input->post('survey_id');
-			$survey_type = $this->input->post('survey_type');
-
-			$page_no =  1;
-			$record_per_page = 100;
-			 if($this->input->post('pagination')){
-				$pagination = $this->input->post('pagination');
-				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
-				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
-			 }
-
-			 $search_input = "";
-			if ($this->input->post('search')) {
-				$search = $this->input->post('search');
-				$search_input = $search['search_input'] != null ? $search['search_input'] : "";
-			}
-
-			$pa_verified_status = "";
-			if ($this->input->post('pa_verified_status')) {
-				$verified_status = $this->input->post('pa_verified_status');
-				$pa_verified_status = $verified_status != null ? $verified_status : "";
-			}
-
-			$data = array(
-				'country_id' => $country_id,
-				'uai_id' => $uai_id,
-				'sub_location_id' => $sub_location_id,
-				'cluster_id' => $cluster_id,
-				'contributor_id' => $contributor_id,
-				'respondent_id' => $respondent_id,
-				'start_date' => $start_date,
-				'end_date' => $end_date,
-				'user_id' => $user_id,
-				'survey_id' => $survey_id,
-				'survey_type' => $survey_type,
-				"search_input" => $search_input,
-				"is_search" => $search_input != null,
-				"pa_verified_status" => $pa_verified_status,
-				"is_pa_verified_status" => $pa_verified_status != null,
-				"page_no" => $page_no,
-				"record_per_page" => $record_per_page,
-				"is_pagination" => $this->input->post('pagination') != null
-			);
-
-			$this->load->model('Reports_model');
-			$result = $this->Reports_model->survey_details($survey_id);
-			$result['submited_data'] = $this->Reports_model->survey_submited_data($data);
-			$result['total_records'] = $this->Reports_model->survey_records($data);
-			$result['user_role'] = $this->session->userdata('role');
-			$result['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
-			$result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
-			$result['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
-			$result['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
-			
-			$result['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
-			$result['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
-			$result['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
-			$result['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
-			$result['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
-			$result['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
-			$result['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
-			$result['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
-			$result['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
-			$result['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
-			$result['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
-			$result['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
-
-			
-			$result['title'] = $this->Reports_model->export_survey_title($survey_id);
-			$result['status'] = 1;
-			echo json_encode($result);
-			exit();
-
+			redirect($baseurl);
 		}
 
+		// Input parameters
+		$data = [
+			'country_id' => $this->input->post('country_id'),
+			'uai_id' => $this->input->post('uai_id'),
+			'sub_location_id' => $this->input->post('sub_location_id'),
+			'cluster_id' => $this->input->post('cluster_id'),
+			'contributor_id' => $this->input->post('contributor_id'),
+			'respondent_id' => $this->input->post('respondent_id'),
+			'start_date' => $this->input->post('start_date'),
+			'end_date' => $this->input->post('end_date'),
+			'user_id' => $this->session->userdata('login_id'),
+			'survey_id' => $this->input->post('survey_id'),
+			'survey_type' => $this->input->post('survey_type'),
+			'page_no' => 1,
+			'record_per_page' => 100,
+			'search_input' => '',
+			'is_search' => false,
+			'pa_verified_status' => '',
+			'is_pa_verified_status' => false,
+			'is_pagination' => false
+		];
+
+		// Handle pagination
+		if ($this->input->post('pagination')) {
+			$pagination = $this->input->post('pagination');
+			$data['page_no'] = $pagination['pageNo'] ?? 1;
+			$data['record_per_page'] = $pagination['recordperpage'] ?? 100;
+			$data['is_pagination'] = true;
+		}
+
+		// Handle search
+		if ($this->input->post('search')) {
+			$search = $this->input->post('search');
+			$data['search_input'] = $search['search_input'] ?? '';
+			$data['is_search'] = !empty($data['search_input']);
+		}
+
+		// Handle pa_verified_status
+		if ($this->input->post('pa_verified_status')) {
+			$data['pa_verified_status'] = $this->input->post('pa_verified_status');
+			$data['is_pa_verified_status'] = !empty($data['pa_verified_status']);
+		}
+
+		$this->load->model('Reports_model');
+
+		// In-memory cache for lookup tables
+		static $lookup_cache = [];
+		$lookup_tables = [
+			'lkp_country' => ['table' => 'lkp_country', 'select' => '*'],
+			'lkp_cluster' => ['table' => 'lkp_cluster', 'select' => '*'],
+			'lkp_uai' => ['table' => 'lkp_uai', 'select' => '*'],
+			'lkp_sub_location' => ['table' => 'lkp_sub_location', 'select' => '*'],
+			'lkp_location_type' => ['table' => 'lkp_location_type', 'select' => '*'],
+			'lkp_animal_type_lactating' => ['table' => 'lkp_animal_type_lactating', 'select' => '*'],
+			'lkp_market' => ['table' => 'lkp_market', 'select' => '*'],
+			'lkp_lr_body_condition' => ['table' => 'lkp_lr_body_condition', 'select' => '*'],
+			'lkp_sr_body_condition' => ['table' => 'lkp_sr_body_condition', 'select' => '*'],
+			'lkp_animal_type' => ['table' => 'lkp_animal_type', 'select' => '*'],
+			'lkp_animal_herd_type' => ['table' => 'lkp_animal_herd_type', 'select' => '*'],
+			'lkp_food_groups' => ['table' => 'lkp_food_groups', 'select' => '*'],
+			'lkp_transect_pasture' => ['table' => 'lkp_transect_pasture', 'select' => '*'],
+			'lkp_dry_wet_pasture' => ['table' => 'lkp_dry_wet_pasture', 'select' => '*'],
+			'lkp_transport_means' => ['table' => 'lkp_transport_means', 'select' => '*'],
+			'respondent_name' => ['table' => 'tbl_respondent_users', 'select' => 'first_name, last_name, data_id'],
+			'cluster_admin' => ['table' => 'tbl_users', 'select' => 'CONCAT(first_name, " ", last_name) as verified_by, user_id', 'where' => ['role_id' => 6]]
+		];
+
+		$result = [
+			'status' => 1,
+			'user_role' => $this->session->userdata('role'),
+			'title' => $this->Reports_model->export_survey_title($data['survey_id'])
+		];
+
+		// Fetch lookup data from in-memory cache
+		foreach ($lookup_tables as $key => $config) {
+			if (!isset($lookup_cache[$key])) {
+				$query = $this->db->select($config['select'])->where('status', 1);
+				if (!empty($config['where'])) {
+					foreach ($config['where'] as $field => $value) {
+						$query->where($field, $value);
+					}
+				}
+				$lookup_cache[$key] = $query->get($config['table'])->result_array();
+			}
+			$result[$key] = $lookup_cache[$key];
+		}
+
+		// Fetch survey details and submitted data
+		$result = array_merge($result, $this->Reports_model->survey_details($data['survey_id']));
+		$survey_data = $this->Reports_model->survey_submited_data($data);
+		$result['submited_data'] = $survey_data['data'];
+		$result['total_records'] = $survey_data['total_records'];
+
+		echo json_encode($result);
+		exit;
 	}
 	public function get_approved_data() {
 		$baseurl = base_url();
@@ -905,194 +916,216 @@ class Reports extends CI_Controller {
 		echo json_encode($result);
 		exit;
 	}
-	public function get_rejected_data(){
+	public function get_rejected_data() {
 		$baseurl = base_url();
-		if(($this->session->userdata('login_id') == '')) {
+		if (empty($this->session->userdata('login_id'))) {
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-				echo json_encode(array(
+				echo json_encode([
 					'status' => 0,
 					'msg' => 'Session Expired! Please login again to continue.'
-				));
-				exit();
-			} else {
-				redirect($baseurl);
+				]);
+				exit;
 			}
-		}else{
-			$country_id = $this->input->post('country_id');
-			$uai_id = $this->input->post('uai_id');
-			$sub_location_id = $this->input->post('sub_location_id');
-			$cluster_id = $this->input->post('cluster_id');
-			$contributor_id = $this->input->post('contributor_id');
-			$respondent_id = $this->input->post('respondent_id');
-			$start_date = $this->input->post('start_date');
-			$end_date = $this->input->post('end_date');
-			$user_id = $this->session->userdata('login_id');
-			$survey_id = $this->input->post('survey_id');
-			$survey_type = $this->input->post('survey_type');
-
-			$page_no =  1;
-			$record_per_page = 100;
-			 if($this->input->post('pagination')){
-				$pagination = $this->input->post('pagination');
-				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
-				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
-			 }
-			 $search_input = "";
-			 if ($this->input->post('search')) {
-				 $search = $this->input->post('search');
-				 $search_input = $search['search_input'] != null ? $search['search_input'] : "";
-			 }
-
-			$data = array(
-				'country_id' => $country_id,
-				'uai_id' => $uai_id,
-				'sub_location_id' => $sub_location_id,
-				'cluster_id' => $cluster_id,
-				'contributor_id' => $contributor_id,
-				'respondent_id' => $respondent_id,
-				'start_date' => $start_date,
-				'end_date' => $end_date,
-				'user_id' => $user_id,
-				'survey_id' => $survey_id,
-				'survey_type' => $survey_type,
-				"search_input" => $search_input,
-				"is_search" => $search_input != null,
-				"page_no" => $page_no,
-				"record_per_page" => $record_per_page,
-				"is_pagination" => $this->input->post('pagination') != null
-			);
-
-			$this->load->model('Reports_model');
-			$result = $this->Reports_model->survey_details($survey_id);
-			$result['submited_data'] = $this->Reports_model->survey_rejected_data($data);
-			$result['total_records'] = $this->Reports_model->survey_rejected_records($data);
-			$result['user_role'] = $this->session->userdata('role');
-			$result['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
-			$result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
-			$result['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
-			$result['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
-			$result['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
-			$result['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
-			$result['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
-			$result['cluster_admin'] = $this->db->select('concat(first_name," ", last_name) as verified_by, user_id')->where('status', 1)->where('role_id', 6)->get('tbl_users')->result_array();
-			$result['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
-			$result['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
-			$result['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
-			$result['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
-			$result['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
-			$result['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
-			$result['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
-			$result['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
-			$result['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
-
-
-			
-			$result['title'] = $this->Reports_model->export_survey_title($survey_id);
-			$result['status'] = 1;
-			echo json_encode($result);
-			exit();
-
+			redirect($baseurl);
 		}
 
+		// Input parameters
+		$data = [
+			'country_id' => $this->input->post('country_id'),
+			'uai_id' => $this->input->post('uai_id'),
+			'sub_location_id' => $this->input->post('sub_location_id'),
+			'cluster_id' => $this->input->post('cluster_id'),
+			'contributor_id' => $this->input->post('contributor_id'),
+			'respondent_id' => $this->input->post('respondent_id'),
+			'start_date' => $this->input->post('start_date'),
+			'end_date' => $this->input->post('end_date'),
+			'user_id' => $this->session->userdata('login_id'),
+			'survey_id' => $this->input->post('survey_id'),
+			'survey_type' => $this->input->post('survey_type'),
+			'page_no' => 1,
+			'record_per_page' => 100,
+			'search_input' => '',
+			'is_search' => false,
+			'is_pagination' => false
+		];
+
+		// Handle pagination
+		if ($this->input->post('pagination')) {
+			$pagination = $this->input->post('pagination');
+			$data['page_no'] = $pagination['pageNo'] ?? 1;
+			$data['record_per_page'] = $pagination['recordperpage'] ?? 100;
+			$data['is_pagination'] = true;
+		}
+
+		// Handle search
+		if ($this->input->post('search')) {
+			$search = $this->input->post('search');
+			$data['search_input'] = $search['search_input'] ?? '';
+			$data['is_search'] = !empty($data['search_input']);
+		}
+
+		$this->load->model('Reports_model');
+
+		// In-memory cache for lookup tables
+		static $lookup_cache = [];
+		$lookup_tables = [
+			'lkp_country' => ['table' => 'lkp_country', 'select' => '*'],
+			'lkp_cluster' => ['table' => 'lkp_cluster', 'select' => '*'],
+			'lkp_uai' => ['table' => 'lkp_uai', 'select' => '*'],
+			'lkp_sub_location' => ['table' => 'lkp_sub_location', 'select' => '*'],
+			'lkp_location_type' => ['table' => 'lkp_location_type', 'select' => '*'],
+			'lkp_animal_type_lactating' => ['table' => 'lkp_animal_type_lactating', 'select' => '*'],
+			'lkp_market' => ['table' => 'lkp_market', 'select' => '*'],
+			'lkp_lr_body_condition' => ['table' => 'lkp_lr_body_condition', 'select' => '*'],
+			'lkp_sr_body_condition' => ['table' => 'lkp_sr_body_condition', 'select' => '*'],
+			'lkp_animal_type' => ['table' => 'lkp_animal_type', 'select' => '*'],
+			'lkp_animal_herd_type' => ['table' => 'lkp_animal_herd_type', 'select' => '*'],
+			'lkp_food_groups' => ['table' => 'lkp_food_groups', 'select' => '*'],
+			'lkp_transect_pasture' => ['table' => 'lkp_transect_pasture', 'select' => '*'],
+			'lkp_dry_wet_pasture' => ['table' => 'lkp_dry_wet_pasture', 'select' => '*'],
+			'lkp_transport_means' => ['table' => 'lkp_transport_means', 'select' => '*'],
+			'respondent_name' => ['table' => 'tbl_respondent_users', 'select' => 'first_name, last_name, data_id'],
+			'cluster_admin' => ['table' => 'tbl_users', 'select' => 'CONCAT(first_name, " ", last_name) as verified_by, user_id', 'where' => ['role_id' => 6]]
+		];
+
+		$result = [
+			'status' => 1,
+			'user_role' => $this->session->userdata('role'),
+			'title' => $this->Reports_model->export_survey_title($data['survey_id'])
+		];
+
+		// Fetch lookup data from in-memory cache
+		foreach ($lookup_tables as $key => $config) {
+			if (!isset($lookup_cache[$key])) {
+				$query = $this->db->select($config['select'])->where('status', 1);
+				if (!empty($config['where'])) {
+					foreach ($config['where'] as $field => $value) {
+						$query->where($field, $value);
+					}
+				}
+				$lookup_cache[$key] = $query->get($config['table'])->result_array();
+			}
+			$result[$key] = $lookup_cache[$key];
+		}
+
+		// Fetch survey details and rejected data
+		$result = array_merge($result, $this->Reports_model->survey_details($data['survey_id']));
+		$survey_data = $this->Reports_model->survey_rejected_data($data);
+		$result['submited_data'] = $survey_data['data'];
+		$result['total_records'] = $survey_data['total_records'];
+
+		echo json_encode($result);
+		exit;
 	}
 
-	public function get_submited_data_export(){
+	public function get_submited_data_export() {
 		$baseurl = base_url();
-		if(($this->session->userdata('login_id') == '')) {
+		if (empty($this->session->userdata('login_id'))) {
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-				echo json_encode(array(
+				echo json_encode([
 					'status' => 0,
 					'msg' => 'Session Expired! Please login again to continue.'
-				));
-				exit();
-			} else {
-				redirect($baseurl);
+				]);
+				exit;
 			}
-		}else{
-			$country_id = $this->input->post('country_id');
-			$uai_id = $this->input->post('uai_id');
-			$sub_location_id = $this->input->post('sub_location_id');
-			$cluster_id = $this->input->post('cluster_id');
-			$contributor_id = $this->input->post('contributor_id');
-			$respondent_id = $this->input->post('respondent_id');
-			$start_date = $this->input->post('start_date');
-			$end_date = $this->input->post('end_date');
-			$user_id = $this->session->userdata('login_id');
-			$survey_id = $this->input->post('survey_id');
-			$survey_type = $this->input->post('survey_type');
-
-			$page_no =  1;
-			$record_per_page = 100;
-			 if($this->input->post('pagination')){
-				$pagination = $this->input->post('pagination');
-				$page_no = $pagination['pageNo'] != null ? $pagination['pageNo'] : 1;
-				$record_per_page = $pagination['recordperpage'] != null ? $pagination['recordperpage'] : 100;
-			 }
-
-			 $search_input = "";
-			if ($this->input->post('search')) {
-				$search = $this->input->post('search');
-				$search_input = $search['search_input'] != null ? $search['search_input'] : "";
-			}
-
-			$pa_verified_status = "";
-			if ($this->input->post('pa_verified_status')) {
-				$verified_status = $this->input->post('pa_verified_status');
-				$pa_verified_status = $verified_status != null ? $verified_status : "";
-			}
-
-			$data = array(
-				'country_id' => $country_id,
-				'uai_id' => $uai_id,
-				'sub_location_id' => $sub_location_id,
-				'cluster_id' => $cluster_id,
-				'contributor_id' => $contributor_id,
-				'respondent_id' => $respondent_id,
-				'start_date' => $start_date,
-				'end_date' => $end_date,
-				'user_id' => $user_id,
-				'survey_id' => $survey_id,
-				'survey_type' => $survey_type,
-				"search_input" => $search_input,
-				"is_search" => $search_input != null,
-				"pa_verified_status" => $pa_verified_status,
-				"is_pa_verified_status" => $pa_verified_status != null,
-				"page_no" => $page_no,
-				"record_per_page" => $record_per_page,
-				"is_pagination" => $this->input->post('pagination') != null
-			);
-
-			$this->load->model('Reports_model');
-			$result = $this->Reports_model->survey_details($survey_id);
-			$result['submited_data'] = $this->Reports_model->survey_submited_data_export($data);
-			// $result['total_records'] = $this->Reports_model->survey_records($data);
-			$result['user_role'] = $this->session->userdata('role');
-			$result['lkp_country'] = $this->db->select('*')->where('status', 1)->get('lkp_country')->result_array();
-			$result['lkp_cluster'] = $this->db->select('*')->where('status', 1)->get('lkp_cluster')->result_array();
-			$result['lkp_uai'] = $this->db->select('*')->where('status', 1)->get('lkp_uai')->result_array();
-			$result['lkp_sub_location'] = $this->db->select('*')->where('status', 1)->get('lkp_sub_location')->result_array();
-			
-			$result['lkp_location_type'] = $this->db->select('*')->where('status', 1)->get('lkp_location_type')->result_array();
-			$result['lkp_animal_type_lactating'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type_lactating')->result_array();
-			$result['respondent_name'] = $this->db->select('first_name, last_name,data_id')->where('status', 1)->get('tbl_respondent_users')->result_array();
-			$result['lkp_market'] = $this->db->select('*')->where('status', 1)->get('lkp_market')->result_array();
-			$result['lkp_lr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_lr_body_condition')->result_array();
-			$result['lkp_sr_body_condition'] = $this->db->select('*')->where('status', 1)->get('lkp_sr_body_condition')->result_array();
-			$result['lkp_animal_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_type')->result_array();
-			$result['lkp_animal_herd_type'] = $this->db->select('*')->where('status', 1)->get('lkp_animal_herd_type')->result_array();
-			$result['lkp_food_groups'] = $this->db->select('*')->where('status', 1)->get('lkp_food_groups')->result_array();
-			$result['lkp_transect_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_transect_pasture')->result_array();
-			$result['lkp_dry_wet_pasture'] = $this->db->select('*')->where('status', 1)->get('lkp_dry_wet_pasture')->result_array();
-			$result['lkp_transport_means'] = $this->db->select('*')->where('status', 1)->get('lkp_transport_means')->result_array();
-
-			
-			$result['title'] = $this->Reports_model->export_survey_title($survey_id);
-			$result['status'] = 1;
-			echo json_encode($result);
-			exit();
-
+			redirect($baseurl);
 		}
 
+		// Input parameters
+		$data = [
+			'country_id' => $this->input->post('country_id'),
+			'uai_id' => $this->input->post('uai_id'),
+			'sub_location_id' => $this->input->post('sub_location_id'),
+			'cluster_id' => $this->input->post('cluster_id'),
+			'contributor_id' => $this->input->post('contributor_id'),
+			'respondent_id' => $this->input->post('respondent_id'),
+			'start_date' => $this->input->post('start_date'),
+			'end_date' => $this->input->post('end_date'),
+			'user_id' => $this->session->userdata('login_id'),
+			'survey_id' => $this->input->post('survey_id'),
+			'survey_type' => $this->input->post('survey_type'),
+			'page_no' => 1,
+			'record_per_page' => 100,
+			'search_input' => '',
+			'is_search' => false,
+			'pa_verified_status' => '',
+			'is_pa_verified_status' => false,
+			'is_pagination' => false
+		];
+
+		// Handle pagination
+		if ($this->input->post('pagination') && !empty($this->input->post('pagination'))) {
+			$pagination = $this->input->post('pagination');
+			$data['page_no'] = $pagination['pageNo'] ?? 1;
+			$data['record_per_page'] = $pagination['recordperpage'] ?? 100;
+			$data['is_pagination'] = true;
+		}
+
+		// Handle search
+		if ($this->input->post('search')) {
+			$search = $this->input->post('search');
+			$data['search_input'] = $search['search_input'] ?? '';
+			$data['is_search'] = !empty($data['search_input']);
+		}
+
+		// Handle pa_verified_status
+		if ($this->input->post('pa_verified_status')) {
+			$data['pa_verified_status'] = $this->input->post('pa_verified_status');
+			$data['is_pa_verified_status'] = !empty($data['pa_verified_status']);
+		}
+
+		$this->load->model('Reports_model');
+
+		// In-memory cache for lookup tables
+		static $lookup_cache = [];
+		$lookup_tables = [
+			'lkp_country' => ['table' => 'lkp_country', 'select' => '*'],
+			'lkp_cluster' => ['table' => 'lkp_cluster', 'select' => '*'],
+			'lkp_uai' => ['table' => 'lkp_uai', 'select' => '*'],
+			'lkp_sub_location' => ['table' => 'lkp_sub_location', 'select' => '*'],
+			'lkp_location_type' => ['table' => 'lkp_location_type', 'select' => '*'],
+			'lkp_animal_type_lactating' => ['table' => 'lkp_animal_type_lactating', 'select' => '*'],
+			'lkp_market' => ['table' => 'lkp_market', 'select' => '*'],
+			'lkp_lr_body_condition' => ['table' => 'lkp_lr_body_condition', 'select' => '*'],
+			'lkp_sr_body_condition' => ['table' => 'lkp_sr_body_condition', 'select' => '*'],
+			'lkp_animal_type' => ['table' => 'lkp_animal_type', 'select' => '*'],
+			'lkp_animal_herd_type' => ['table' => 'lkp_animal_herd_type', 'select' => '*'],
+			'lkp_food_groups' => ['table' => 'lkp_food_groups', 'select' => '*'],
+			'lkp_transect_pasture' => ['table' => 'lkp_transect_pasture', 'select' => '*'],
+			'lkp_dry_wet_pasture' => ['table' => 'lkp_dry_wet_pasture', 'select' => '*'],
+			'lkp_transport_means' => ['table' => 'lkp_transport_means', 'select' => '*'],
+			'respondent_name' => ['table' => 'tbl_respondent_users', 'select' => 'first_name, last_name, data_id'],
+			'cluster_admin' => ['table' => 'tbl_users', 'select' => 'CONCAT(first_name, " ", last_name) as verified_by, user_id', 'where' => ['role_id' => 6]]
+		];
+
+		$result = [
+			'status' => 1,
+			'user_role' => $this->session->userdata('role'),
+			'title' => $this->Reports_model->export_survey_title($data['survey_id'])
+		];
+
+		// Fetch lookup data from in-memory cache
+		foreach ($lookup_tables as $key => $config) {
+			if (!isset($lookup_cache[$key])) {
+				$query = $this->db->select($config['select'])->where('status', 1);
+				if (!empty($config['where'])) {
+					foreach ($config['where'] as $field => $value) {
+						$query->where($field, $value);
+					}
+				}
+				$lookup_cache[$key] = $query->get($config['table'])->result_array();
+			}
+			$result[$key] = $lookup_cache[$key];
+		}
+
+		// Fetch survey details and submitted data
+		$result = array_merge($result, $this->Reports_model->survey_details($data['survey_id']));
+		$survey_data = $this->Reports_model->survey_submited_data_export($data);
+		$result['submited_data'] = $survey_data['data'];
+		$result['total_records'] = $survey_data['total_records'];
+
+		echo json_encode($result);
+		exit;
 	}
 
 
