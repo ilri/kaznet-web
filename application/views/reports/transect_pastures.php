@@ -296,7 +296,6 @@
 												</div>
 											</div>
 											<!-- <button type="button" class="btn btn-sm btn-primary hidden"  id="export_sub" onclick="exportXcel()">Export data</button> -->
-											<button type="button" class="btn btn-sm mt-2 mb-2 hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
 											<?php if ($this->session->userdata('role') == 6) {?>
 												<div class="mt-10">
 												<button type="button" class="btn btn-sm btn-success verify hidden ml-2" data-status="2">Approve</button>
@@ -304,6 +303,7 @@
 												<!-- <button type="button" class="btn btn-sm btn-danger delete hidden ml-2" data-status="delete">Delete</button> -->
 											</div>
 											<?php } ?>
+											<button type="button" class="btn btn-sm mt-2 mb-2 hidden"  id="export_sub" data-tabvalue=1 onclick="exportXcel(event)">Export data</button>
 										</div>
                                         <div class="table-responsive" style="height:345px;">
 											<div class="loaders" id="info_data">

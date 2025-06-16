@@ -2346,7 +2346,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2370,7 +2370,6 @@ class Reports_model extends CI_Model {
             $this->db->group_end();
         }
 		$submited_data = $this->db->order_by('rp.id', 'DESC')->get()->result_array();
-        // print_r( $this->db->last_query());exit;
         return $submited_data;
     }
     public function survey_household_records($data){
@@ -2396,7 +2395,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2440,7 +2439,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2486,7 +2485,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2530,7 +2529,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2576,7 +2575,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -2915,7 +2914,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		// $this->db->where('rp.pa_verified_status', 1);
@@ -2964,7 +2963,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 1);
@@ -3007,7 +3006,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 2);
@@ -3052,7 +3051,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 2);
@@ -3095,7 +3094,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 3);
@@ -3140,7 +3139,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.pasture_type', $data['pasture_type']);
         }
         // if(!empty($data['respondent_id'])) {
-        //     $this->db->where('rp.id', $data['respondent_id']);
+        //     $this->db->where('rp.data_id', $data['respondent_id']);
         // }
 		$this->db->where('rp.status', 1);
 		$this->db->where('rp.pa_verified_status', 3);
@@ -3212,7 +3211,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -3244,7 +3243,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.pa_verified_date) >=', $data['start_date']);
@@ -3276,7 +3275,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.pa_verified_date) >=', $data['start_date']);
@@ -3752,7 +3751,7 @@ class Reports_model extends CI_Model {
                 $this->db->where('rp.added_by', $data['contributor_id']);
             }
             if(!empty($data['respondent_id'])) {
-                $this->db->where('rp.id', $data['respondent_id']);
+                $this->db->where('rp.data_id', $data['respondent_id']);
             }
             if(!empty($data['start_date']) && !empty($data['end_date'])){
                 $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -3786,7 +3785,7 @@ class Reports_model extends CI_Model {
                 $this->db->where('rp.added_by', $data['contributor_id']);
             }
             if(!empty($data['respondent_id'])) {
-                $this->db->where('rp.id', $data['respondent_id']);
+                $this->db->where('rp.data_id', $data['respondent_id']);
             }
             if(!empty($data['start_date']) && !empty($data['end_date'])){
                 $this->db->where('DATE(pa_verified_date) >=', $data['start_date']);
@@ -3817,7 +3816,7 @@ class Reports_model extends CI_Model {
                 $this->db->where('rp.added_by', $data['contributor_id']);
             }
             if(!empty($data['respondent_id'])) {
-                $this->db->where('rp.id', $data['respondent_id']);
+                $this->db->where('rp.data_id', $data['respondent_id']);
             }
             if(!empty($data['start_date']) && !empty($data['end_date'])){
                 $this->db->where('DATE(pa_verified_date) >=', $data['start_date']);
@@ -3965,7 +3964,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.added_datetime) >=', $data['start_date']);
@@ -3997,7 +3996,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.pa_verified_date) >=', $data['start_date']);
@@ -4029,7 +4028,7 @@ class Reports_model extends CI_Model {
             $this->db->where('rp.added_by', $data['contributor_id']);
         }
         if(!empty($data['respondent_id'])) {
-            $this->db->where('rp.id', $data['respondent_id']);
+            $this->db->where('rp.data_id', $data['respondent_id']);
         }
         if(!empty($data['start_date']) && !empty($data['end_date'])){
             $this->db->where('DATE(rp.pa_verified_date) >=', $data['start_date']);

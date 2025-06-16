@@ -205,6 +205,7 @@ class FormModel extends CI_Model {
         }
         
         $query .= " AND s.status = 1";
+        $query .= " AND rp.status = 1";
         
         // if (!empty($data['is_pa_verified_status'])) {
         //     $query .= " AND s.pa_verified_status = ?";

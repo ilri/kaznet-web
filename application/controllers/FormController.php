@@ -404,6 +404,7 @@ class FormController extends CI_Controller {
             $baseurl = base_url();
             redirect($baseurl);
         }
+		$user_id = $this->session->userdata('login_id');
         
         $result = array();
         
