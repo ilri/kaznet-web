@@ -9053,10 +9053,17 @@ class Reports extends CI_Controller {
 			}
 	
 			if (!empty($field_ids)) {
+				$country_id = $this->input->get('country_id');
+				$uai_id = $this->input->get('uai_id');
+
 				$this->db->select('data_id');
-				$this->db->where('country_id', $this->input->get('country_id'));
+				if (!empty($country_id)) {
+					$this->db->where('country_id', $country_id);
+				} elseif (!empty($uai_id)) {
+					$this->db->where('uai_id', $uai_id);
+				}
 				$this->db->from('survey9'); // survey9_1203_backup
-				$this->db->limit(1000);
+				$this->db->limit(500);
 				
 				$this->db->group_start(); // Start outer group for ORs
 
