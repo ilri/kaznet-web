@@ -9104,7 +9104,7 @@ class Reports extends CI_Controller {
 								print_r($imageUrl);
 	
 								if ($imageUrl) {
-									$url = 'http://18.233.168.18/forage/process_image';
+									$url = 'http://54.159.212.248/forage/process_image';
 									$data = json_encode(['url' => $imageUrl]);
 									$ch = curl_init($url);
 									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -9279,7 +9279,7 @@ class Reports extends CI_Controller {
 									echo "File URL: " . $imageUrl . '<br/>';
 	
 									// Step 5: Process image via cURL
-									$url = 'http://18.233.168.18/forage/process_image';
+									$url = 'http://54.159.212.248/forage/process_image';
 									$data = json_encode(['url' => $imageUrl]);
 									$ch = curl_init($url);
 									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
