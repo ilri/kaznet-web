@@ -9100,7 +9100,15 @@ class Reports extends CI_Controller {
 							// print_r($survey_result);
 							echo '<br/>';
 							foreach ($survey_result as $survey_image) {
-								$imageUrl = $baseurl . "uploads/survey/" . $survey_image->file_name;
+								$fileName = $survey_image->file_name;
+								if (empty($fileName)) {
+									continue;
+								}
+								if (strpos($fileName, 'api.ona.io') !== false || strpos($fileName, 'classic.ona.io') !== false) {
+									$imageUrl = $fileName;
+								} else {
+									$imageUrl = $baseurl . 'uploads/survey/' . $fileName;
+								}
 								print_r($imageUrl);
 	
 								if ($imageUrl) {
@@ -9275,7 +9283,15 @@ class Reports extends CI_Controller {
 									echo "File Name: " . $survey_image->file_name . "<br/>";
 									echo "Field ID: " . $survey_image->field_id . "<br/>";
 									echo "Data ID: " . $survey_image->data_id . "<br/>";
-									$imageUrl = $baseurl . "uploads/survey/" . $survey_image->file_name;
+									$fileName = $survey_image->file_name;
+									if (empty($fileName)) {
+										continue;
+									}
+									if (strpos($fileName, 'api.ona.io') !== false || strpos($fileName, 'classic.ona.io') !== false) {
+										$imageUrl = $fileName;
+									} else {
+										$imageUrl = $baseurl . 'uploads/survey/' . $fileName;
+									}
 									echo "File URL: " . $imageUrl . '<br/>';
 	
 									// Step 5: Process image via cURL
