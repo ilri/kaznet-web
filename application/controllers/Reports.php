@@ -9563,4 +9563,272 @@ class Reports extends CI_Controller {
 		exit();
 	}
 
+	public function generate_vegetation_percentage() {
+		$baseurl = base_url();
+		if (empty($this->session->userdata('login_id'))) {
+			redirect($baseurl);
+			exit;
+		}
+		$baseurl = "https://kaznet.ilri.org/";
+
+		// Define the field mappings
+		$field_mappings = array(
+			772 => ['area' => 1046],  // North
+			773 => ['area' => 1047],  // East
+			774 => ['area' => 1048],  // South
+			775 => ['area' => 1049],  // West
+			790 => ['area' => 1040],  // Point0
+			794 => ['area' => 1041],  // Point1
+			798 => ['area' => 1042],  // Point2
+			802 => ['area' => 1043],  // Point3
+			806 => ['area' => 1044],  // Point4
+			810 => ['area' => 1045],  // Point5
+			815 => ['area' => 1050],  // Point6
+			819 => ['area' => 1051],  // Point7
+			823 => ['area' => 1052],  // Point8
+			827 => ['area' => 1053],  // Point9
+			831 => ['area' => 1054]   // Point10
+		);
+
+		// Fetch image field IDs from form_field
+		$this->db->select('field_id, label');
+		$this->db->from('form_field');
+		$this->db->group_start();
+		$this->db->like('label', 'forage');
+		$this->db->or_like('label', 'vegetation area');
+		$this->db->group_end();
+		$this->db->where('form_id', 9);
+		$this->db->where('status', 1);
+		$this->db->where('type', 'file');
+		$query = $this->db->get();
+		// echo "Image field query: " . $this->db->last_query() . "<br/>";
+		// echo "Image field IDs: " . implode(', ', array_column($query->result(), 'field_id')) . "<br/>";
+
+		if ($query->num_rows() > 0) {
+			$field_ids = array_column($query->result(), 'field_id');
+
+			// Check for expected field_ids
+			$expected_fields = array_keys($field_mappings);
+			foreach ($expected_fields as $expected_field) {
+				if (!in_array($expected_field, $field_ids)) {
+					echo "Warning: field_id $expected_field not found in form_field with type='file' and label containing 'forage' or 'vegetation'.<br/>";
+				}
+			}
+
+			if (!empty($field_ids)) {
+				$country_id = $this->input->get('country_id');
+				$uai_id = $this->input->get('uai_id');
+
+				// Fetch survey9 records with at least one NULL area field
+				$this->db->select('data_id');
+				if (!empty($country_id)) {
+					$this->db->where('country_id', $country_id);
+				} elseif (!empty($uai_id)) {
+					$this->db->where('uai_id', $uai_id);
+				}
+				$this->db->from('survey9');
+				$this->db->limit(500);
+				$this->db->group_start();
+				$this->db->or_group_start();
+				foreach ($field_mappings as $map) {
+					$this->db->where("field_{$map['area']}", null);
+				}
+				$this->db->group_end();
+				$this->db->group_end();
+				$survey_query = $this->db->get();
+				echo "<------------------------------------------><br/>";
+				echo "Survey9 query: " . $this->db->last_query() . "<br/>";
+
+				if ($survey_query->num_rows() > 0) {
+					$survey_9_result = $survey_query->result();
+
+					foreach ($survey_9_result as $survey9) {
+						echo "Processing data_id: {$survey9->data_id}<br/>";
+
+						// Check ic_data_file for images
+						$this->db->select('*');
+						$this->db->from('ic_data_file');
+						$this->db->where('form_id', 9);
+						$this->db->where('data_id', $survey9->data_id);
+						$this->db->where('status', 1);
+						$this->db->where_in('field_id', $field_ids);
+						$survey_query = $this->db->get();
+						// echo "ic_data_file query: " . $this->db->last_query() . "<br/>";
+
+						if ($survey_query->num_rows() > 0) {
+							$survey_result = $survey_query->result();
+							foreach ($survey_result as $survey_image) {
+								$fileName = $survey_image->file_name;
+								$field_id = $survey_image->field_id;
+								if (empty($fileName)) {
+									echo "No image file for field_id: $field_id, data_id: {$survey9->data_id} in ic_data_file<br/>";
+									if (array_key_exists($field_id, $field_mappings)) {
+										$mapping = $field_mappings[$field_id];
+										$this->db->where('data_id', $survey9->data_id);
+										$this->db->update('survey9', ["field_{$mapping['area']}" => 0]);
+										echo "Set default area: 0 for field_id: $field_id, data_id: {$survey9->data_id} in ic_data_file<br/>";
+									}
+									continue;
+								}
+								$imageUrl = (strpos($fileName, 'api.ona.io') !== false || strpos($fileName, 'classic.ona.io') !== false)
+									? $fileName
+									: $baseurl . 'uploads/survey/' . $fileName;
+								echo "Image URL for field_id: $field_id: $imageUrl<br/>";
+
+								if ($imageUrl) {
+									$url = 'http://54.159.212.248/forage/vegetation-area';
+									$data = json_encode(['url' => $imageUrl]);
+									$ch = curl_init($url);
+									curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+									curl_setopt($ch, CURLOPT_POST, true);
+									curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+									curl_setopt($ch, CURLOPT_HTTPHEADER, [
+										'Content-Type: application/json',
+										'Content-Length: ' . strlen($data)
+									]);
+									$response = curl_exec($ch);
+
+									if ($response === false) {
+										echo "cURL Error for data_id: {$survey9->data_id}, field_id: $field_id, file: $fileName: " . curl_error($ch) . "<br/>";
+										curl_close($ch);
+										continue;
+									}
+
+									$response_data = json_decode($response, true);
+									echo "API response for field_id: $field_id: " . print_r($response_data, true) . "<br/>";
+									$vegetation_area = null;
+									if (is_array($response_data) && isset($response_data['percentage'])) {
+										$vegetation_area = round(floatval($response_data['percentage']), 2);
+									} elseif (is_numeric($response_data)) {
+										$vegetation_area = round(floatval($response_data), 2); // Adjust if API returns 0-1
+									}
+
+									if ($vegetation_area !== null && array_key_exists($field_id, $field_mappings)) {
+										$mapping = $field_mappings[$field_id];
+
+										// Fetch existing area field
+										$this->db->select("field_{$mapping['area']}");
+										$this->db->from('survey9');
+										$this->db->where('data_id', $survey9->data_id);
+										$existing_data_query = $this->db->get();
+
+										if ($existing_data_query->num_rows() > 0) {
+											$existing_data = $existing_data_query->row_array();
+											$update_data = [
+												"field_{$mapping['area']}" => $vegetation_area
+											];
+											$merged_data = array_merge($existing_data, $update_data);
+
+											$this->db->where('data_id', $survey9->data_id);
+											$this->db->update('survey9', $merged_data);
+											echo "Update query: " . $this->db->last_query() . "<br/>";
+											// echo "Updated survey9 for field_id: $field_id with area: $vegetation_area for data_id: {$survey9->data_id}<br/>";
+										}
+									} else {
+										echo "Invalid API response for data_id: {$survey9->data_id}, field_id: $field_id, file: $fileName.<br/>";
+									}
+									curl_close($ch);
+								}
+							}
+						} else {
+							// Check survey9 for images in mapped fields
+							$field_columns = array_map(function($field_id) {
+								return "field_$field_id";
+							}, array_keys($field_mappings));
+							$this->db->select(array_merge(['data_id'], $field_columns));
+							$this->db->from('survey9');
+							$this->db->where('data_id', $survey9->data_id);
+							$image_query = $this->db->get();
+							// echo "survey9 image query: " . $this->db->last_query() . "<br/>";
+
+							if ($image_query->num_rows() > 0) {
+								$survey_result = $image_query->row();
+								foreach ($field_mappings as $field_id => $mapping) {
+									$field_column = "field_$field_id";
+									$fileName = $survey_result->$field_column;
+
+									if (empty($fileName)) {
+										echo "No image file for field_id: $field_id, data_id: {$survey9->data_id} in survey9<br/>";
+										$this->db->where('data_id', $survey9->data_id);
+										$this->db->update('survey9', ["field_{$mapping['area']}" => 0]);
+										echo "Set default area: 0 for field_id: $field_id, data_id: {$survey9->data_id} in survey9<br/>";
+										continue;
+									}
+
+									$imageUrl = (strpos($fileName, 'api.ona.io') !== false || strpos($fileName, 'classic.ona.io') !== false)
+										? $fileName
+										: $baseurl . 'uploads/survey/' . $fileName;
+									echo "Image URL for field_id: $field_id: $imageUrl<br/>";
+
+									if ($imageUrl) {
+										$url = 'http://54.159.212.248/forage/vegetation-area';
+										$data = json_encode(['url' => $imageUrl]);
+										$ch = curl_init($url);
+										curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+										curl_setopt($ch, CURLOPT_POST, true);
+										curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+										curl_setopt($ch, CURLOPT_HTTPHEADER, [
+											'Content-Type: application/json',
+											'Content-Length: ' . strlen($data)
+										]);
+										$response = curl_exec($ch);
+
+										if ($response === false) {
+											echo "cURL Error for data_id: {$survey9->data_id}, field_id: $field_id, file: $fileName: " . curl_error($ch) . "<br/>";
+											curl_close($ch);
+											continue;
+										}
+
+										$response_data = json_decode($response, true);
+										echo "API response for field_id: $field_id: " . print_r($response_data, true) . "<br/>";
+										$vegetation_area = null;
+										if (is_array($response_data) && isset($response_data['percentage'])) {
+											$vegetation_area = round(floatval($response_data['percentage']), 2);
+										} elseif (is_numeric($response_data)) {
+											$vegetation_area = round(floatval($response_data), 2); // Adjust if API returns 0-1
+										}
+
+										if ($vegetation_area !== null && array_key_exists($field_id, $field_mappings)) {
+											// Fetch existing area field
+											$this->db->select("field_{$mapping['area']}");
+											$this->db->from('survey9');
+											$this->db->where('data_id', $survey9->data_id);
+											$existing_data_query = $this->db->get();
+
+											if ($existing_data_query->num_rows() > 0) {
+												$existing_data = $existing_data_query->row_array();
+												$update_data = [
+													"field_{$mapping['area']}" => $vegetation_area
+												];
+												$merged_data = array_merge($existing_data, $update_data);
+
+												$this->db->where('data_id', $survey9->data_id);
+												$this->db->update('survey9', $merged_data);
+												echo "Update query: " . $this->db->last_query() . "<br/>";
+												// echo "Updated survey9 for field_id: $field_id with area: $vegetation_area for data_id: {$survey9->data_id}<br/>";
+											}
+										} else {
+											echo "Invalid API response for data_id: {$survey9->data_id}, field_id: $field_id, file: $fileName.<br/>";
+										}
+										curl_close($ch);
+									}
+								}
+							} else {
+								echo "No survey data found for data_id: {$survey9->data_id} with the specified field_ids in survey9.<br/>";
+							}
+						}
+						echo "<------------------------------------------><br/>";
+					}
+				} else {
+					echo "No survey9 records found with NULL area fields.<br/>";
+				}
+			} else {
+				echo "No field_ids found.<br/>";
+			}
+		} else {
+			echo "No matching rows found in form_field.<br/>";
+		}
+		exit();
+	}
+
 }
